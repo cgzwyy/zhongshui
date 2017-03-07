@@ -2,6 +2,7 @@ package zskj.jkxt;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.os.StrictMode;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -19,8 +20,11 @@ public class JKXTApplication extends Application {
 
     @Override
     public void onCreate() {
-        // TODO Auto-generated method stub
         super.onCreate();
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites()
+                .detectNetwork().penaltyLog().build());
+        StrictMode.setVmPolicy(
+                new StrictMode.VmPolicy.Builder().detectLeakedSqlLiteObjects().penaltyLog().penaltyDeath().build());
         getUrl();
         NETWORK_FLAG = ConnectionChangeReceiver.ConnectionDetect(this);
         Log.e("NETWORK_FLAG","------------------".concat(String.valueOf(NETWORK_FLAG)));
