@@ -1,9 +1,9 @@
 package zskj.jkxt.activity;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -26,6 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import zskj.jkxt.R;
+import zskj.jkxt.api.RequestCallback;
+import zskj.jkxt.api.WebService;
 import zskj.jkxt.domain.Fan;
 import zskj.jkxt.domain.Station;
 import zskj.jkxt.util.Sort;
@@ -38,6 +41,8 @@ public class MonitorDetailActivity extends AppCompatActivity {
     GridView monitor_detail; //风机信息列表
     Map<Integer,Fan> map = new HashMap<Integer, Fan>();
     Button back,refresh;
+
+    ProgressDialog dialog = null;   //进度对话框
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,11 +60,13 @@ public class MonitorDetailActivity extends AppCompatActivity {
         wind_speed = (TextView) this.findViewById(R.id.wind_speed); //风速
         total_active_power = (TextView) this.findViewById(R.id.total_active_power); //瞬时总有功
         daily_electricity = (TextView) this.findViewById(R.id.daily_electricity);  //当日发电量
-        //获取场站相关信息
-        getStationData();
+
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("加载中...");     //设置提示信息
+        dialog.setCanceledOnTouchOutside(false);   //设置在点击Dialog外是否取消Dialog进度条
 
         monitor_detail = (GridView) this.findViewById(R.id.monitor_detail);
-        setMonitorDetail();
+        getData(model.columnValue);
 
         back = (Button) this.findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -73,29 +80,18 @@ public class MonitorDetailActivity extends AppCompatActivity {
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getStationData();
-                setMonitorDetail();
+                getData(model.columnValue);
             }
         });
 
     }
 
-    public void getStationData(){
-        String data = "{\"场站名称\":\"布尔津\",\"省调计划\":\"6\",\"平均风速\":\"3.2343242342\",\"当日发电量\":\"2.178323\",\"瞬时总有功\":\"1.17\"}";
-
-        JsonParser parser = new JsonParser();
-        JsonObject object=(JsonObject) parser.parse(data);
-
-        DecimalFormat df = new DecimalFormat("#.00");
-
-        plan.setText(df.format(Double.valueOf(object.get("省调计划").getAsString())));
-        wind_speed.setText(df.format(Double.valueOf(object.get("平均风速").getAsString())));
-        total_active_power.setText(df.format(Double.valueOf(object.get("瞬时总有功").getAsString())));
-        daily_electricity.setText(df.format(Double.valueOf(object.get("当日发电量").getAsString())));
-    }
-
-    public void setMonitorDetail(){
-        map = getFansInfo();
+    public void setMonitorDetail(String result){
+        map = getFansInfo(result);
+        if(map.isEmpty()){ //map为空，未获取到数据
+            Toast.makeText(getApplicationContext(), "获取数据失败！", Toast.LENGTH_SHORT).show();
+            return;
+        }
         monitor_detail.setAdapter(new MyMonitorAdapter(map));
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //隐藏dialog的title
@@ -127,25 +123,61 @@ public class MonitorDetailActivity extends AppCompatActivity {
         });
     }
 
-    public Map<Integer,Fan> getFansInfo(){
-        String data = "{\"list\":[{\"编号\":\"#01\",\"风机运行状态\":\"1\",\"风速\":\"4.20\",\"有功功率\":\"-17.7000001\",\"转速\":\"1102\"}," +
-                "{\"编号\":\"#03\",\"风机运行状态\":\"2\",\"风速\":\"4.2\",\"有功功率\":\"17.7000001\",\"转速\":\"1102.6\"}," +
-                "{\"编号\":\"#02\",\"风机运行状态\":\"9\",\"风速\":\"4.20\",\"有功功率\":\"-17.7000001\",\"转速\":\"1102\"}," +
-                "{\"编号\":\"#05\",\"风机运行状态\":\"3\",\"风速\":\"4.20\",\"有功功率\":\"-17.7000001\",\"转速\":\"11.7557567\"}," +
-                "{\"编号\":\"#04\",\"风机运行状态\":\"5\",\"风速\":\"4.20\",\"有功功率\":\"-17.7000001\",\"转速\":\"1102\"}," +
-                "{\"编号\":\"#06\",\"风机运行状态\":\"7\",\"风速\":\"4.20\",\"有功功率\":\"-17.7000001\",\"转速\":\"1102\"}," +
-                "{\"编号\":\"#08\",\"风机运行状态\":\"2\",\"风速\":\"4.2\",\"有功功率\":\"17.7000001\",\"转速\":\"1102.6\"}," +
-                "{\"编号\":\"#09\",\"风机运行状态\":\"9\",\"风速\":\"4.20\",\"有功功率\":\"-17.7000001\",\"转速\":\"1102\"}," +
-                "{\"编号\":\"#10\",\"风机运行状态\":\"3\",\"风速\":\"4.20\",\"有功功率\":\"-17.7000001\",\"转速\":\"11.7557567\"}," +
-                "{\"编号\":\"#13\",\"风机运行状态\":\"5\",\"风速\":\"4.20\",\"有功功率\":\"-17.7000001\",\"转速\":\"1102\"}," +
-                "{\"编号\":\"#15\",\"风机运行状态\":\"7\",\"风速\":\"4.20\",\"有功功率\":\"-17.7000001\",\"转速\":\"1102\"}," +
-                "{\"编号\":\"#07\",\"风机运行状态\":\"5\",\"风速\":\"4.20\",\"有功功率\":\"-17.7000001\",\"转速\":\"1102\"}]}";
+    private void getData(final String Str_StationCode ){
+        dialog.show();   //显示进度条对话框
+        new Thread() {
+            public void run(){
+                WebService.getInstance().GetStationInfo(Str_StationCode, new RequestCallback() {
+
+                    @Override
+                    public void onSuccess(final String result) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog.dismiss();  //删除该进度条
+                                setMonitorDetail(result);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFail(final String errorMsg) {
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog.dismiss();  //删除该进度条
+                                // Toast：简易的消息提示框，自动消失
+                                // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
+                                // 第二个参数：要显示的字符串。也可是R.string中字符串ID
+                                // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
+                                Toast.makeText(getApplicationContext(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
+                });
+            }
+        }.start();
+    }
+
+    public Map<Integer,Fan> getFansInfo(String result){
+
+        if(!result.contains("{")){
+            map.clear();
+            return map;
+        }
 
         JsonParser parser = new JsonParser();//创建JSON解析器
-        JsonObject object=(JsonObject) parser.parse(data); //创建JsonObject对象
+        JsonObject object=(JsonObject) parser.parse(result); //创建JsonObject对象
         JsonArray array=object.get("list").getAsJsonArray(); //得到为json的数组
 
-        DecimalFormat df = new DecimalFormat("#.00");  //数据格式转换，四舍五入，保留两位小数
+        DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
+
+        plan.setText(df.format(Double.valueOf(object.get("省调计划").getAsString())));
+        wind_speed.setText(df.format(Double.valueOf(object.get("总辐射瞬时值").getAsString())));
+        total_active_power.setText(df.format(Double.valueOf(object.get("瞬时总有功").getAsString())));
+        daily_electricity.setText(df.format(Double.valueOf(object.get("当日发电量").getAsString())));
 
         Fan[] fans = new Fan[array.size()];
 
@@ -156,9 +188,9 @@ public class MonitorDetailActivity extends AppCompatActivity {
             fan.fan_speed = df.format(Double.valueOf(subObject.get("风速").getAsString()));
             fan.fan_active_power = df.format(Double.valueOf(subObject.get("有功功率").getAsString()));
             fan.fan_revs = df.format(Double.valueOf(subObject.get("转速").getAsString()));
-            fan.fan_state = subObject.get("风机运行状态").getAsString();
-            Log.e("result","--------------------->"+fan.fan_number+"--------"+fan.fan_speed+"-----------"
-                    +fan.fan_state+"-----------"+fan.fan_active_power+"--------"+fan.fan_revs+"-------------"+Integer.valueOf(fan.fan_number.substring(1,fan.fan_number.length())));
+            fan.fan_state = df.format(Double.valueOf(subObject.get("风机运行状态").getAsString()));
+//            Log.e("result","--------------------->"+fan.fan_number+"--------"+fan.fan_speed+"-----------"
+//                    +fan.fan_state+"-----------"+fan.fan_active_power+"--------"+fan.fan_revs+"-------------"+Integer.valueOf(fan.fan_number.substring(1,fan.fan_number.length())));
 //            map.put(Integer.valueOf(fan.fan_number.substring(1,fan.fan_number.length()))-1,fan);
             fans[i] = fan;
         }
@@ -209,12 +241,12 @@ public class MonitorDetailActivity extends AppCompatActivity {
             }
 
             final Fan model = map.get(position);
-            Log.e("result","------------"+position);
+//            Log.e("result","------------"+position);
             holder.fan_number.setText(model.fan_number);
             holder.fan_speed.setText(model.fan_speed.concat(getResources().getString(R.string.speed_unit)));
             holder.fan_active_power.setText(model.fan_active_power.concat(getResources().getString(R.string.active_power_unit)));
             holder.fan_revs.setText(model.fan_revs.concat(getResources().getString(R.string.revs_unit)));
-            if(Integer.valueOf(model.fan_state) >= 5){ //停机
+            if(Double.valueOf(model.fan_state.trim()) >= 5){ //停机
                 holder.fan_picture.setImageResource(R.drawable.fj_05);
                 holder.fan_state.setText(getResources().getString(R.string.stop));
                 holder.fan_state.setVisibility(View.VISIBLE);

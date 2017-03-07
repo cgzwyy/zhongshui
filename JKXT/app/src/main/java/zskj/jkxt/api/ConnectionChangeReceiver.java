@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -22,19 +23,24 @@ public class ConnectionChangeReceiver extends BroadcastReceiver {
         NetworkInfo wifiInfo = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         NetworkInfo activeInfo = manager.getActiveNetworkInfo();
         if (activeInfo == null || !activeInfo.isAvailable()) {
+            Log.e("there one","------------------");
             return NET_NONE;
         } else {
             if (mobileInfo == null) {
+                Log.e("there two","------------------");
                 Toast.makeText(context, "没有网络", Toast.LENGTH_SHORT).show();
                 return NET_NONE;
             }
             if (mobileInfo.isConnected()) {
+                Log.e("there 3","------------------");
                 Toast.makeText(context, "数据流量", Toast.LENGTH_SHORT).show();
                 return NET_DATA;
             } else if (wifiInfo.isConnected()) {
+                Log.e("there 4","------------------");
                 Toast.makeText(context, "Wifi", Toast.LENGTH_SHORT).show();
                 return NET_WIFI;
             } else {
+                Log.e("there 5","------------------");
                 Toast.makeText(context, "未知网络", Toast.LENGTH_SHORT).show();
                 return NET_NONE;
             }

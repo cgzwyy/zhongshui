@@ -3,6 +3,7 @@ package zskj.jkxt;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.InputStream;
 
@@ -14,7 +15,6 @@ import zskj.jkxt.api.ConnectionChangeReceiver;
 
 public class JKXTApplication extends Application {
     public static String webServiceUrl = "";
-    public static String stations = "";
     public static int NETWORK_FLAG = ConnectionChangeReceiver.NET_NONE;
 
     @Override
@@ -23,6 +23,7 @@ public class JKXTApplication extends Application {
         super.onCreate();
         getUrl();
         NETWORK_FLAG = ConnectionChangeReceiver.ConnectionDetect(this);
+        Log.e("NETWORK_FLAG","------------------".concat(String.valueOf(NETWORK_FLAG)));
     }
 
     private void getUrl() {

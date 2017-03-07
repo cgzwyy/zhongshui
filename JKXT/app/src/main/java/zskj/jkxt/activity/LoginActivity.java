@@ -9,13 +9,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import zskj.jkxt.R;
 import zskj.jkxt.api.RequestCallback;
@@ -110,23 +110,25 @@ public class LoginActivity extends Activity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            if(isUser(userName,password)){
-                Intent intent = new Intent();
-                intent.setClass(LoginActivity.this,StationActivity.class);
-                startActivity(intent);
-            }else{
-                showProgress(false);
-                mUserNameView.setError(getString(R.string.error_incorrect_username_password)); //密码错误
-                mUserNameView.requestFocus();
-            }
+            isUser(userName,password);
+//            if(isUser(userName,password)){
+//                Intent intent = new Intent();
+//                intent.setClass(LoginActivity.this,StationActivity.class);
+//                startActivity(intent);
+//            }else{
+//                showProgress(false);
+//                mUserNameView.setError(getString(R.string.error_incorrect_username_password)); //密码错误
+//                mUserNameView.requestFocus();
+//            }
         }
     }
 
     //验证用户名密码是否正确
-    private boolean isUser(final String userName, final String password){
+    private void isUser(final String userName, final String password){
 //        dialog.show();
         new Thread() {
             public void run(){
+                Log.e("tag---->","dsf");
                 WebService.getInstance().isUser(userName, password, new RequestCallback() {
 
                     @Override
@@ -136,8 +138,16 @@ public class LoginActivity extends Activity {
                             @Override
                             public void run() {
 //                                dialog.dismiss();
-//                                List<Monitor> data = parserResult(result);
-//                                lv_station_information.setAdapter(new mAdapter(data));
+                                int flag = parserResult(result);
+                                if(flag >= 0){
+                                    Intent intent = new Intent();
+                                    intent.setClass(LoginActivity.this,StationActivity.class);
+                                    startActivity(intent);
+                                }else{
+                                    showProgress(false);
+                                    mUserNameView.setError(getString(R.string.error_incorrect_username_password)); //密码错误
+                                    mUserNameView.requestFocus();
+                                }
                             }
                         });
                     }
@@ -150,7 +160,10 @@ public class LoginActivity extends Activity {
                             @Override
                             public void run() {
 //                                dialog.dismiss();
-                                Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                                showProgress(false);
+                                mUserNameView.setError(getString(R.string.error_incorrect_username_password)); //密码错误
+                                mUserNameView.requestFocus();
                             }
                         });
 
@@ -158,7 +171,6 @@ public class LoginActivity extends Activity {
                 });
             }
         }.start();
-        return true;
     }
 
     /**
@@ -196,6 +208,13 @@ public class LoginActivity extends Activity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
+    }
+
+    private int parserResult(String result){
+        if(result.equalsIgnoreCase("用户名或密码为空") || result.equalsIgnoreCase("用户名或密码错误")){
+            return -1;
+        }else
+            return Integer.parseInt(result);
     }
 
 

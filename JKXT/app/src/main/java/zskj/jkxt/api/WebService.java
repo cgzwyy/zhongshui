@@ -1,6 +1,7 @@
 package zskj.jkxt.api;
 
 import android.os.StrictMode;
+import android.util.Log;
 
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
@@ -15,7 +16,7 @@ import zskj.jkxt.JKXTApplication;
 
 public class WebService {
     static public String namespace = "http://tempuri.org/";
-    static public String serviceUrl = "http://192.168.11.77/H9000Service.asmx";
+    static public String serviceUrl = "http://192.168.117.58:8085/H9000Service.asmx";
     static final String ERRORMSG = "获取数据失败";
     static WebService service = null;
 
@@ -43,8 +44,9 @@ public class WebService {
         }
         String methodName = "isUser";
         SoapObject request = new SoapObject(namespace, methodName);
-        request.addProperty("userName", userName);
+        request.addProperty("username", userName);
         request.addProperty("password", password);
+        Log.e("result----------->",userName + "---------------" + password);
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
         envelope.bodyOut = request;
         envelope.dotNet = true;
@@ -54,7 +56,33 @@ public class WebService {
             SoapObject object = (SoapObject) envelope.bodyIn;
             if (object != null && object.getProperty(0) != null) {
                 callback.onSuccess(object.getProperty(0).toString());
-                System.out.println("result-------------->" + object.getProperty(0).toString());
+                Log.e("result----------->",object.getProperty(0).toString());
+            }
+            else
+                callback.onFail(ERRORMSG);
+        } catch (Exception e) {
+            callback.onFail(e.getMessage());
+        }
+    }
+    public void GetStationInfo(String Str_StationCode, RequestCallback callback) {
+        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
+            callback.onFail(ERRORMSG);
+            return;
+        }
+        String methodName = "GetStationInfo";
+        SoapObject request = new SoapObject(namespace, methodName);
+        request.addProperty("Str_StationCode", Str_StationCode);
+        Log.e("result----------->",Str_StationCode + "---------------");
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+        envelope.bodyOut = request;
+        envelope.dotNet = true;
+        HttpTransportSE ht = new HttpTransportSE(serviceUrl);
+        try {
+            ht.call(namespace + methodName, envelope);
+            SoapObject object = (SoapObject) envelope.bodyIn;
+            if (object != null && object.getProperty(0) != null) {
+                callback.onSuccess(object.getProperty(0).toString());
+                Log.e("result----------->",object.getProperty(0).toString());
             }
             else
                 callback.onFail(ERRORMSG);
