@@ -9,7 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import zskj.jkxt.R;
-//test
+//test test 2
 public class TestActivity extends AppCompatActivity {
 
     @Override
