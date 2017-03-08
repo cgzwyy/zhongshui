@@ -29,14 +29,15 @@ public class LoginActivity extends Activity {
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
-     *  声明用户登录引用，方便随时撤销登录请求
+     * 声明用户登录引用，方便随时撤销登录请求
      */
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private EditText mUserNameView,mPasswordView;
+    private EditText mUserNameView, mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,7 +111,8 @@ public class LoginActivity extends Activity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            isUser(userName,password);
+            isUser(userName, password);
+//            mAuthTask.execute();
 //            if(isUser(userName,password)){
 //                Intent intent = new Intent();
 //                intent.setClass(LoginActivity.this,StationActivity.class);
@@ -124,11 +126,11 @@ public class LoginActivity extends Activity {
     }
 
     //验证用户名密码是否正确
-    private void isUser(final String userName, final String password){
+    private void isUser(final String userName, final String password) {
 //        dialog.show();
         new Thread() {
-            public void run(){
-                Log.e("tag---->","dsf");
+            public void run() {
+                Log.e("tag---->", "dsf");
                 WebService.getInstance().isUser(userName, password, new RequestCallback() {
 
                     @Override
@@ -139,11 +141,11 @@ public class LoginActivity extends Activity {
                             public void run() {
 //                                dialog.dismiss();
                                 int flag = parserResult(result);
-                                if(flag >= 0){
+                                if (flag >= 0) {
                                     Intent intent = new Intent();
-                                    intent.setClass(LoginActivity.this,StationActivity.class);
+                                    intent.setClass(LoginActivity.this, StationActivity.class);
                                     startActivity(intent);
-                                }else{
+                                } else {
                                     showProgress(false);
                                     mUserNameView.setError(getString(R.string.error_incorrect_username_password)); //密码错误
                                     mUserNameView.requestFocus();
@@ -210,10 +212,10 @@ public class LoginActivity extends Activity {
         }
     }
 
-    private int parserResult(String result){
-        if(result.equalsIgnoreCase("用户名或密码为空") || result.equalsIgnoreCase("用户名或密码错误")){
+    private int parserResult(String result) {
+        if (result.equalsIgnoreCase("用户名或密码为空") || result.equalsIgnoreCase("用户名或密码错误")) {
             return -1;
-        }else
+        } else
             return Integer.parseInt(result);
     }
 
@@ -231,6 +233,11 @@ public class LoginActivity extends Activity {
         UserLoginTask(String userName, String password) {
             mUser = userName;
             mPassword = password;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
         }
 
         @Override
@@ -269,6 +276,7 @@ public class LoginActivity extends Activity {
                 mPasswordView.requestFocus();
             }
         }
+
         //取消任务
         @Override
         protected void onCancelled() {
