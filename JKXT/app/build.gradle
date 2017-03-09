@@ -21,15 +21,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+    compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
-    testCompile 'junit:junit:4.12'
-    compile 'org.apache.httpcomponents:httpcore:4.4.4'
-    compile files('libs/ksoap2-android-assembly-2.5.8-jar-with-dependencies.jar')
-    compile files('libs/gson-2.1.jar')
-    compile files('libs/gson-2.1-javadoc.jar')
-    compile files('libs/gson-2.1-sources.jar')
-    compile files('libs/mpandroidchartlibrary-1-7-4.jar')
 }

@@ -12,9 +12,6 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.apache.http.util.EncodingUtils;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +59,7 @@ public class StationActivity extends Activity {
             int length = in.available();
             byte[] buffer = new byte[length];
             in.read(buffer);
-            stations = EncodingUtils.getString(buffer, "UTF-8");
+            stations = new String(buffer, "UTF-8");
             in.close();
         } catch (Exception e) {
             e.printStackTrace();
