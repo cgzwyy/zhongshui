@@ -1,9 +1,9 @@
 package zskj.jkxt.activity;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 
 import com.github.mikephil.charting.charts.BarLineChartBase;
@@ -21,7 +21,7 @@ import zskj.jkxt.R;
 import zskj.jkxt.util.MyMarkerView;
 
 //test
-public class TestActivity extends AppCompatActivity {
+public class TestActivity extends Activity {
 
     private LineChart mChart;
     @Override
@@ -83,7 +83,7 @@ public class TestActivity extends AppCompatActivity {
         xl.setPosition(XLabels.XLabelPosition.BOTTOM); // 设置X轴的数据在底部显示
         xl.setTypeface(tf); // 设置字体
         xl.setTextSize(10f); // 设置字体大小
-        xl.setSpaceBetweenLabels(3); // 设置数据之间的间距
+        xl.setSpaceBetweenLabels(2); // 设置数据之间的间距
 
         YLabels yl = mChart.getYLabels();
         // yl.setPosition(YLabelPosition.LEFT_INSIDE); // set the position
@@ -107,17 +107,19 @@ public class TestActivity extends AppCompatActivity {
         l.setForm(Legend.LegendForm.LINE);  //设置图最下面显示的类型
         l.setTypeface(tf);
         l.setTextSize(15);
-        l.setTextColor(Color.rgb(104, 241, 175));
-        l.setFormSize(30f); // set the size of the legend forms/shapes
-
+        l.setTextColor(Color.rgb(104, 241, 175));//图注字体颜色
+        l.setFormSize(30f); // set the size of the legend forms/shapes 设置图注线的长度
+//        l.setFormToTextSpace(20f); //设置图注和标题的宽度
         // 刷新图表
         mChart.invalidate();
     }
 
     private void setData() {
-        String[] aa = {"12","14","15","17","18","19","20"};
-        String[] bb = {"122.00","234.34","85.67","117.90","332.33","113.33","120.78"};
+        String[] aa = {"0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"};
+        String[] bb = {"122.00","234.34","85.67","117.90","332.33","113.33","120.78","122.00","234.34","85.67","117.90","332.33","113.33","120.78","122.00","234.34","85.67","117.90","332.33","113.33","120.78","332.33","113.33","120.78"};
+        String[] cc = {"22.00","34.34","85.67","17.90","32.33","13.33","20.78","22.00","34.34","85.67","17.90","32.33","13.33","20.78","22.00","34.34","85.67","17.90","32.33","13.33","20.78","32.33","13.33","20.78","22.00","34.34","85.67","17.90","32.33","13.33","20.78","22.00","34.34","85.67","17.90","32.33","13.33","20.78","22.00","34.34","85.67","17.90","32.33","13.33","20.78","32.33","13.33","20.78"};
 
+//        int max = bb.length>cc.length?bb.length:cc.length;
         ArrayList<String> xVals = new ArrayList<String>();
         for (int i = 0; i < aa.length; i++) {
             xVals.add(aa[i]);
@@ -128,9 +130,15 @@ public class TestActivity extends AppCompatActivity {
         for (int i = 0; i < bb.length; i++) {
             yVals.add(new Entry(Float.parseFloat(bb[i]), i));
         }
+        ArrayList<Entry> zVals = new ArrayList<Entry>();
+
+        for (int i = 0; i < cc.length; i++) {
+            zVals.add(new Entry(Float.parseFloat(cc[i]), i));
+        }
 
         // create a dataset and give it a type
         LineDataSet set1 = new LineDataSet(yVals, "DataSet Line");
+        LineDataSet set2 = new LineDataSet(zVals, "DataSet Line2");
 
         set1.setDrawCubic(true);  //设置曲线为圆滑的线
         set1.setCubicIntensity(0.2f);
@@ -141,11 +149,23 @@ public class TestActivity extends AppCompatActivity {
         set1.setHighLightColor(Color.rgb(244, 117, 117));
         set1.setColor(Color.rgb(104, 241, 175));    //设置曲线的颜色
 
+        set2.setDrawCubic(true);  //设置曲线为圆滑的线
+        set2.setCubicIntensity(0.2f);
+        set2.setDrawFilled(false);  //设置包括的范围区域填充颜色
+        set2.setDrawCircles(false);  //设置有圆点
+        set2.setLineWidth(2f);    //设置线的宽度
+        set2.setCircleSize(5f);   //设置小圆的大小
+        set2.setHighLightColor(Color.rgb(243, 113, 113));
+        set2.setColor(Color.rgb(10, 24, 17));    //设置曲线的颜色
+
         // create a data object with the datasets
         LineData data = new LineData(xVals, set1);
-
+        data.addDataSet(set2);
         // set data
         mChart.setData(data);
 
+    }
+    private void tmpSetData() {
+        //for()
     }
 }

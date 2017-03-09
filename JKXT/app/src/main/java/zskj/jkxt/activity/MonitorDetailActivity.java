@@ -1,9 +1,9 @@
 package zskj.jkxt.activity;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -33,7 +33,7 @@ import zskj.jkxt.domain.Fan;
 import zskj.jkxt.domain.Station;
 import zskj.jkxt.util.Sort;
 
-public class MonitorDetailActivity extends AppCompatActivity {
+public class MonitorDetailActivity extends Activity {
 
     Station model; //接收参数
     TextView station_address,station_type;

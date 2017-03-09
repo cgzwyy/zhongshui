@@ -1,6 +1,5 @@
 package zskj.jkxt.api;
 
-import android.os.StrictMode;
 import android.util.Log;
 
 import org.ksoap2.SoapEnvelope;
@@ -29,10 +28,6 @@ public class WebService {
     public static WebService getInstance() {
         if (service == null) {
             service = new WebService();
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites()
-                    .detectNetwork().penaltyLog().build());
-            StrictMode.setVmPolicy(
-                    new StrictMode.VmPolicy.Builder().detectLeakedSqlLiteObjects().penaltyLog().penaltyDeath().build());
         }
         return service;
     }
