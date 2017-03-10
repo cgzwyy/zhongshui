@@ -149,4 +149,13 @@
     <color name="black">#000000</color> <!-- 黑色 -->
     <color name="detail_text_color">#3dc84a</color> <!-- 黑色 -->
     <color name="dialog_background">#eeeeee</color> <!-- 黑色 -->
+
+    <color name="red1">#bc8f8f</color> <!-- 褐玫瑰红 -->
+    <color name="red2">#ba55d3</color> <!-- 中粉紫色 -->
+    <color name="red3">#b8860b</color> <!-- 暗金黄色 -->
+    <color name="red4">#b22222</color> <!-- 火砖色 -->
+    <color name="green1">#b0e0e6</color> <!-- 粉蓝色 -->
+    <color name="green2">#b0c4de</color> <!-- 亮钢兰色 -->
+    <color name="green3">#afeeee</color> <!-- 苍宝石绿 -->
+    <color name="green4">#adff2f</color> <!-- 黄绿色 -->
 </resources>

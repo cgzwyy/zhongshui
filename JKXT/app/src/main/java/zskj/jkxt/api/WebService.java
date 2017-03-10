@@ -105,7 +105,7 @@ public class WebService {
             SoapObject object = (SoapObject) envelope.bodyIn;
             if (object != null && object.getProperty(0) != null) {
                 callback.onSuccess(object.getProperty(0).toString());
-                Log.e("result----------->",object.getProperty(0).toString());
+                //Log.e("result----------->",object.getProperty(0).toString());
             }
             else
                 callback.onFail(ERRORMSG);
