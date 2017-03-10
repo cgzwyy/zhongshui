@@ -85,4 +85,32 @@ public class WebService {
             callback.onFail(e.getMessage());
         }
     }
+    public void GetStationP(String sdate, String pcode, String forecase_pcode, RequestCallback callback) {
+        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
+            callback.onFail(ERRORMSG);
+            return;
+        }
+        String methodName = "GetStationP";
+        SoapObject request = new SoapObject(namespace, methodName);
+        request.addProperty("sdate", sdate);
+        request.addProperty("pcode", pcode);
+        request.addProperty("forecase_pcode", forecase_pcode);
+        Log.e("result----------->",sdate + "---------------" + pcode );
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+        envelope.bodyOut = request;
+        envelope.dotNet = true;
+        HttpTransportSE ht = new HttpTransportSE(serviceUrl,1000000);
+        try {
+            ht.call(namespace + methodName, envelope);
+            SoapObject object = (SoapObject) envelope.bodyIn;
+            if (object != null && object.getProperty(0) != null) {
+                callback.onSuccess(object.getProperty(0).toString());
+                Log.e("result----------->",object.getProperty(0).toString());
+            }
+            else
+                callback.onFail(ERRORMSG);
+        } catch (Exception e) {
+            callback.onFail(e.getMessage());
+        }
+    }
 }
