@@ -30,7 +30,6 @@ public class TestActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_test);
-
         mChart = (LineChart) findViewById(R.id.chart1);
 
         // 设置在Y轴上是否是从0开始显示
