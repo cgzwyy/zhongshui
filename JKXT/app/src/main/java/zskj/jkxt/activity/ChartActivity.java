@@ -7,7 +7,6 @@ import android.view.WindowManager;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import org.json.JSONArray;
@@ -120,7 +119,7 @@ public class ChartActivity extends Activity {
         // create a dataset and give it a type
         LineDataSet set1 = new LineDataSet(yVals, "Speed one");
 
-        set1.setDrawCubic(true);  //设置曲线为圆滑的线
+//        set1.setDrawCubic(true);  //设置曲线为圆滑的线
         set1.setCubicIntensity(0.2f);
         set1.setDrawFilled(false);  //设置包括的范围区域填充颜色
         set1.setDrawCircles(false);  //设置有圆点
@@ -139,10 +138,10 @@ public class ChartActivity extends Activity {
 //        set2.setColor(Color.rgb(10, 24, 17));    //设置曲线的颜色
 
         // create a data object with the datasets
-        LineData data = new LineData(xVals, set1);
+//        LineData data = new LineData(xVals, set1);
 //        data.addDataSet(set2);
         // set data
-        mChart.setData(data);
+//        mChart.setData(data);
     }
 
 
