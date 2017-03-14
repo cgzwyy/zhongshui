@@ -14,6 +14,8 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
+
+    <!-- android:screenOrientation="landscape"-->
     <application
         android:name=".JKXTApplication"
         android:allowBackup="true"
@@ -22,9 +24,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.Test2Activity"
-            android:label="@string/app_name"
-            android:screenOrientation="landscape">
+            android:name=".activity.TabTestActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -46,6 +47,8 @@
         </receiver>
 
         <activity android:name=".activity.TestActivity">
+        </activity>
+        <activity android:name=".activity.Test2Activity">
         </activity>
     </application>
 

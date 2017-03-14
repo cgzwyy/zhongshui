@@ -275,7 +275,7 @@ public class TestActivity extends Activity {
         yAxis.setLabelCount(6, false);
 
         // 加载数据
-        tmpSetData();
+        setData();
         //从X轴进入的动画
         mChart.animateX(4000);
         mChart.animateY(3000);   //从Y轴进入的动画
@@ -312,14 +312,14 @@ public class TestActivity extends Activity {
         ArrayList<Entry> yVals = new ArrayList<Entry>();
 
         for (int i = 0; i < bb.length; i++) {
-            yVals.add(new Entry(Float.parseFloat(bb[i]), i));
+            yVals.add(new Entry(i,Float.parseFloat(bb[i])));
         }
         ArrayList<Entry> zVals = new ArrayList<Entry>();
-        zVals.add(new Entry(Float.parseFloat(cc[1]), 1));
-        zVals.add(new Entry(Float.parseFloat(cc[2]), 3));
-        zVals.add(new Entry(Float.parseFloat(cc[3]), 4));
-        zVals.add(new Entry(Float.parseFloat(cc[4]), 8));
-        zVals.add(new Entry(Float.parseFloat(cc[5]), 10));
+        zVals.add(new Entry(1,Float.parseFloat(cc[1])));
+        zVals.add(new Entry(3,Float.parseFloat(cc[2])));
+        zVals.add(new Entry(4,Float.parseFloat(cc[3])));
+        zVals.add(new Entry(8,Float.parseFloat(cc[4])));
+        zVals.add(new Entry(10,Float.parseFloat(cc[5])));
 
 //        for (int i = 0; i < cc.length; i++) {
 //            zVals.add(new Entry(Float.parseFloat(cc[i]), i));

@@ -36,8 +36,21 @@ public class MyMarkerView extends MarkerView {
 
             tvContent.setText("" + Utils.formatNumber(ce.getHigh(), 0, true));
         } else {
+            int hour = (int)e.getX() / 60;
+            int min = (int)e.getX() % 60;
+            String result = null;
+            if(hour < 10){
+                result = "0" + hour + ":";
+            }else{
+                result = hour + ":";
+            }
 
-            tvContent.setText("" + Utils.formatNumber(e.getY(), 0, true));
+            if(min < 10){
+                result += "0" + min ;
+            }else{
+                result += min ;
+            }
+            tvContent.setText( result  +" : " + Utils.formatNumber(e.getY(), 0, true));
         }
 
         super.refreshContent(e, highlight);
