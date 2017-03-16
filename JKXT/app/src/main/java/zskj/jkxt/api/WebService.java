@@ -113,4 +113,28 @@ public class WebService {
             callback.onFail(e.getMessage());
         }
     }
+    public void GetStationName(RequestCallback callback) {
+        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
+            callback.onFail(ERRORMSG);
+            return;
+        }
+        String methodName = "GetStationName";
+        SoapObject request = new SoapObject(namespace, methodName);
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+        envelope.bodyOut = request;
+        envelope.dotNet = true;
+        HttpTransportSE ht = new HttpTransportSE(serviceUrl,1000000);
+        try {
+            ht.call(namespace + methodName, envelope);
+            SoapObject object = (SoapObject) envelope.bodyIn;
+            if (object != null && object.getProperty(0) != null) {
+                callback.onSuccess(object.getProperty(0).toString());
+                Log.e("result----------->",object.getProperty(0).toString());
+            }
+            else
+                callback.onFail(ERRORMSG);
+        } catch (Exception e) {
+            callback.onFail(e.getMessage());
+        }
+    }
 }

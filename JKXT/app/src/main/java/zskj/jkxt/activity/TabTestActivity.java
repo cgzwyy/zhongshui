@@ -3,15 +3,12 @@ package zskj.jkxt.activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import zskj.jkxt.R;
 import zskj.jkxt.api.AddressFragment;
@@ -20,24 +17,23 @@ import zskj.jkxt.api.SettingFragment;
 import zskj.jkxt.api.WeixinFragment;
 
 public class TabTestActivity extends FragmentActivity implements View.OnClickListener {
-    //声明ViewPager
-    private ViewPager mViewPager;
-    //适配器
-    private FragmentPagerAdapter mAdapter;
-    //装载Fragment的集合
-    private List<Fragment> mFragments;
-
-    //四个Tab对应的布局
+    //声明四个Tab的布局文件
     private LinearLayout mTabWeixin;
     private LinearLayout mTabFrd;
     private LinearLayout mTabAddress;
     private LinearLayout mTabSetting;
 
-    //四个Tab对应的ImageButton
-    private ImageButton mImgWeixin;
-    private ImageButton mImgFrd;
-    private ImageButton mImgAddress;
-    private ImageButton mImgSetting;
+    //声明四个Tab的ImageButton
+    private ImageButton mWeixinImg;
+    private ImageButton mFrdImg;
+    private ImageButton mAddressImg;
+    private ImageButton mSettingImg;
+
+    //声明四个Tab分别对应的Fragment
+    private Fragment mFragWeinxin;
+    private Fragment mFragFrd;
+    private Fragment mFragAddress;
+    private Fragment mFragSetting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,91 +42,39 @@ public class TabTestActivity extends FragmentActivity implements View.OnClickLis
         setContentView(R.layout.activity_tab_test);
         initViews();//初始化控件
         initEvents();//初始化事件
-        initDatas();//初始化数据
-    }
-
-    private void initDatas() {
-        mFragments = new ArrayList<>();
-        //将四个Fragment加入集合中
-        mFragments.add(new WeixinFragment());
-        mFragments.add(new FrdFragment());
-        mFragments.add(new AddressFragment());
-        mFragments.add(new SettingFragment());
-
-        //初始化适配器
-        mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-            @Override
-            public Fragment getItem(int position) {//从集合中获取对应位置的Fragment
-                return mFragments.get(position);
-            }
-
-            @Override
-            public int getCount() {//获取集合中Fragment的总数
-                return mFragments.size();
-            }
-
-        };
-        //不要忘记设置ViewPager的适配器
-        mViewPager.setAdapter(mAdapter);
-        //设置ViewPager的切换监听
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            //页面滚动事件
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            //页面选中事件
-            @Override
-            public void onPageSelected(int position) {
-                //设置position对应的集合中的Fragment
-                mViewPager.setCurrentItem(position);
-                resetImgs();
-                selectTab(position);
-            }
-
-            @Override
-            //页面滚动状态改变事件
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
+        selectTab(0);//默认选中第一个Tab
     }
 
     private void initEvents() {
-        //设置四个Tab的点击事件
+        //初始化四个Tab的点击事件
         mTabWeixin.setOnClickListener(this);
         mTabFrd.setOnClickListener(this);
         mTabAddress.setOnClickListener(this);
         mTabSetting.setOnClickListener(this);
-
     }
 
-    //初始化控件
     private void initViews() {
-        mViewPager = (ViewPager) findViewById(R.id.id_viewpager);
-
+        //初始化四个Tab的布局文件
         mTabWeixin = (LinearLayout) findViewById(R.id.id_tab_weixin);
         mTabFrd = (LinearLayout) findViewById(R.id.id_tab_frd);
         mTabAddress = (LinearLayout) findViewById(R.id.id_tab_address);
         mTabSetting = (LinearLayout) findViewById(R.id.id_tab_setting);
 
-        mImgWeixin = (ImageButton) findViewById(R.id.id_tab_weixin_img);
-        mImgFrd = (ImageButton) findViewById(R.id.id_tab_frd_img);
-        mImgAddress = (ImageButton) findViewById(R.id.id_tab_address_img);
-        mImgSetting = (ImageButton) findViewById(R.id.id_tab_setting_img);
-
+        //初始化四个ImageButton
+        mWeixinImg = (ImageButton) findViewById(R.id.id_tab_weixin_img);
+        mFrdImg = (ImageButton) findViewById(R.id.id_tab_frd_img);
+        mAddressImg = (ImageButton) findViewById(R.id.id_tab_address_img);
+        mSettingImg = (ImageButton) findViewById(R.id.id_tab_setting_img);
     }
 
+    //处理Tab的点击事件
     @Override
     public void onClick(View v) {
         //先将四个ImageButton置为灰色
         resetImgs();
-
-        //根据点击的Tab切换不同的页面及设置对应的ImageButton为绿色
         switch (v.getId()) {
             case R.id.id_tab_weixin:
-                selectTab(0);
+                selectTab(0);//当点击的是微信的Tab就选中微信的Tab
                 break;
             case R.id.id_tab_frd:
                 selectTab(1);
@@ -142,33 +86,84 @@ public class TabTestActivity extends FragmentActivity implements View.OnClickLis
                 selectTab(3);
                 break;
         }
+
     }
 
+    //进行选中Tab的处理
     private void selectTab(int i) {
-        //根据点击的Tab设置对应的ImageButton为绿色
+        //获取FragmentManager对象
+        FragmentManager manager = getSupportFragmentManager();
+        //获取FragmentTransaction对象
+        FragmentTransaction transaction = manager.beginTransaction();
+        //先隐藏所有的Fragment
+        hideFragments(transaction);
         switch (i) {
+            //当选中点击的是微信的Tab时
             case 0:
-                mImgWeixin.setImageResource(R.mipmap.tab_weixin_pressed);
+                //设置微信的ImageButton为绿色
+                mWeixinImg.setImageResource(R.mipmap.tab_weixin_pressed);
+                //如果微信对应的Fragment没有实例化，则进行实例化，并显示出来
+                if (mFragWeinxin == null) {
+                    mFragWeinxin = new WeixinFragment();
+                    transaction.add(R.id.id_content, mFragWeinxin);
+                } else {
+                    //如果微信对应的Fragment已经实例化，则直接显示出来
+                    transaction.show(mFragWeinxin);
+                }
                 break;
             case 1:
-                mImgFrd.setImageResource(R.mipmap.tab_find_frd_pressed);
+                mFrdImg.setImageResource(R.mipmap.tab_find_frd_pressed);
+                if (mFragFrd == null) {
+                    mFragFrd = new FrdFragment();
+                    transaction.add(R.id.id_content, mFragFrd);
+                } else {
+                    transaction.show(mFragFrd);
+                }
                 break;
             case 2:
-                mImgAddress.setImageResource(R.mipmap.tab_address_pressed);
+                mAddressImg.setImageResource(R.mipmap.tab_address_pressed);
+                if (mFragAddress == null) {
+                    mFragAddress = new AddressFragment();
+                    transaction.add(R.id.id_content, mFragAddress);
+                } else {
+                    transaction.show(mFragAddress);
+                }
                 break;
             case 3:
-                mImgSetting.setImageResource(R.mipmap.tab_settings_pressed);
+                mSettingImg.setImageResource(R.mipmap.tab_settings_pressed);
+                if (mFragSetting == null) {
+                    mFragSetting = new SettingFragment();
+                    transaction.add(R.id.id_content, mFragSetting);
+                } else {
+                    transaction.show(mFragSetting);
+                }
                 break;
         }
-        //设置当前点击的Tab所对应的页面
-        mViewPager.setCurrentItem(i);
+        //不要忘记提交事务
+        transaction.commit();
     }
 
-    //将四个ImageButton设置为灰色
+    //将四个的Fragment隐藏
+    private void hideFragments(FragmentTransaction transaction) {
+        if (mFragWeinxin != null) {
+            transaction.hide(mFragWeinxin);
+        }
+        if (mFragFrd != null) {
+            transaction.hide(mFragFrd);
+        }
+        if (mFragAddress != null) {
+            transaction.hide(mFragAddress);
+        }
+        if (mFragSetting != null) {
+            transaction.hide(mFragSetting);
+        }
+    }
+
+    //将四个ImageButton置为灰色
     private void resetImgs() {
-        mImgWeixin.setImageResource(R.mipmap.tab_weixin_normal);
-        mImgFrd.setImageResource(R.mipmap.tab_find_frd_normal);
-        mImgAddress.setImageResource(R.mipmap.tab_address_normal);
-        mImgSetting.setImageResource(R.mipmap.tab_settings_normal);
+        mWeixinImg.setImageResource(R.mipmap.tab_weixin_normal);
+        mFrdImg.setImageResource(R.mipmap.tab_find_frd_normal);
+        mAddressImg.setImageResource(R.mipmap.tab_address_normal);
+        mSettingImg.setImageResource(R.mipmap.tab_settings_normal);
     }
 }
