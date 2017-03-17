@@ -39,4 +39,7 @@
     <string name="refresh">刷新</string>
     <string name="select_time">选择时间</string>
     <string name="select_station">选择场站</string>
+    <string name="alarm_type">类型名</string>
+    <string name="alarm_time">时间</string>
+    <string name="alarm_content">事项</string>
 </resources>

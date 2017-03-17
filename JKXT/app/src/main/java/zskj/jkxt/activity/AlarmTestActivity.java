@@ -1,10 +1,8 @@
-package zskj.jkxt.api;
+package zskj.jkxt.activity;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -22,31 +20,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zskj.jkxt.R;
+import zskj.jkxt.api.RequestCallback;
+import zskj.jkxt.api.WebService;
 import zskj.jkxt.domain.AlarmData;
 
-/**
- * Created by WYY on 2017/3/14.
- */
-
-public class AddressFragment extends Fragment {
+public class AlarmTestActivity extends AppCompatActivity {
 
     ProgressDialog dialog = null;   //进度对话框
     ListView lv_alarm;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_alarm_test, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_alarm_test);
 
-        dialog = new ProgressDialog(getActivity());
+        dialog = new ProgressDialog(this);
         dialog.setMessage("加载中...");     //设置提示信息
         dialog.setCanceledOnTouchOutside(false);   //设置在点击Dialog外是否取消Dialog进度条
 
-        lv_alarm = (ListView) view.findViewById(R.id.lv_alarm);
+        lv_alarm = (ListView) this.findViewById(R.id.lv_alarm);
 
         GetDataTop10();
-
-        return view;
     }
 
     private void GetDataTop10() {
@@ -57,7 +51,7 @@ public class AddressFragment extends Fragment {
 
                     @Override
                     public void onSuccess(final String result) {
-                        getActivity().runOnUiThread(new Runnable() {
+                        runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 List<AlarmData> data = parserResult(result);
@@ -69,7 +63,7 @@ public class AddressFragment extends Fragment {
 
                     @Override
                     public void onFail(final String errorMsg) {
-                        getActivity().runOnUiThread(new Runnable() {
+                        runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 dialog.dismiss();  //删除该进度条
@@ -77,7 +71,7 @@ public class AddressFragment extends Fragment {
                                 // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
                                 // 第二个参数：要显示的字符串。也可是R.string中字符串ID
                                 // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
-                                Toast.makeText(getActivity(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -94,7 +88,7 @@ public class AddressFragment extends Fragment {
 
                     @Override
                     public void onSuccess(final String result) {
-                        getActivity().runOnUiThread(new Runnable() {
+                        runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 List<AlarmData> data = parserResult(result);
@@ -106,7 +100,7 @@ public class AddressFragment extends Fragment {
 
                     @Override
                     public void onFail(final String errorMsg) {
-                        getActivity().runOnUiThread(new Runnable() {
+                        runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 dialog.dismiss();  //删除该进度条
@@ -114,7 +108,7 @@ public class AddressFragment extends Fragment {
                                 // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
                                 // 第二个参数：要显示的字符串。也可是R.string中字符串ID
                                 // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
-                                Toast.makeText(getActivity(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -158,7 +152,7 @@ public class AddressFragment extends Fragment {
             ViewHolder holder;
             if (convertView == null) {
                 holder = new ViewHolder();
-                convertView = View.inflate(getActivity(), R.layout.item_alarm, null);
+                convertView = View.inflate(getApplicationContext(), R.layout.item_alarm, null);
                 holder.alarm_type = (TextView) convertView.findViewById(R.id.alarm_type);
                 holder.alarm_time = (TextView) convertView.findViewById(R.id.alarm_time);
                 holder.alarm_content = (TextView) convertView.findViewById(R.id.alarm_content);
@@ -216,7 +210,7 @@ public class AddressFragment extends Fragment {
             alarmData.alarm_content = subObject.get("事项").getAsString();
 
             list.add(alarmData);
-        }
+       }
 
         return list;
     }
