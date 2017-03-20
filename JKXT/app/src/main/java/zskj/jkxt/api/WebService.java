@@ -186,4 +186,62 @@ public class WebService {
             callback.onFail(e.getMessage());
         }
     }
+
+    public void GetStationP2(String sdate, String station_names, RequestCallback callback) {
+
+        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
+            callback.onFail(ERRORMSG);
+            return;
+        }
+        String methodName = "GetStationP2";
+        SoapObject request = new SoapObject(namespace, methodName);
+        request.addProperty("sdate", sdate);
+        request.addProperty("station_name", station_names);
+        Log.e("result----------->",sdate + "---------------" + station_names );
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+        envelope.bodyOut = request;
+        envelope.dotNet = true;
+        HttpTransportSE ht = new HttpTransportSE(serviceUrl,1000000);
+        try {
+            ht.call(namespace + methodName, envelope);
+            SoapObject object = (SoapObject) envelope.bodyIn;
+            if (object != null && object.getProperty(0) != null) {
+                callback.onSuccess(object.getProperty(0).toString());
+                //Log.e("result----------->",object.getProperty(0).toString());
+            }
+            else
+                callback.onFail(ERRORMSG);
+        } catch (Exception e) {
+            callback.onFail(e.getMessage());
+        }
+    }
+
+    public void GetStationP3(String sdate, String time, String station_names, RequestCallback callback) {
+        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
+            callback.onFail(ERRORMSG);
+            return;
+        }
+        String methodName = "GetStationP3";
+        SoapObject request = new SoapObject(namespace, methodName);
+        request.addProperty("sdate", sdate);
+        request.addProperty("time", time);
+        request.addProperty("station_name", station_names);
+        Log.e("result----------->",sdate + "---------------" + station_names );
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+        envelope.bodyOut = request;
+        envelope.dotNet = true;
+        HttpTransportSE ht = new HttpTransportSE(serviceUrl,1000000);
+        try {
+            ht.call(namespace + methodName, envelope);
+            SoapObject object = (SoapObject) envelope.bodyIn;
+            if (object != null && object.getProperty(0) != null) {
+                callback.onSuccess(object.getProperty(0).toString());
+                //Log.e("result----------->",object.getProperty(0).toString());
+            }
+            else
+                callback.onFail(ERRORMSG);
+        } catch (Exception e) {
+            callback.onFail(e.getMessage());
+        }
+    }
 }

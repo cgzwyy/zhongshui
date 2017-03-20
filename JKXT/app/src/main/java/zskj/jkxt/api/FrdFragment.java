@@ -7,12 +7,17 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,9 +52,16 @@ public class FrdFragment extends Fragment {
     ProgressDialog dialog = null;   //进度对话框
     private LineChart mChart;
     private Button select_time,select_station;
-    private TextView selected_time,selected_station;
+    private TextView selected_time;
+//    private TextView selected_station;
+    private Spinner spinner_station;
     int mYear, mMonth, mDay;
     private int station_choice;
+    private ArrayAdapter<String> adapter;
+    private Button sure;
+    private String date; //chart 日期
+    private String station_name;
+    private int last_time = 0;
 
     @Nullable
     @Override
@@ -58,6 +70,8 @@ public class FrdFragment extends Fragment {
         dialog = new ProgressDialog(getActivity());
         dialog.setMessage("加载中...");     //设置提示信息
         dialog.setCanceledOnTouchOutside(false);   //设置在点击Dialog外是否取消Dialog进度条
+
+        mChart = (LineChart) view.findViewById(R.id.chart1);
 
         select_time = (Button) view.findViewById(R.id.select_time);
         selected_time = (TextView) view.findViewById(R.id.selected_time);
@@ -69,30 +83,280 @@ public class FrdFragment extends Fragment {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
 
         selected_time.setText(sdf.format(ca.getTime()));
+        date = selected_time.getText().toString();
 
-        select_time.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-
-                DateTimePickDialogUtil dateTimePicKDialog = new DateTimePickDialogUtil(
-                        getActivity(), mYear + "年" + (mMonth+1) + "月" + mDay + "日");
-                dateTimePicKDialog.dateTimePicKDialog(selected_time);
-
-            }
-        });
-
-        select_station = (Button) view.findViewById(R.id.select_station);
-        selected_station = (TextView) view.findViewById(R.id.selected_station);
-
-        select_station.setOnClickListener(new View.OnClickListener() {
+        selected_time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GetStationName();
+                DateTimePickDialogUtil dateTimePicKDialog = new DateTimePickDialogUtil(
+                        getActivity(), selected_time.getText().toString());
+                selected_time.setText("");
+                dateTimePicKDialog.dateTimePicKDialog(selected_time);
+                date = selected_time.getText().toString();
+            }
+        });
+//        select_time.setOnClickListener(new View.OnClickListener() {
+//
+//            public void onClick(View v) {
+//
+//                DateTimePickDialogUtil dateTimePicKDialog = new DateTimePickDialogUtil(
+//                        getActivity(), mYear + "年" + (mMonth+1) + "月" + mDay + "日");
+//                dateTimePicKDialog.dateTimePicKDialog(selected_time);
+//
+//            }
+//        });
+
+        select_station = (Button) view.findViewById(R.id.select_station);
+//        selected_station = (TextView) view.findViewById(R.id.selected_station);
+        spinner_station = (Spinner) view.findViewById(R.id.spinner_station);
+//        station_name = spinner_station.getSelectedItem().toString();
+        GetStationName();
+//        select_station.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                GetStationName();
+//            }
+//        });
+
+        sure = (Button) view.findViewById(R.id.sure);
+        sure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GetData(date,station_name);
+                handler.postDelayed(runnable, 1000 * 10);
             }
         });
 
+        return view;
+    }
+    private Handler handler = new Handler();
+    private Runnable runnable = new Runnable() {
+        public void run() {
+            while(last_time < 1440){
+                this.update();
+                Log.e("last_time----1-------->",last_time+"");
+                handler.postDelayed(this, 1000 * 60);// 间隔10秒
+            }
 
-        mChart = (LineChart) view.findViewById(R.id.chart1);
+        }
+        void update() {
+            GetNewData(date, last_time+"", station_name);
+            last_time += 100;
+        }
+    };
+
+    private void GetData(final String sdate, final String station_names) {
+        dialog.show();   //显示进度条对话框
+//        Log.e("tmpsetdata---->", "start");
+        new Thread() {
+            public void run(){
+                WebService.getInstance().GetStationP2(sdate, station_names, new RequestCallback() {
+
+                    @Override
+                    public void onSuccess(final String result) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setDataDetail(result);
+                                dialog.dismiss();  //删除该进度条
+//                                setData(100, 30);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFail(final String errorMsg) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog.dismiss();  //删除该进度条
+                                // Toast：简易的消息提示框，自动消失
+                                // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
+                                // 第二个参数：要显示的字符串。也可是R.string中字符串ID
+                                // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
+                                Toast.makeText(getActivity(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
+                });
+            }
+        }.start();
+//        Log.e("tmpsetdata---->", "end");
+    }
+    private void GetNewData(final String sdate, final String time, final String station_names) {
+        new Thread() {
+            public void run(){
+                WebService.getInstance().GetStationP3(sdate, time, station_names, new RequestCallback() {
+
+                    @Override
+                    public void onSuccess(final String result) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                setNewDataDetail(result);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFail(final String errorMsg) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getActivity(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
+                });
+            }
+        }.start();
+//        Log.e("tmpsetdata---->", "end");
+    }
+
+    public void setDataDetail(String result) {
+        if (!result.contains("{")) {
+            Toast.makeText(getActivity(), "获取数据失败：" + result, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        JsonParser parser = new JsonParser();//创建JSON解析器
+        JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
+        JsonArray parray = object.get("pcode").getAsJsonArray(); //得到为json的数组
+        JsonArray forecast_parray = object.get("forecast_pcode").getAsJsonArray(); //得到为json的数组
+
+        DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
+
+        ArrayList<Entry> yVals = new ArrayList<Entry>();
+        last_time = 0;
+        for (int i = 0; i < parray.size(); i++) {
+            JsonObject subObject = parray.get(i).getAsJsonObject();
+//            Log.e("setdata------>",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
+            yVals.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
+            if(subObject.get("time").getAsInt() > last_time)
+                last_time = subObject.get("time").getAsInt();
+        }
+
+        ArrayList<Entry> zVals = new ArrayList<Entry>();
+        for(int i=0;i<forecast_parray.size();i++){
+            JsonObject subObject=forecast_parray.get(i).getAsJsonObject();
+//            Log.e("forecast_parray->",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
+            zVals.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
+            if(subObject.get("time").getAsInt() > last_time)
+                last_time = subObject.get("time").getAsInt();
+        }
+
+        // create a dataset and give it a type
+        LineDataSet set1 = new LineDataSet(yVals, "实时出力");
+        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
+//        set1.setColor(ColorTemplate.getHoloBlue());
+        set1.setValueTextColor(ColorTemplate.getHoloBlue());
+        set1.setLineWidth(1.5f);//设置线的宽度
+        set1.setDrawCircles(false);  //设置有圆点
+        set1.setDrawValues(false);
+        set1.setFillAlpha(65);
+        set1.setFillColor(ColorTemplate.getHoloBlue());
+        set1.setHighLightColor(Color.rgb(244, 117, 117));
+        set1.setDrawCircleHole(false);
+        set1.setColor(Color.RED);
+//        set1.setLabel("line one");
+
+        LineDataSet set2 = new LineDataSet(zVals, "功率预测");
+        set2.setAxisDependency(YAxis.AxisDependency.LEFT);
+//        set2.setColor(ColorTemplate.getHoloBlue());
+        set2.setValueTextColor(ColorTemplate.getHoloBlue());
+        set2.setLineWidth(1.5f);
+        set2.setDrawCircles(false);
+        set2.setDrawValues(false);
+        set2.setFillAlpha(65);
+        set2.setFillColor(ColorTemplate.getHoloBlue());
+        set2.setHighLightColor(Color.rgb(244, 117, 117));
+        set2.setDrawCircleHole(false);
+        set2.setColor(Color.BLUE);
+
+        // create a data object with the datasets
+        LineData data = new LineData(set1);
+        data.setValueTextColor(Color.WHITE);
+        data.setValueTextSize(9f);
+        data.addDataSet(set2);
+
+        // set data
+        mChart.setData(data);
+        otherChartSet();
+    }
+    public void setNewDataDetail(String result) {
+
+        if (!result.contains("{")) {
+           return;
+        }
+
+        JsonParser parser = new JsonParser();//创建JSON解析器
+        JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
+        JsonArray parray = object.get("pcode").getAsJsonArray(); //得到为json的数组
+        JsonArray forecast_parray = object.get("forecast_pcode").getAsJsonArray(); //得到为json的数组
+
+        DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
+
+        ArrayList<Entry> yVals = new ArrayList<Entry>();
+
+        for (int i = 0; i < parray.size(); i++) {
+            JsonObject subObject = parray.get(i).getAsJsonObject();
+//            Log.e("setdata------>",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
+            yVals.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
+            if(subObject.get("time").getAsInt() > last_time)
+                last_time = subObject.get("time").getAsInt();
+        }
+
+        ArrayList<Entry> zVals = new ArrayList<Entry>();
+        for(int i=0;i<forecast_parray.size();i++){
+            JsonObject subObject=forecast_parray.get(i).getAsJsonObject();
+//            Log.e("forecast_parray->",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
+            zVals.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
+            if(subObject.get("time").getAsInt() > last_time)
+                last_time = subObject.get("time").getAsInt();
+        }
+
+        // create a dataset and give it a type
+        LineDataSet set1 = new LineDataSet(yVals, "实时出力");
+        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
+//        set1.setColor(ColorTemplate.getHoloBlue());
+        set1.setValueTextColor(ColorTemplate.getHoloBlue());
+        set1.setLineWidth(1.5f);//设置线的宽度
+        set1.setDrawCircles(false);  //设置有圆点
+        set1.setDrawValues(false);
+        set1.setFillAlpha(65);
+        set1.setFillColor(ColorTemplate.getHoloBlue());
+        set1.setHighLightColor(Color.rgb(244, 117, 117));
+        set1.setDrawCircleHole(false);
+        set1.setColor(Color.RED);
+//        set1.setLabel("line one");
+
+        LineDataSet set2 = new LineDataSet(zVals, "功率预测");
+        set2.setAxisDependency(YAxis.AxisDependency.LEFT);
+//        set2.setColor(ColorTemplate.getHoloBlue());
+        set2.setValueTextColor(ColorTemplate.getHoloBlue());
+        set2.setLineWidth(1.5f);
+        set2.setDrawCircles(false);
+        set2.setDrawValues(false);
+        set2.setFillAlpha(65);
+        set2.setFillColor(ColorTemplate.getHoloBlue());
+        set2.setHighLightColor(Color.rgb(244, 117, 117));
+        set2.setDrawCircleHole(false);
+        set2.setColor(Color.BLUE);
+
+        // create a data object with the datasets
+        LineData data = new LineData(set1);
+        data.setValueTextColor(Color.WHITE);
+        data.setValueTextSize(9f);
+        data.addDataSet(set2);
+
+        // set data
+        mChart.setData(data);
+        otherChartSet();
+    }
+
+    private void otherChartSet(){
 
         // no description text
 //        mChart.getDescription().setEnabled(false);
@@ -178,130 +442,10 @@ public class FrdFragment extends Fragment {
         leftAxis.setGranularityEnabled(true);
         leftAxis.setTextColor(Color.rgb(255, 192, 56));
         leftAxis.setDrawLabels(true);
-        leftAxis.setStartAtZero(true);
+//        leftAxis.setStartAtZero(true);
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
-
-        return view;
-    }
-
-    private void GetData() {
-        dialog.show();   //显示进度条对话框
-//        Log.e("tmpsetdata---->", "start");
-        new Thread() {
-            public void run(){
-                WebService.getInstance().GetStationP("17221","Gbe_F11All_Wh","Gbe_F10All_Wh", new RequestCallback() {
-
-                    @Override
-                    public void onSuccess(final String result) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                setDataDetail(result);
-                                dialog.dismiss();  //删除该进度条
-//                                setData(100, 30);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onFail(final String errorMsg) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                dialog.dismiss();  //删除该进度条
-                                // Toast：简易的消息提示框，自动消失
-                                // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
-                                // 第二个参数：要显示的字符串。也可是R.string中字符串ID
-                                // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
-                                Toast.makeText(getActivity(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-                    }
-                });
-            }
-        }.start();
-//        Log.e("tmpsetdata---->", "end");
-    }
-
-    public void setDataDetail(String result) {
-
-//        Log.e("setDataDetail---->", "start");
-        //设置x轴数据
-//        ArrayList<String> xVals = new ArrayList<String>();
-//        for (int i = 0; i <= 1440; i++) {
-//            xVals.add(String.valueOf(i));
-//        }
-
-        if (!result.contains("{")) {
-            Toast.makeText(getActivity(), "获取数据失败：" + result, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        JsonParser parser = new JsonParser();//创建JSON解析器
-        JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
-        JsonArray parray = object.get("pcode").getAsJsonArray(); //得到为json的数组
-        JsonArray forecast_parray = object.get("forecast_pcode").getAsJsonArray(); //得到为json的数组
-
-        DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
-
-        ArrayList<Entry> yVals = new ArrayList<Entry>();
-
-//        for (int i = 0; i < bb.length; i++) {
-//            yVals.add(new Entry(Float.parseFloat(bb[i]), i));
-//        }
-
-        for (int i = 0; i < parray.size(); i++) {
-            JsonObject subObject = parray.get(i).getAsJsonObject();
-//            Log.e("setdata------>",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
-            yVals.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
-        }
-
-        ArrayList<Entry> zVals = new ArrayList<Entry>();
-        for(int i=0;i<forecast_parray.size();i++){
-            JsonObject subObject=forecast_parray.get(i).getAsJsonObject();
-//            Log.e("forecast_parray->",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
-            zVals.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
-        }
-
-        // create a dataset and give it a type
-        LineDataSet set1 = new LineDataSet(yVals, "实时出力");
-        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set1.setColor(ColorTemplate.getHoloBlue());
-        set1.setValueTextColor(ColorTemplate.getHoloBlue());
-        set1.setLineWidth(1.5f);//设置线的宽度
-        set1.setDrawCircles(false);  //设置有圆点
-        set1.setDrawValues(false);
-        set1.setFillAlpha(65);
-        set1.setFillColor(ColorTemplate.getHoloBlue());
-        set1.setHighLightColor(Color.rgb(244, 117, 117));
-        set1.setDrawCircleHole(false);
-        set1.setColor(Color.RED);
-//        set1.setLabel("line one");
-
-        LineDataSet set2 = new LineDataSet(zVals, "功率预测");
-        set2.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set2.setColor(ColorTemplate.getHoloBlue());
-        set2.setValueTextColor(ColorTemplate.getHoloBlue());
-        set2.setLineWidth(1.5f);
-        set2.setDrawCircles(false);
-        set2.setDrawValues(false);
-        set2.setFillAlpha(65);
-        set2.setFillColor(ColorTemplate.getHoloBlue());
-        set2.setHighLightColor(Color.rgb(244, 117, 117));
-        set2.setDrawCircleHole(false);
-        set2.setColor(Color.BLUE);
-
-        // create a data object with the datasets
-        LineData data = new LineData(set1);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTextSize(9f);
-        data.addDataSet(set2);
-
-        // set data
-        mChart.setData(data);
     }
 
     private void showSingleChoiceDialog(final Context context, String result){
@@ -325,12 +469,45 @@ public class FrdFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (station_choice != -1) {
-                            selected_station.setText(items[station_choice]);
-                            GetData();
+//                            selected_station.setText(items[station_choice]);
+//                            GetData();
                         }
                     }
                 });
         singleChoiceDialog.show();
+    }
+
+    private void setSpinnerData(final Context context, String result){
+        Log.e("result-->",result);
+        if(result.isEmpty() || result.equals(""))
+            return;
+        final String[] items = result.split(",");
+
+        //将可选内容与ArrayAdapter连接起来
+        adapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item,items);
+
+        //设置下拉列表的风格
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        //将adapter 添加到spinner中
+        spinner_station.setAdapter(adapter);
+
+        //添加事件Spinner事件监听
+        spinner_station.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                station_name = spinner_station.getSelectedItem().toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        //设置默认值
+        spinner_station.setVisibility(View.VISIBLE);
+
     }
 
     private void GetStationName() {
@@ -346,7 +523,9 @@ public class FrdFragment extends Fragment {
                             @Override
                             public void run() {
                                 dialog.dismiss();  //删除该进度条
-                                showSingleChoiceDialog(getActivity(),result);
+                                Log.e("result-->",result);
+                                setSpinnerData(getActivity(),result);
+//                                showSingleChoiceDialog(getActivity(),result);
 //                                setData(100, 30);
                             }
                         });

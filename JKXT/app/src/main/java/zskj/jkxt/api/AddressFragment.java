@@ -1,6 +1,7 @@
 package zskj.jkxt.api;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -61,7 +62,7 @@ public class AddressFragment extends Fragment {
                             @Override
                             public void run() {
                                 List<AlarmData> data = parserResult(result);
-                                lv_alarm.setAdapter(new mAdapter(data));
+                                lv_alarm.setAdapter(new mAdapter(getActivity(),data));
                                 dialog.dismiss();  //删除该进度条
                             }
                         });
@@ -98,7 +99,7 @@ public class AddressFragment extends Fragment {
                             @Override
                             public void run() {
                                 List<AlarmData> data = parserResult(result);
-                                lv_alarm.setAdapter(new mAdapter(data));
+                                lv_alarm.setAdapter(new mAdapter(getActivity(),data));
                                 dialog.dismiss();  //删除该进度条
                             }
                         });
@@ -126,10 +127,12 @@ public class AddressFragment extends Fragment {
 
     class mAdapter extends BaseAdapter {
         private int[] colors = new int[] { 0x30FF0000, 0x300000FF };
+        private Context context;
         List<AlarmData> list;
 
-        public mAdapter(List<AlarmData> list) {
+        public mAdapter(Context context,List<AlarmData> list) {
             super();
+            this.context = context;
             this.list = list;
             if (list == null)
                 list = new ArrayList<AlarmData>();
@@ -158,7 +161,7 @@ public class AddressFragment extends Fragment {
             ViewHolder holder;
             if (convertView == null) {
                 holder = new ViewHolder();
-                convertView = View.inflate(getActivity(), R.layout.item_alarm, null);
+                convertView = View.inflate(context, R.layout.item_alarm, null);
                 holder.alarm_type = (TextView) convertView.findViewById(R.id.alarm_type);
                 holder.alarm_time = (TextView) convertView.findViewById(R.id.alarm_time);
                 holder.alarm_content = (TextView) convertView.findViewById(R.id.alarm_content);
@@ -170,9 +173,9 @@ public class AddressFragment extends Fragment {
 
             int colorPos = position % colors.length;
             if (colorPos == 1) {
-                convertView.setBackgroundColor(getResources().getColor(R.color.pale));
-            } else {
                 convertView.setBackgroundColor(getResources().getColor(R.color.paleblue));
+            } else {
+                convertView.setBackgroundColor(getResources().getColor(R.color.pale));
             }
 
             final AlarmData model = list.get(position);

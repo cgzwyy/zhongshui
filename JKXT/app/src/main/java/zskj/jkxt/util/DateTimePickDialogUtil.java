@@ -81,7 +81,10 @@ public class DateTimePickDialogUtil implements DatePicker.OnDateChangedListener,
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        inputDate.setText("");
+//                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+//                        Calendar ca = Calendar.getInstance();
+//                        inputDate.setText(sdf.format(ca.getTime()));
+                        inputDate.setText(initDateTime);
                     }
                 }).show();
 
