@@ -143,7 +143,7 @@ public class LoginActivity extends Activity {
                                 int flag = parserResult(result);
                                 if (flag >= 0) {
                                     Intent intent = new Intent();
-                                    intent.setClass(LoginActivity.this, StationActivity.class);
+                                    intent.setClass(LoginActivity.this, TabTestActivity.class);
                                     startActivity(intent);
                                 } else {
                                     showProgress(false);

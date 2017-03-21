@@ -50,6 +50,13 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:text="@string/alarm_num"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textColor="@color/black"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:text="@string/alarm_type"
             android:gravity="center"
             android:layout_weight="1"

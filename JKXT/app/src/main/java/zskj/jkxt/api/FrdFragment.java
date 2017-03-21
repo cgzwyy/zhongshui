@@ -29,6 +29,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -59,7 +60,7 @@ public class FrdFragment extends Fragment {
     private int station_choice;
     private ArrayAdapter<String> adapter;
     private Button sure;
-    private String date; //chart 日期
+//    private String date; //chart 日期
     private String station_name;
     private int last_time = 0;
 
@@ -83,7 +84,7 @@ public class FrdFragment extends Fragment {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
 
         selected_time.setText(sdf.format(ca.getTime()));
-        date = selected_time.getText().toString();
+//        date = selected_time.getText().toString();
 
         selected_time.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +93,7 @@ public class FrdFragment extends Fragment {
                         getActivity(), selected_time.getText().toString());
                 selected_time.setText("");
                 dateTimePicKDialog.dateTimePicKDialog(selected_time);
-                date = selected_time.getText().toString();
+//                date = selected_time.getText().toString();
             }
         });
 //        select_time.setOnClickListener(new View.OnClickListener() {
@@ -122,8 +123,8 @@ public class FrdFragment extends Fragment {
         sure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GetData(date,station_name);
-                handler.postDelayed(runnable, 1000 * 10);
+                GetData(selected_time.getText().toString(),station_name);
+                handler.postDelayed(runnable, 1000 * 60);
             }
         });
 
@@ -134,14 +135,14 @@ public class FrdFragment extends Fragment {
         public void run() {
             while(last_time < 1440){
                 this.update();
-                Log.e("last_time----1-------->",last_time+"");
-                handler.postDelayed(this, 1000 * 60);// 间隔10秒
+                handler.postDelayed(this, 1000 * 60 * 10);// 间隔60 * 10秒
             }
 
         }
         void update() {
-            GetNewData(date, last_time+"", station_name);
-            last_time += 100;
+            Log.e("last_time----2-------->",selected_time.getText().toString() + "   "+last_time+"   " + station_name);
+            GetNewData(selected_time.getText().toString(), last_time+"", station_name);
+//            last_time += 100;
         }
     };
 
@@ -194,6 +195,7 @@ public class FrdFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                Log.e("getNewData--->",result);
                                 setNewDataDetail(result);
                             }
                         });
@@ -291,69 +293,82 @@ public class FrdFragment extends Fragment {
            return;
         }
 
-        JsonParser parser = new JsonParser();//创建JSON解析器
-        JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
-        JsonArray parray = object.get("pcode").getAsJsonArray(); //得到为json的数组
-        JsonArray forecast_parray = object.get("forecast_pcode").getAsJsonArray(); //得到为json的数组
+        LineData data = mChart.getData();
+        if (data != null) {
 
-        DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
+            ILineDataSet set1 = data.getDataSetByIndex(0);
+            ILineDataSet set2 = data.getDataSetByIndex(1);
+            // set.addEntry(...); // can be called as well
 
-        ArrayList<Entry> yVals = new ArrayList<Entry>();
+            if (set1 == null) {
+                set1 = createSet("有功功率");
+                data.addDataSet(set1);
+            }
+            if (set2 == null) {
+                set2 = createSet("预测功率");
+                data.addDataSet(set2);
+            }
 
-        for (int i = 0; i < parray.size(); i++) {
-            JsonObject subObject = parray.get(i).getAsJsonObject();
+            JsonParser parser = new JsonParser();//创建JSON解析器
+            JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
+            JsonArray parray = object.get("pcode").getAsJsonArray(); //得到为json的数组
+            JsonArray forecast_parray = object.get("forecast_pcode").getAsJsonArray(); //得到为json的数组
+
+            DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
+
+            for (int i = 0; i < parray.size(); i++) {
+                JsonObject subObject = parray.get(i).getAsJsonObject();
 //            Log.e("setdata------>",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
-            yVals.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
-            if(subObject.get("time").getAsInt() > last_time)
-                last_time = subObject.get("time").getAsInt();
-        }
-
-        ArrayList<Entry> zVals = new ArrayList<Entry>();
-        for(int i=0;i<forecast_parray.size();i++){
-            JsonObject subObject=forecast_parray.get(i).getAsJsonObject();
+                set1.addEntry(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
+                if(subObject.get("time").getAsInt() > last_time)
+                    last_time = subObject.get("time").getAsInt();
+            }
+            for(int i=0;i<forecast_parray.size();i++){
+                JsonObject subObject=forecast_parray.get(i).getAsJsonObject();
 //            Log.e("forecast_parray->",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
-            zVals.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
-            if(subObject.get("time").getAsInt() > last_time)
-                last_time = subObject.get("time").getAsInt();
+                set2.addEntry(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
+                if(subObject.get("time").getAsInt() > last_time)
+                    last_time = subObject.get("time").getAsInt();
+            }
+
+            data.clearValues();
+            data.addDataSet(set1);
+            data.addDataSet(set2);
+//            data.addEntry(new Entry(set.getEntryCount(), (float) (Math.random() * 40) + 30f), 0);
+            data.notifyDataChanged();
+
+            // let the chart know it's data has changed
+            mChart.notifyDataSetChanged();
+
+            // limit the number of visible entries
+            mChart.setVisibleXRangeMaximum(120);
+            // mChart.setVisibleYRange(30, AxisDependency.LEFT);
+
+            // move to the latest entry
+//            mChart.moveViewToX(data.getEntryCount());
+
+            // this automatically refreshes the chart (calls invalidate())
+            // mChart.moveViewTo(data.getXValCount()-7, 55f,
+            // AxisDependency.LEFT);
         }
+//        otherChartSet();
+    }
 
-        // create a dataset and give it a type
-        LineDataSet set1 = new LineDataSet(yVals, "实时出力");
-        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set1.setColor(ColorTemplate.getHoloBlue());
-        set1.setValueTextColor(ColorTemplate.getHoloBlue());
-        set1.setLineWidth(1.5f);//设置线的宽度
-        set1.setDrawCircles(false);  //设置有圆点
-        set1.setDrawValues(false);
-        set1.setFillAlpha(65);
-        set1.setFillColor(ColorTemplate.getHoloBlue());
-        set1.setHighLightColor(Color.rgb(244, 117, 117));
-        set1.setDrawCircleHole(false);
-        set1.setColor(Color.RED);
-//        set1.setLabel("line one");
+    private LineDataSet createSet(String des) {
 
-        LineDataSet set2 = new LineDataSet(zVals, "功率预测");
-        set2.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set2.setColor(ColorTemplate.getHoloBlue());
-        set2.setValueTextColor(ColorTemplate.getHoloBlue());
-        set2.setLineWidth(1.5f);
-        set2.setDrawCircles(false);
-        set2.setDrawValues(false);
-        set2.setFillAlpha(65);
-        set2.setFillColor(ColorTemplate.getHoloBlue());
-        set2.setHighLightColor(Color.rgb(244, 117, 117));
-        set2.setDrawCircleHole(false);
-        set2.setColor(Color.BLUE);
-
-        // create a data object with the datasets
-        LineData data = new LineData(set1);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTextSize(9f);
-        data.addDataSet(set2);
-
-        // set data
-        mChart.setData(data);
-        otherChartSet();
+        LineDataSet set = new LineDataSet(null, des);
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setColor(Color.BLUE);
+        set.setLineWidth(1.5f);
+        set.setFillAlpha(65);
+        set.setFillColor(ColorTemplate.getHoloBlue());
+        set.setHighLightColor(Color.rgb(244, 117, 117));
+        set.setValueTextColor(ColorTemplate.getHoloBlue());
+        set.setValueTextSize(9f);
+        set.setDrawValues(false);
+        set.setDrawCircles(false);
+        set.setDrawCircleHole(false);
+        return set;
     }
 
     private void otherChartSet(){
