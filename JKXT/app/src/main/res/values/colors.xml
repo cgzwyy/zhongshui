@@ -160,4 +160,8 @@
     <color name="green4">#adff2f</color> <!-- 黄绿色 -->
     <color name="pale">#FAFFFFFF</color><!--灰白色 -->
     <color name="paleblue">#FAE0F3FA</color><!--浅蓝色 -->
+
+
+    <!--                                                 app begin                                                       -->
+    <color name="app_bg">@color/beige</color>
 </resources>

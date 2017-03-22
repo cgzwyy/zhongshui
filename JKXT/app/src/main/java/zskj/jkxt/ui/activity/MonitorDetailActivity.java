@@ -3,7 +3,11 @@ package zskj.jkxt.ui.activity;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -35,60 +39,83 @@ import zskj.jkxt.util.Sort;
 
 public class MonitorDetailActivity extends Activity {
 
+    //data
     Station model; //接收参数
-    TextView station_address,station_type;
-    TextView plan,wind_speed,total_active_power,daily_electricity;
-    GridView monitor_detail; //风机信息列表
-    Map<Integer,Fan> map = new HashMap<Integer, Fan>();
-    Button back,refresh;
+    Map<Integer, Fan> map = new HashMap<Integer, Fan>();
+    //view
+    ImageView back, refresh;
 
-    ProgressDialog dialog = null;   //进度对话框
+    TextView station_address, station_type;
+
+    TextView tv_plan_title, tv_plan;
+    TextView tv_speed_title, tv_speed;
+    TextView tv_power_title, tv_power;
+    TextView tv_electricity_title, tv_electricity;
+
+    GridView monitor_detail; //风机信息列表
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_monitor_detail);
         //接收传入的参数
         model = (Station) getIntent().getSerializableExtra("model");
+        initView();
+        initData();
+//        getData(model.columnValue);
+    }
+
+    private void initView() {
+        back = (ImageView) this.findViewById(R.id.back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+        refresh = (ImageView) this.findViewById(R.id.refresh);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getData(model.columnValue);
+            }
+        });
         //设置页面
         station_address = (TextView) this.findViewById(R.id.station_address);
         station_type = (TextView) this.findViewById(R.id.station_type);
 
-        station_address.setText(model.columnAddress.toString());
-        station_type.setText(model.columnName.toString().concat(getResources().getString(R.string.monitor_page)));
-
-        plan = (TextView) this.findViewById(R.id.plan); //省调计划
-        wind_speed = (TextView) this.findViewById(R.id.wind_speed); //风速
-        total_active_power = (TextView) this.findViewById(R.id.total_active_power); //瞬时总有功
-        daily_electricity = (TextView) this.findViewById(R.id.daily_electricity);  //当日发电量
-
-        dialog = new ProgressDialog(this);
-        dialog.setMessage("加载中...");     //设置提示信息
-        dialog.setCanceledOnTouchOutside(false);   //设置在点击Dialog外是否取消Dialog进度条
+        tv_plan = (TextView) this.findViewById(R.id.tv_plan); //省调计划
+        tv_speed = (TextView) this.findViewById(R.id.tv_speed); //风速
+        tv_power = (TextView) this.findViewById(R.id.tv_power); //瞬时总有功
+        tv_electricity = (TextView) this.findViewById(R.id.tv_electricity);  //当日发电量
+        tv_plan_title = (TextView) this.findViewById(R.id.tv_plan_title); //省调计划
+        tv_speed_title = (TextView) this.findViewById(R.id.tv_speed_title); //风速
+        tv_power_title = (TextView) this.findViewById(R.id.tv_power_title); //瞬时总有功
+        tv_electricity_title = (TextView) this.findViewById(R.id.tv_electricity_title);  //当日发电量
 
         monitor_detail = (GridView) this.findViewById(R.id.monitor_detail);
-        getData(model.columnValue);
-
-        back = (Button) this.findViewById(R.id.back);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        refresh = (Button) this.findViewById(R.id.refresh);
-        refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getData(model.columnValue);
-            }
-        });
-
     }
 
-    public void setMonitorDetail(String result){
+    private void initData() {
+        station_address.setText(model.columnAddress.toString());
+        station_type.setText(model.columnName.toString().concat(getResources().getString(R.string.monitor_page)));
+        SpannableString plan = new SpannableString(getResources().getString(R.string.title_plan));
+        plan.setSpan(new ForegroundColorSpan(Color.GRAY), 4, plan.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tv_plan_title.setText(plan);
+        SpannableString speed = new SpannableString(getResources().getString(R.string.title_speed));
+        speed.setSpan(new ForegroundColorSpan(Color.GRAY), 4, speed.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tv_speed_title.setText(speed);
+        SpannableString power = new SpannableString(getResources().getString(R.string.title_power));
+        power.setSpan(new ForegroundColorSpan(Color.GRAY), 5, power.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tv_power_title.setText(power);
+        SpannableString elec = new SpannableString(getResources().getString(R.string.title_electricity));
+        elec.setSpan(new ForegroundColorSpan(Color.GRAY), 5, elec.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tv_electricity_title.setText(elec);
+    }
+
+    public void setMonitorDetail(String result) {
         map = getFansInfo(result);
-        if(map.isEmpty()){ //map为空，未获取到数据
+        if (map.isEmpty()) { //map为空，未获取到数据
             Toast.makeText(getApplicationContext(), "获取数据失败！", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -123,10 +150,10 @@ public class MonitorDetailActivity extends Activity {
         });
     }
 
-    private void getData(final String Str_StationCode ){
-        dialog.show();   //显示进度条对话框
+    private void getData(final String Str_StationCode) {
+//        dialog.show();   //显示进度条对话框
         new Thread() {
-            public void run(){
+            public void run() {
                 WebService.getInstance().GetStationInfo(Str_StationCode, new RequestCallback() {
 
                     @Override
@@ -134,7 +161,7 @@ public class MonitorDetailActivity extends Activity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                dialog.dismiss();  //删除该进度条
+//                                dialog.dismiss();  //删除该进度条
                                 setMonitorDetail(result);
                             }
                         });
@@ -146,12 +173,12 @@ public class MonitorDetailActivity extends Activity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                dialog.dismiss();  //删除该进度条
+//                                dialog.dismiss();  //删除该进度条
                                 // Toast：简易的消息提示框，自动消失
                                 // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
                                 // 第二个参数：要显示的字符串。也可是R.string中字符串ID
                                 // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
-                                Toast.makeText(getApplicationContext(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "获取数据失败！" + errorMsg, Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -161,28 +188,28 @@ public class MonitorDetailActivity extends Activity {
         }.start();
     }
 
-    public Map<Integer,Fan> getFansInfo(String result){
+    public Map<Integer, Fan> getFansInfo(String result) {
 
-        if(!result.contains("{")){
+        if (!result.contains("{")) {
             map.clear();
             return map;
         }
 
         JsonParser parser = new JsonParser();//创建JSON解析器
-        JsonObject object=(JsonObject) parser.parse(result); //创建JsonObject对象
-        JsonArray array=object.get("list").getAsJsonArray(); //得到为json的数组
+        JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
+        JsonArray array = object.get("list").getAsJsonArray(); //得到为json的数组
 
         DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
 
-        plan.setText(df.format(Double.valueOf(object.get("省调计划").getAsString())));
-        wind_speed.setText(df.format(Double.valueOf(object.get("总辐射瞬时值").getAsString())));
-        total_active_power.setText(df.format(Double.valueOf(object.get("瞬时总有功").getAsString())));
-        daily_electricity.setText(df.format(Double.valueOf(object.get("当日发电量").getAsString())));
+//        plan.setText(df.format(Double.valueOf(object.get("省调计划").getAsString())));
+//        wind_speed.setText(df.format(Double.valueOf(object.get("总辐射瞬时值").getAsString())));
+//        total_active_power.setText(df.format(Double.valueOf(object.get("瞬时总有功").getAsString())));
+//        daily_electricity.setText(df.format(Double.valueOf(object.get("当日发电量").getAsString())));
 
         Fan[] fans = new Fan[array.size()];
 
-        for(int i=0;i<array.size();i++){
-            JsonObject subObject=array.get(i).getAsJsonObject();
+        for (int i = 0; i < array.size(); i++) {
+            JsonObject subObject = array.get(i).getAsJsonObject();
             Fan fan = new Fan();
             fan.fan_number = subObject.get("编号").getAsString();
             fan.fan_speed = df.format(Double.valueOf(subObject.get("风速").getAsString()));
@@ -198,10 +225,10 @@ public class MonitorDetailActivity extends Activity {
         return Sort.fanSort(fans);
     }
 
-    class MyMonitorAdapter extends BaseAdapter{
-        Map<Integer,Fan> map;
+    class MyMonitorAdapter extends BaseAdapter {
+        Map<Integer, Fan> map;
 
-        public MyMonitorAdapter(Map<Integer,Fan> map) {
+        public MyMonitorAdapter(Map<Integer, Fan> map) {
             super();
             this.map = map;
             if (map == null)
@@ -246,11 +273,11 @@ public class MonitorDetailActivity extends Activity {
             holder.fan_speed.setText(model.fan_speed.concat(getResources().getString(R.string.speed_unit)));
             holder.fan_active_power.setText(model.fan_active_power.concat(getResources().getString(R.string.active_power_unit)));
             holder.fan_revs.setText(model.fan_revs.concat(getResources().getString(R.string.revs_unit)));
-            if(Double.valueOf(model.fan_state.trim()) >= 5){ //停机
+            if (Double.valueOf(model.fan_state.trim()) >= 5) { //停机
                 holder.fan_picture.setImageResource(R.drawable.fj_05);
                 holder.fan_state.setText(getResources().getString(R.string.stop));
                 holder.fan_state.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 holder.fan_picture.setImageResource(R.drawable.fj_04);
                 holder.fan_state.setText("");
                 holder.fan_state.setVisibility(View.INVISIBLE);

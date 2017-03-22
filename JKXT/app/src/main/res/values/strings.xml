@@ -44,4 +44,8 @@
     <string name="alarm_content">事项</string>
     <string name="sure">确定</string>
     <string name="alarm_num">编号</string>
+    <string name="title_plan">省调计划/MW</string>
+    <string name="title_speed">平均风速m/s</string>
+    <string name="title_power">瞬时总有功/MW</string>
+    <string name="title_electricity">当日发电量/Mkwh</string>
 </resources>
