@@ -1,4 +1,4 @@
-package zskj.jkxt.util;
+package zskj.jkxt.ui.widget;
 
 import android.content.Context;
 import android.widget.TextView;

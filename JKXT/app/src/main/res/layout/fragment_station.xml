@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/gainsboro"
-    tools:context="zskj.jkxt.activity.StationActivity">
+    tools:context=".ui.activity.StationActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

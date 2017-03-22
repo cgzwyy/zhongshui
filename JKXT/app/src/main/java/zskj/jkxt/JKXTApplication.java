@@ -8,13 +8,14 @@ import android.util.Log;
 
 import java.io.InputStream;
 
-import zskj.jkxt.api.ConnectionChangeReceiver;
+import zskj.jkxt.util.ConnectionChangeReceiver;
 
 /**
  * Created by WYY on 2017/2/24.
  */
 
 public class JKXTApplication extends Application {
+
     public static String webServiceUrl = "";
     public static int NETWORK_FLAG = ConnectionChangeReceiver.NET_NONE;
 
@@ -27,7 +28,7 @@ public class JKXTApplication extends Application {
                 new StrictMode.VmPolicy.Builder().detectLeakedSqlLiteObjects().penaltyLog().penaltyDeath().build());
         getUrl();
         NETWORK_FLAG = ConnectionChangeReceiver.ConnectionDetect(this);
-        Log.e("NETWORK_FLAG","------------------".concat(String.valueOf(NETWORK_FLAG)));
+        Log.e("NETWORK_FLAG", "------------------".concat(String.valueOf(NETWORK_FLAG)));
     }
 
     private void getUrl() {
@@ -50,7 +51,7 @@ public class JKXTApplication extends Application {
             byte[] buffer = new byte[length];
             in.read(buffer);
             //res = EncodingUtils.getString(buffer, "BIG5");
-            res = new String(buffer,"BIG5");
+            res = new String(buffer, "BIG5");
             in.close();
         } catch (Exception e) {
             e.printStackTrace();

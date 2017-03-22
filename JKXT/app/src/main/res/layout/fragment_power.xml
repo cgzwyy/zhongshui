@@ -5,7 +5,7 @@
     android:id="@+id/activity_test"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="zskj.jkxt.activity.TestActivity">
+    tools:context=".ui.test.TestActivity">
 
     <LinearLayout
         android:id="@+id/chart_condition"

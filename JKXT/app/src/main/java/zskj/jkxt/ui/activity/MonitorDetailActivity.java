@@ -1,4 +1,4 @@
-package zskj.jkxt.activity;
+package zskj.jkxt.ui.activity;
 
 import android.app.Activity;
 import android.app.Dialog;

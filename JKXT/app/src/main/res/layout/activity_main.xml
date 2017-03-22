@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/fl_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"></FrameLayout>
+
+    <RadioGroup
+        android:id="@+id/rg_menu"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="#ff37474f"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp">
+
+        <RadioButton
+            android:id="@+id/rb_station"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableTop="@mipmap/tab_weixin_pressed"
+            android:gravity="center"
+            android:text="站点"
+            android:textColor="@color/white"
+            android:textSize="15dp" />
+
+        <RadioButton
+            android:id="@+id/rb_power"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableTop="@mipmap/tab_find_frd_normal"
+            android:gravity="center"
+            android:text="全场功率"
+            android:textColor="@color/white"
+            android:textSize="15dp" />
+
+        <RadioButton
+            android:id="@+id/rb_warn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableTop="@mipmap/tab_address_normal"
+            android:gravity="center"
+            android:text="实时警告"
+            android:textColor="@color/white"
+            android:textSize="15dp" />
+
+        <RadioButton
+            android:id="@+id/rb_set"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableTop="@mipmap/tab_settings_normal"
+            android:gravity="center"
+            android:text="设置"
+            android:textColor="@color/white"
+            android:textSize="15dp" />
+    </RadioGroup>
+
+</LinearLayout>

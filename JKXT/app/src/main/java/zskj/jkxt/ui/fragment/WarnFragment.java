@@ -1,4 +1,4 @@
-package zskj.jkxt.api;
+package zskj.jkxt.ui.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -29,29 +29,32 @@ import java.util.List;
 import java.util.Map;
 
 import zskj.jkxt.R;
+import zskj.jkxt.api.RequestCallback;
+import zskj.jkxt.api.WebService;
 import zskj.jkxt.domain.AlarmData;
 
 /**
  * Created by WYY on 2017/3/14.
+ * 实时警告
  */
 
-public class AddressFragment extends Fragment {
+public class WarnFragment extends Fragment {
 
     ProgressDialog dialog = null;   //进度对话框
     ListView lv_alarm;
     String last_time = null; //取得的最后一条报警数据的时间
     int num = 0; //取得报警数据条数
-    Map<Integer,AlarmData> map = new HashMap<>();
+    Map<Integer, AlarmData> map = new HashMap<>();
     int lastNum = 0; //更新前取得的报警数据条数
     String sdate = null; //报警数据日期
     int tmp = 0; //临时变量
-    Button first_page,previous_page,next_page,last_page;
+    Button first_page, previous_page, next_page, last_page;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_alarm_test, container, false);
+        View view = inflater.inflate(R.layout.fragmeng_warn, container, false);
 
         dialog = new ProgressDialog(getActivity());
         dialog.setMessage("加载中...");     //设置提示信息
@@ -72,7 +75,7 @@ public class AddressFragment extends Fragment {
         sdate = sdf.format(ca.getTime());
 
         sdate = "20170317";
-        GetData(sdate,last_time);
+        GetData(sdate, last_time);
 
         handler.postDelayed(runnable, 1000 * 10);
 
@@ -80,11 +83,11 @@ public class AddressFragment extends Fragment {
         first_page.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(num>10){ //总数据条数多于10条
+                if (num > 10) { //总数据条数多于10条
                     tmpAdapter = (mAdapter) lv_alarm.getAdapter();
                     List<AlarmData> data = tmpAdapter.getData();
                     data.clear();
-                    for(int i=0;i<10;i++){
+                    for (int i = 0; i < 10; i++) {
                         data.add(map.get(i));
                     }
                     tmpAdapter.notifyDataSetChanged();
@@ -96,14 +99,14 @@ public class AddressFragment extends Fragment {
         previous_page.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(num > 10){
+                if (num > 10) {
                     tmpAdapter = (mAdapter) lv_alarm.getAdapter();
                     int min = tmpAdapter.getMinNum(); //当前页面最小编号
-                    if(min > 0){  //不是首页
+                    if (min > 0) {  //不是首页
                         List<AlarmData> data = tmpAdapter.getData();
                         data.clear();
 
-                        for(int i=min-10;i<min;i++){
+                        for (int i = min - 10; i < min; i++) {
                             data.add(map.get(i));
                         }
                         tmpAdapter.notifyDataSetChanged();
@@ -117,11 +120,11 @@ public class AddressFragment extends Fragment {
             public void onClick(View v) {
                 tmpAdapter = (mAdapter) lv_alarm.getAdapter();
                 int min = tmpAdapter.getMinNum(); //当前页面最小编号
-                if(num - min > 10){
+                if (num - min > 10) {
                     List<AlarmData> data = tmpAdapter.getData();
                     data.clear();
 
-                    for(int i=min+10;i<min+20 && i<num;i++){
+                    for (int i = min + 10; i < min + 20 && i < num; i++) {
                         data.add(map.get(i));
                     }
                     tmpAdapter.notifyDataSetChanged();
@@ -135,12 +138,12 @@ public class AddressFragment extends Fragment {
             public void onClick(View v) {
                 tmpAdapter = (mAdapter) lv_alarm.getAdapter();
                 int min = tmpAdapter.getMinNum(); //当前页面最小编号
-                if(num - min > 10){
+                if (num - min > 10) {
                     List<AlarmData> data = tmpAdapter.getData();
                     data.clear();
 
-                    for(int i=0;i<num%10;i++){
-                        data.add(map.get(num/10*10+i));
+                    for (int i = 0; i < num % 10; i++) {
+                        data.add(map.get(num / 10 * 10 + i));
                     }
                     tmpAdapter.notifyDataSetChanged();
                 }
@@ -154,15 +157,16 @@ public class AddressFragment extends Fragment {
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
         public void run() {
-            while(Integer.valueOf(last_time) < Integer.valueOf("235959999") && tmp < 1 ){
+            while (Integer.valueOf(last_time) < Integer.valueOf("235959999") && tmp < 1) {
                 this.update();
                 handler.postDelayed(this, 1000 * 60 * 10);// 间隔60 * 10秒
             }
 
         }
+
         void update() {
             Log.e("last_time---->", last_time + "");
-            GetData("20170317",last_time);
+            GetData("20170317", last_time);
             tmp++;
         }
     };
@@ -170,7 +174,7 @@ public class AddressFragment extends Fragment {
     private void GetDataTop10() {
         dialog.show();   //显示进度条对话框
         new Thread() {
-            public void run(){
+            public void run() {
                 WebService.getInstance().GetAlarmDataTop10(new RequestCallback() {
 
                     @Override
@@ -179,7 +183,7 @@ public class AddressFragment extends Fragment {
                             @Override
                             public void run() {
                                 List<AlarmData> data = parserResult(result);
-                                lv_alarm.setAdapter(new mAdapter(getActivity(),data));
+                                lv_alarm.setAdapter(new mAdapter(getActivity(), data));
                                 dialog.dismiss();  //删除该进度条
                             }
                         });
@@ -195,7 +199,7 @@ public class AddressFragment extends Fragment {
                                 // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
                                 // 第二个参数：要显示的字符串。也可是R.string中字符串ID
                                 // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
-                                Toast.makeText(getActivity(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "获取数据失败！" + errorMsg, Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -204,11 +208,12 @@ public class AddressFragment extends Fragment {
             }
         }.start();
     }
+
     private void GetData(final String sdate, final String stime) {
         dialog.show();   //显示进度条对话框
         new Thread() {
-            public void run(){
-                WebService.getInstance().GetAlarmData(sdate,stime, new RequestCallback() {
+            public void run() {
+                WebService.getInstance().GetAlarmData(sdate, stime, new RequestCallback() {
 
                     @Override
                     public void onSuccess(final String result) {
@@ -233,7 +238,7 @@ public class AddressFragment extends Fragment {
                                 // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
                                 // 第二个参数：要显示的字符串。也可是R.string中字符串ID
                                 // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
-                                Toast.makeText(getActivity(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "获取数据失败！" + errorMsg, Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -244,11 +249,11 @@ public class AddressFragment extends Fragment {
     }
 
     class mAdapter extends BaseAdapter {
-        private int[] colors = new int[] { 0x30FF0000, 0x300000FF };
+        private int[] colors = new int[]{0x30FF0000, 0x300000FF};
         private Context context;
         List<AlarmData> list;
 
-        public mAdapter(Context context,List<AlarmData> list) {
+        public mAdapter(Context context, List<AlarmData> list) {
             super();
             this.context = context;
             this.list = list;
@@ -266,6 +271,7 @@ public class AddressFragment extends Fragment {
             // TODO Auto-generated method stub
             return list;
         }
+
         public int getMinNum() {
             // TODO Auto-generated method stub
             return Integer.valueOf(list.get(0).alarm_num);
@@ -314,11 +320,11 @@ public class AddressFragment extends Fragment {
             SimpleDateFormat formatter2 = new SimpleDateFormat("HH:mm:ss:SSS");
             String formatStr = null;
             String s = model.alarm_time;
-            String str ="000000000";
+            String str = "000000000";
             try {
 //                formatStr = formatter2.format(formatter.parse(String.format("%1$0"+(9-s.length())+"d",0)+s));
 
-                formatStr = formatter2.format(formatter.parse(str.substring(0,9-s.length())+s));
+                formatStr = formatter2.format(formatter.parse(str.substring(0, 9 - s.length()) + s));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -338,34 +344,35 @@ public class AddressFragment extends Fragment {
 
     private void setDataDetail(String result) {
         parserResults(result);
-        if(lastNum == 0){
+        if (lastNum == 0) {
             List<AlarmData> data = new ArrayList<>();
-            if(num > 0 && num%10 == 0){
-                for(int i=0;i<10;i++){
-                    data.add(map.get(num/10*10+i));
+            if (num > 0 && num % 10 == 0) {
+                for (int i = 0; i < 10; i++) {
+                    data.add(map.get(num / 10 * 10 + i));
                 }
-            }else{
-                for(int i=0;i<num%10;i++){
-                    data.add(map.get(num/10*10+i));
+            } else {
+                for (int i = 0; i < num % 10; i++) {
+                    data.add(map.get(num / 10 * 10 + i));
                 }
             }
-            lv_alarm.setAdapter(new mAdapter(getActivity(),data));
-        }else {
+            lv_alarm.setAdapter(new mAdapter(getActivity(), data));
+        } else {
             tmpAdapter = (mAdapter) lv_alarm.getAdapter();
             List<AlarmData> data = tmpAdapter.getData();
-            if(lastNum/10 == num/10){
-                for(int i=lastNum;i<num;i++){
+            if (lastNum / 10 == num / 10) {
+                for (int i = lastNum; i < num; i++) {
                     data.add(map.get(i));
                 }
-            }else{
+            } else {
                 data.clear();
-                for(int i=0;i<num%10;i++){
-                    data.add(map.get(num/10*10+i));
+                for (int i = 0; i < num % 10; i++) {
+                    data.add(map.get(num / 10 * 10 + i));
                 }
             }
             tmpAdapter.notifyDataSetChanged();
         }
     }
+
     private List<AlarmData> parserResult(String result) {
         List<AlarmData> list = new ArrayList<>();
         JsonParser parser = new JsonParser();//创建JSON解析器
@@ -386,20 +393,21 @@ public class AddressFragment extends Fragment {
 
         return list;
     }
+
     private void parserResults(String result) {
 //        Map<Integer,AlarmData> map = new HashMap<>();
-        if(map == null){
+        if (map == null) {
             map = new HashMap<>();
         }
         lastNum = map.size();
-        if(!result.contains("{")){
+        if (!result.contains("{")) {
             return;
-        }else{
+        } else {
             JsonParser parser = new JsonParser();//创建JSON解析器
             JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
             JsonArray alarms = object.get("AlarmData").getAsJsonArray(); //得到为json的数组
 
-            if(map == null){
+            if (map == null) {
                 map = new HashMap<>();
             }
             lastNum = map.size();
@@ -411,11 +419,11 @@ public class AddressFragment extends Fragment {
                 alarmData.alarm_date = subObject.get("日期").getAsString();
                 alarmData.alarm_time = subObject.get("时间").getAsString();
                 alarmData.alarm_content = subObject.get("事项").getAsString();
-                alarmData.alarm_num = num+"";
+                alarmData.alarm_num = num + "";
 
-                map.put(num++,alarmData);
+                map.put(num++, alarmData);
             }
-            last_time = map.get(num-1).alarm_time;
+            last_time = map.get(num - 1).alarm_time;
         }
     }
 }

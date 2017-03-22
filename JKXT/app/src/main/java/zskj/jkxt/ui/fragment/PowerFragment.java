@@ -1,4 +1,4 @@
-package zskj.jkxt.api;
+package zskj.jkxt.ui.fragment;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -41,33 +41,36 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import zskj.jkxt.R;
+import zskj.jkxt.api.RequestCallback;
+import zskj.jkxt.api.WebService;
 import zskj.jkxt.util.DateTimePickDialogUtil;
-import zskj.jkxt.util.MyMarkerView;
+import zskj.jkxt.ui.widget.MyMarkerView;
 
 /**
  * Created by WYY on 2017/3/14.
+ * 全场功率页面
  */
 
-public class FrdFragment extends Fragment {
+public class PowerFragment extends Fragment {
 
     ProgressDialog dialog = null;   //进度对话框
     private LineChart mChart;
-    private Button select_time,select_station;
+    private Button select_time, select_station;
     private TextView selected_time;
-//    private TextView selected_station;
+    //    private TextView selected_station;
     private Spinner spinner_station;
     int mYear, mMonth, mDay;
     private int station_choice;
     private ArrayAdapter<String> adapter;
     private Button sure;
-//    private String date; //chart 日期
+    //    private String date; //chart 日期
     private String station_name;
     private int last_time = 0;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_test, container, false);
+        View view = inflater.inflate(R.layout.fragment_power, container, false);
         dialog = new ProgressDialog(getActivity());
         dialog.setMessage("加载中...");     //设置提示信息
         dialog.setCanceledOnTouchOutside(false);   //设置在点击Dialog外是否取消Dialog进度条
@@ -123,25 +126,27 @@ public class FrdFragment extends Fragment {
         sure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GetData(selected_time.getText().toString(),station_name);
+                GetData(selected_time.getText().toString(), station_name);
                 handler.postDelayed(runnable, 1000 * 60);
             }
         });
 
         return view;
     }
+
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
         public void run() {
-            while(last_time < 1440){
+            while (last_time < 1440) {
                 this.update();
                 handler.postDelayed(this, 1000 * 60 * 10);// 间隔60 * 10秒
             }
 
         }
+
         void update() {
-            Log.e("last_time----2-------->",selected_time.getText().toString() + "   "+last_time+"   " + station_name);
-            GetNewData(selected_time.getText().toString(), last_time+"", station_name);
+            Log.e("last_time----2-------->", selected_time.getText().toString() + "   " + last_time + "   " + station_name);
+            GetNewData(selected_time.getText().toString(), last_time + "", station_name);
 //            last_time += 100;
         }
     };
@@ -150,7 +155,7 @@ public class FrdFragment extends Fragment {
         dialog.show();   //显示进度条对话框
 //        Log.e("tmpsetdata---->", "start");
         new Thread() {
-            public void run(){
+            public void run() {
                 WebService.getInstance().GetStationP2(sdate, station_names, new RequestCallback() {
 
                     @Override
@@ -175,7 +180,7 @@ public class FrdFragment extends Fragment {
                                 // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
                                 // 第二个参数：要显示的字符串。也可是R.string中字符串ID
                                 // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
-                                Toast.makeText(getActivity(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "获取数据失败！" + errorMsg, Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -185,9 +190,10 @@ public class FrdFragment extends Fragment {
         }.start();
 //        Log.e("tmpsetdata---->", "end");
     }
+
     private void GetNewData(final String sdate, final String time, final String station_names) {
         new Thread() {
-            public void run(){
+            public void run() {
                 WebService.getInstance().GetStationP3(sdate, time, station_names, new RequestCallback() {
 
                     @Override
@@ -195,7 +201,7 @@ public class FrdFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Log.e("getNewData--->",result);
+                                Log.e("getNewData--->", result);
                                 setNewDataDetail(result);
                             }
                         });
@@ -206,7 +212,7 @@ public class FrdFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getActivity(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "获取数据失败！" + errorMsg, Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -236,16 +242,16 @@ public class FrdFragment extends Fragment {
             JsonObject subObject = parray.get(i).getAsJsonObject();
 //            Log.e("setdata------>",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
             yVals.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
-            if(subObject.get("time").getAsInt() > last_time)
+            if (subObject.get("time").getAsInt() > last_time)
                 last_time = subObject.get("time").getAsInt();
         }
 
         ArrayList<Entry> zVals = new ArrayList<Entry>();
-        for(int i=0;i<forecast_parray.size();i++){
-            JsonObject subObject=forecast_parray.get(i).getAsJsonObject();
+        for (int i = 0; i < forecast_parray.size(); i++) {
+            JsonObject subObject = forecast_parray.get(i).getAsJsonObject();
 //            Log.e("forecast_parray->",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
             zVals.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
-            if(subObject.get("time").getAsInt() > last_time)
+            if (subObject.get("time").getAsInt() > last_time)
                 last_time = subObject.get("time").getAsInt();
         }
 
@@ -287,10 +293,11 @@ public class FrdFragment extends Fragment {
         mChart.setData(data);
         otherChartSet();
     }
+
     public void setNewDataDetail(String result) {
 
         if (!result.contains("{")) {
-           return;
+            return;
         }
 
         LineData data = mChart.getData();
@@ -320,14 +327,14 @@ public class FrdFragment extends Fragment {
                 JsonObject subObject = parray.get(i).getAsJsonObject();
 //            Log.e("setdata------>",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
                 set1.addEntry(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
-                if(subObject.get("time").getAsInt() > last_time)
+                if (subObject.get("time").getAsInt() > last_time)
                     last_time = subObject.get("time").getAsInt();
             }
-            for(int i=0;i<forecast_parray.size();i++){
-                JsonObject subObject=forecast_parray.get(i).getAsJsonObject();
+            for (int i = 0; i < forecast_parray.size(); i++) {
+                JsonObject subObject = forecast_parray.get(i).getAsJsonObject();
 //            Log.e("forecast_parray->",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
                 set2.addEntry(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
-                if(subObject.get("time").getAsInt() > last_time)
+                if (subObject.get("time").getAsInt() > last_time)
                     last_time = subObject.get("time").getAsInt();
             }
 
@@ -371,7 +378,7 @@ public class FrdFragment extends Fragment {
         return set;
     }
 
-    private void otherChartSet(){
+    private void otherChartSet() {
 
         // no description text
 //        mChart.getDescription().setEnabled(false);
@@ -431,19 +438,19 @@ public class FrdFragment extends Fragment {
             public String getFormattedValue(float value, AxisBase axis) {
 //                long millis = TimeUnit.HOURS.toMillis((long) value);
 //                return mFormat.format(new Date(millis));
-                int hour = (int)value / 60;
-                int min = (int)value % 60;
+                int hour = (int) value / 60;
+                int min = (int) value % 60;
                 String result = null;
-                if(hour < 10){
+                if (hour < 10) {
                     result = "0" + hour + ":";
-                }else{
+                } else {
                     result = hour + ":";
                 }
 
-                if(min < 10){
-                    result += "0" + min ;
-                }else{
-                    result += min ;
+                if (min < 10) {
+                    result += "0" + min;
+                } else {
+                    result += min;
                 }
                 return result;
             }
@@ -463,8 +470,8 @@ public class FrdFragment extends Fragment {
         rightAxis.setEnabled(false);
     }
 
-    private void showSingleChoiceDialog(final Context context, String result){
-        if(result.isEmpty() || result.equals(""))
+    private void showSingleChoiceDialog(final Context context, String result) {
+        if (result.isEmpty() || result.equals(""))
             return;
         final String[] items = result.split(",");
         station_choice = -1;
@@ -492,14 +499,14 @@ public class FrdFragment extends Fragment {
         singleChoiceDialog.show();
     }
 
-    private void setSpinnerData(final Context context, String result){
-        Log.e("result-->",result);
-        if(result.isEmpty() || result.equals(""))
+    private void setSpinnerData(final Context context, String result) {
+        Log.e("result-->", result);
+        if (result.isEmpty() || result.equals(""))
             return;
         final String[] items = result.split(",");
 
         //将可选内容与ArrayAdapter连接起来
-        adapter = new ArrayAdapter<String>(context,android.R.layout.simple_spinner_item,items);
+        adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, items);
 
         //设置下拉列表的风格
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -529,7 +536,7 @@ public class FrdFragment extends Fragment {
         dialog.show();   //显示进度条对话框
 //        Log.e("tmpsetdata---->", "start");
         new Thread() {
-            public void run(){
+            public void run() {
                 WebService.getInstance().GetStationName(new RequestCallback() {
 
                     @Override
@@ -538,8 +545,8 @@ public class FrdFragment extends Fragment {
                             @Override
                             public void run() {
                                 dialog.dismiss();  //删除该进度条
-                                Log.e("result-->",result);
-                                setSpinnerData(getActivity(),result);
+                                Log.e("result-->", result);
+                                setSpinnerData(getActivity(), result);
 //                                showSingleChoiceDialog(getActivity(),result);
 //                                setData(100, 30);
                             }
@@ -556,7 +563,7 @@ public class FrdFragment extends Fragment {
                                 // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
                                 // 第二个参数：要显示的字符串。也可是R.string中字符串ID
                                 // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
-                                Toast.makeText(getActivity(), "获取数据失败！"+errorMsg, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "获取数据失败！" + errorMsg, Toast.LENGTH_SHORT).show();
                             }
                         });
 

@@ -1,4 +1,4 @@
-package zskj.jkxt.api;
+package zskj.jkxt.util;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

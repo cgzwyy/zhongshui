@@ -1,4 +1,4 @@
-package zskj.jkxt.api;
+package zskj.jkxt.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,7 +18,6 @@ public class SettingFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.tab4, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_set, container, false);
     }
 }
