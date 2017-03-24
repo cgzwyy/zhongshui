@@ -1,13 +1,15 @@
 package zskj.jkxt.domain;
 
 import java.io.Serializable;
+import java.util.Comparator;
+
+import zskj.jkxt.util.Sort;
 
 /**
  * Created by WYY on 2017/3/1.
  */
 
 public class Fan implements Serializable {
-
 
 
     /**

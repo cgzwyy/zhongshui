@@ -57,15 +57,13 @@ public class WebService {
         }
     }
 
-    public void GetStationInfo(String Str_StationCode, RequestCallback callback) {
+    public String GetStationInfo(String Str_StationCode) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
-            callback.onFail(ERRORMSG);
-            return;
+            return ERRORMSG;
         }
         String methodName = "GetStationInfo";
         SoapObject request = new SoapObject(namespace, methodName);
         request.addProperty("Str_StationCode", Str_StationCode);
-        Log.e("result----------->", Str_StationCode + "---------------");
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
         envelope.bodyOut = request;
         envelope.dotNet = true;
@@ -74,12 +72,11 @@ public class WebService {
             ht.call(namespace + methodName, envelope);
             SoapObject object = (SoapObject) envelope.bodyIn;
             if (object != null && object.getProperty(0) != null) {
-                callback.onSuccess(object.getProperty(0).toString());
-                Log.e("result----------->", object.getProperty(0).toString());
+                return object.getProperty(0).toString();
             } else
-                callback.onFail(ERRORMSG);
+                return ERRORMSG;
         } catch (Exception e) {
-            callback.onFail(e.getMessage());
+            return e.getMessage();
         }
     }
 

@@ -96,7 +96,7 @@
                     android:id="@+id/tv_plan_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/turquoise"
+                    android:textColor="@color/deepskyblue"
                     android:textSize="@dimen/normal_text_size" />
 
                 <TextView
@@ -120,7 +120,7 @@
                     android:id="@+id/tv_speed_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/turquoise"
+                    android:textColor="@color/deepskyblue"
                     android:textSize="@dimen/normal_text_size" />
 
                 <TextView
@@ -150,7 +150,7 @@
                     android:id="@+id/tv_power_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/turquoise"
+                    android:textColor="@color/deepskyblue"
                     android:textSize="@dimen/normal_text_size" />
 
                 <TextView
@@ -174,7 +174,7 @@
                     android:id="@+id/tv_electricity_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/turquoise"
+                    android:textColor="@color/deepskyblue"
                     android:textSize="@dimen/normal_text_size" />
 
                 <TextView
