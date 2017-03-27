@@ -9,7 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:background="@color/deepskyblue"
+        android:background="@color/blue"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="5dp">
@@ -193,7 +193,6 @@
         android:id="@+id/monitor_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:background="@color/black"
         android:gravity="center"
         android:horizontalSpacing="2dp"

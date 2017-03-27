@@ -16,4 +16,11 @@ public class Station implements Serializable {
     public String columnAddress;//位置
     public String columnName;//厂站类型
     public String columnValue;//编号
+
+    public static boolean isEmpty(Station station){
+        if(station.columnValue == null || station.columnValue.length() == 0){
+            return true;
+        }
+        return false;
+    }
 }

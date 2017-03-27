@@ -3,7 +3,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@color/dialog_background" >
+            android:background="@color/dialog_background">
 
     <LinearLayout
         android:id="@+id/layout"
@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:background="@color/darkred"
+            android:background="@color/blue"
             android:gravity="center"
             android:paddingTop="@dimen/activity_vertical_little_margin"
             android:paddingBottom="@dimen/activity_vertical_little_margin"
