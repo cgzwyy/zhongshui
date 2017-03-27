@@ -1,9 +1,6 @@
 package zskj.jkxt.ui.activity;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,18 +8,13 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,19 +26,14 @@ import com.google.gson.JsonParser;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import zskj.jkxt.R;
-import zskj.jkxt.api.RequestCallback;
 import zskj.jkxt.api.WebService;
 import zskj.jkxt.domain.Fan;
 import zskj.jkxt.domain.Station;
-import zskj.jkxt.util.Sort;
+import zskj.jkxt.ui.widget.StationDetailPopu;
 
 public class MonitorDetailActivity extends Activity {
 
@@ -63,11 +50,11 @@ public class MonitorDetailActivity extends Activity {
     //grid
     GridView monitor_detail; //风机信息列表
 
-    ArrayList<Fan> map = new ArrayList<>();
+    ArrayList<Fan> fanList = new ArrayList<>();
     MonitorAdapter monitorAdapter;
     DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
-    Animation anim;
     MonitorDetailTask mTask;
+    RotateAnimation rotateAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,10 +82,11 @@ public class MonitorDetailActivity extends Activity {
                 getDetail(model.columnValue);
             }
         });
-        anim = AnimationUtils.loadAnimation(this, R.anim.refresh_anim);
-        anim.setRepeatMode(Animation.RESTART);
-        anim.setRepeatCount(100);
-        refresh.setAnimation(anim);
+        rotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation.setRepeatCount(Animation.INFINITE);
+        rotateAnimation.setRepeatMode(Animation.RESTART);
+        rotateAnimation.setDuration(2000);
+
         //设置页面
         station_address = (TextView) this.findViewById(R.id.station_address);
         station_type = (TextView) this.findViewById(R.id.station_type);
@@ -113,33 +101,11 @@ public class MonitorDetailActivity extends Activity {
         tv_electricity_title = (TextView) this.findViewById(R.id.tv_electricity_title);  //当日发电量
 
         monitor_detail = (GridView) this.findViewById(R.id.monitor_detail);
-        //TODO reconfig onItemClick
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //隐藏dialog的title
         monitor_detail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                dialog.setContentView(R.layout.fan_detail_dialog);
-
-                Window dialogWindow = dialog.getWindow();
-                dialogWindow.setGravity(Gravity.CENTER);
-
-                WindowManager m = getWindowManager();
-                Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-                WindowManager.LayoutParams p = dialogWindow.getAttributes(); // 获取对话框当前的参数值
-                p.width = (int) (d.getWidth() * 0.65); // 宽度设置为屏幕的0.65
-                dialogWindow.setAttributes(p);
-
-                TextView fan_detail_speed = (TextView) dialog.findViewById(R.id.fan_detail_speed);
-                TextView fan_detail_power = (TextView) dialog.findViewById(R.id.fan_detail_power);
-                TextView fan_detail_revs = (TextView) dialog.findViewById(R.id.fan_detail_revs);
-
-                Fan fan = map.get(position);
-                fan_detail_speed.setText(fan.fan_speed.concat(getResources().getString(R.string.speed_unit)));
-                fan_detail_power.setText(fan.fan_active_power.concat(getResources().getString(R.string.active_power_unit)));
-                fan_detail_revs.setText(fan.fan_revs.concat(getResources().getString(R.string.revs_unit)));
-
-                dialog.show();
+                Fan fan = fanList.get(position);
+                showDetailPopu(fan);
             }
         });
     }
@@ -224,6 +190,8 @@ public class MonitorDetailActivity extends Activity {
      */
     private void dealResult(String result) {
         if (!result.contains("{")) {//非法数据
+//            testData();
+//            monitorAdapter.notifyDataSetChanged();
             Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -232,7 +200,7 @@ public class MonitorDetailActivity extends Activity {
         JsonArray array = object.get("list").getAsJsonArray(); //得到为json的数组
 
         if (array != null && array.size() > 0) {
-            map.clear();
+            fanList.clear();
             for (int i = 0; i < array.size(); i++) {
                 JsonObject subObject = array.get(i).getAsJsonObject();
                 Fan fan = new Fan();
@@ -241,10 +209,10 @@ public class MonitorDetailActivity extends Activity {
                 fan.fan_active_power = df.format(Double.valueOf(subObject.get("有功功率").getAsString()));
                 fan.fan_revs = df.format(Double.valueOf(subObject.get("转速").getAsString()));
                 fan.fan_state = df.format(Double.valueOf(subObject.get("风机运行状态").getAsString()));
-                map.add(fan);
+                fanList.add(fan);
             }
         }
-        Collections.sort(map, new Comparator<Fan>() {
+        Collections.sort(fanList, new Comparator<Fan>() {
             @Override
             public int compare(Fan fan, Fan t1) {
                 String fan_number = fan.fan_number;
@@ -260,12 +228,12 @@ public class MonitorDetailActivity extends Activity {
 
         @Override
         public int getCount() {
-            return map.size();
+            return fanList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return map.get(position);
+            return fanList.get(position);
         }
 
         @Override
@@ -290,11 +258,11 @@ public class MonitorDetailActivity extends Activity {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            final Fan model = map.get(position);
+            final Fan model = fanList.get(position);
             holder.fan_number.setText(model.fan_number);
-            holder.fan_speed.setText(model.fan_speed.concat(getResources().getString(R.string.speed_unit)));
-            holder.fan_active_power.setText(model.fan_active_power.concat(getResources().getString(R.string.active_power_unit)));
-            holder.fan_revs.setText(model.fan_revs.concat(getResources().getString(R.string.revs_unit)));
+            holder.fan_speed.setText(getResources().getString(R.string.speed_unit, model.fan_speed));
+            holder.fan_active_power.setText(getResources().getString(R.string.active_power_unit, model.fan_active_power));
+            holder.fan_revs.setText(getResources().getString(R.string.revs_unit, model.fan_revs));
             if (Double.valueOf(model.fan_state.trim()) >= 5) { //停机
                 holder.fan_picture.setImageResource(R.drawable.fj_05);
                 holder.fan_state.setText(getResources().getString(R.string.stop));
@@ -320,8 +288,33 @@ public class MonitorDetailActivity extends Activity {
 
     private void progress(boolean pro) {
         if (pro) {
-            anim.startNow();
-        } else
-            anim.cancel();
+            refresh.startAnimation(rotateAnimation);
+        } else {
+            rotateAnimation.cancel();
+            refresh.clearAnimation();
+        }
+    }
+
+    StationDetailPopu mPopu;
+
+    private void showDetailPopu(Fan fan) {
+        if (mPopu == null)
+            mPopu = new StationDetailPopu(this);
+        mPopu.setFan(fan);
+        mPopu.showAtLocation(getWindow().getDecorView().findViewById(android.R.id.content), Gravity.CENTER_VERTICAL, 0, 0);
+    }
+
+    //TODO delete
+    private void testData() {
+        fanList.clear();
+        for (int i = 0; i < 10; i++) {
+            Fan fan = new Fan();
+            fan.fan_number = "编号：" + i;
+            fan.fan_speed = "123.33";
+            fan.fan_active_power = "123.44";
+            fan.fan_revs = "123.55";
+            fan.fan_state = "123.66";
+            fanList.add(fan);
+        }
     }
 }
