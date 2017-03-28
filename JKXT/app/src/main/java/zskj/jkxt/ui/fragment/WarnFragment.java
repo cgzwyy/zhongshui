@@ -2,10 +2,12 @@ package zskj.jkxt.ui.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +42,8 @@ import zskj.jkxt.domain.AlarmData;
 
 public class WarnFragment extends Fragment {
 
+    Context mContext;
+
     ProgressDialog dialog = null;   //进度对话框
     ListView lv_alarm;
     String last_time = null; //取得的最后一条报警数据的时间
@@ -47,35 +51,49 @@ public class WarnFragment extends Fragment {
     Map<Integer, AlarmData> map = new HashMap<>();
     int lastNum = 0; //更新前取得的报警数据条数
     String sdate = null; //报警数据日期
+    String stime = null; //报警数据时间
     int tmp = 0; //临时变量
     Button first_page, previous_page, next_page, last_page;
+    WranTask mTask;
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragmeng_warn, container, false);
+        return inflater.inflate(R.layout.fragmeng_warn, container, false);
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         dialog = new ProgressDialog(getActivity());
         dialog.setMessage("加载中...");     //设置提示信息
         dialog.setCanceledOnTouchOutside(false);   //设置在点击Dialog外是否取消Dialog进度条
 
-        first_page = (Button) view.findViewById(R.id.first_page);
-        previous_page = (Button) view.findViewById(R.id.previous_page);
-        next_page = (Button) view.findViewById(R.id.next_page);
-        last_page = (Button) view.findViewById(R.id.last_page);
+        first_page = (Button) getView().findViewById(R.id.first_page);
+        previous_page = (Button) getView().findViewById(R.id.previous_page);
+        next_page = (Button) getView().findViewById(R.id.next_page);
+        last_page = (Button) getView().findViewById(R.id.last_page);
 
-        lv_alarm = (ListView) view.findViewById(R.id.lv_alarm);
+        lv_alarm = (ListView) getView().findViewById(R.id.lv_alarm);
         num = 0;
         last_time = "0";
 
         final Calendar ca = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat sdf_date = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat sdf_time = new SimpleDateFormat("HHmmssSSS");
 
-        sdate = sdf.format(ca.getTime());
+        sdate = sdf_date.format(ca.getTime());
+        stime = sdf_time.format(ca.getTime());
 
         sdate = "20170317";
-        GetData(sdate, last_time);
+        stime = "0";
+        getDetail(sdate, stime);
 
         handler.postDelayed(runnable, 1000 * 10);
 
@@ -150,7 +168,6 @@ public class WarnFragment extends Fragment {
             }
         });
 
-        return view;
     }
 
     private mAdapter tmpAdapter;
@@ -161,12 +178,10 @@ public class WarnFragment extends Fragment {
                 this.update();
                 handler.postDelayed(this, 1000 * 60 * 10);// 间隔60 * 10秒
             }
-
         }
-
         void update() {
             Log.e("last_time---->", last_time + "");
-            GetData("20170317", last_time);
+            getDetail(sdate, last_time);
             tmp++;
         }
     };
@@ -209,6 +224,58 @@ public class WarnFragment extends Fragment {
         }.start();
     }
 
+    /**
+     * 获取数据
+     *
+     * @param sdate,stime
+     */
+    private void getDetail(String sdate,String stime) {
+        if (TextUtils.isEmpty(sdate) || TextUtils.isEmpty(stime))
+            return;
+        if (mTask != null) {//不为null 说明操作正在进行，规避多次点击登录按钮操作
+            Toast.makeText(mContext, "加载中，请稍候...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mTask = new WranTask(sdate, stime);
+        mTask.execute();
+    }
+
+    private class WranTask extends AsyncTask<Void, Void, String> {
+
+        String sdate = "";
+        String stime = "";
+
+        WranTask(String sdate,String stime) {
+            this.sdate = sdate;
+            this.stime = stime;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//            progress(true);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            return WebService.getInstance().GetAlarmData(sdate,stime);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            mTask = null;
+//            progress(false);
+            setDataDetail(result);
+        }
+
+        @Override
+        protected void onCancelled() {
+            mTask = null;
+//            progress(false);
+        }
+    }
+
+    /*
     private void GetData(final String sdate, final String stime) {
         dialog.show();   //显示进度条对话框
         new Thread() {
@@ -247,6 +314,8 @@ public class WarnFragment extends Fragment {
             }
         }.start();
     }
+    */
+
 
     class mAdapter extends BaseAdapter {
         private int[] colors = new int[]{0x30FF0000, 0x300000FF};

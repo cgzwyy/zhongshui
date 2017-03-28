@@ -108,10 +108,9 @@ public class WebService {
         }
     }
 
-    public void GetStationName(RequestCallback callback) {
+    public String GetStationName() {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
-            callback.onFail(ERRORMSG);
-            return;
+            return ERRORMSG;
         }
         String methodName = "GetStationName";
         SoapObject request = new SoapObject(namespace, methodName);
@@ -123,12 +122,11 @@ public class WebService {
             ht.call(namespace + methodName, envelope);
             SoapObject object = (SoapObject) envelope.bodyIn;
             if (object != null && object.getProperty(0) != null) {
-                callback.onSuccess(object.getProperty(0).toString());
-                Log.e("result----------->", object.getProperty(0).toString());
+                return object.getProperty(0).toString();
             } else
-                callback.onFail(ERRORMSG);
+                return ERRORMSG;
         } catch (Exception e) {
-            callback.onFail(e.getMessage());
+            return e.getMessage();
         }
     }
 
@@ -155,10 +153,9 @@ public class WebService {
         }
     }
 
-    public void GetAlarmData(String sdate, String stime, RequestCallback callback) {
+    public String GetAlarmData(String sdate, String stime) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
-            callback.onFail(ERRORMSG);
-            return;
+            return ERRORMSG;
         }
         String methodName = "GetAlarmData";
         SoapObject request = new SoapObject(namespace, methodName);
@@ -172,19 +169,18 @@ public class WebService {
             ht.call(namespace + methodName, envelope);
             SoapObject object = (SoapObject) envelope.bodyIn;
             if (object != null && object.getProperty(0) != null) {
-                callback.onSuccess(object.getProperty(0).toString());
+                return object.getProperty(0).toString();
             } else
-                callback.onFail(ERRORMSG);
+                return ERRORMSG;
         } catch (Exception e) {
-            callback.onFail(e.getMessage());
+            return e.getMessage();
         }
     }
 
-    public void GetStationP2(String sdate, String station_names, RequestCallback callback) {
+    public String GetStationP2(String sdate, String station_names) {
 
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
-            callback.onFail(ERRORMSG);
-            return;
+            return ERRORMSG;
         }
         String methodName = "GetStationP2";
         SoapObject request = new SoapObject(namespace, methodName);
@@ -199,12 +195,12 @@ public class WebService {
             ht.call(namespace + methodName, envelope);
             SoapObject object = (SoapObject) envelope.bodyIn;
             if (object != null && object.getProperty(0) != null) {
-                callback.onSuccess(object.getProperty(0).toString());
+                 return  object.getProperty(0).toString();
                 //Log.e("result----------->",object.getProperty(0).toString());
             } else
-                callback.onFail(ERRORMSG);
+                return ERRORMSG;
         } catch (Exception e) {
-            callback.onFail(e.getMessage());
+            return e.getMessage();
         }
     }
 

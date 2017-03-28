@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,8 +45,8 @@ import java.util.Calendar;
 import zskj.jkxt.R;
 import zskj.jkxt.api.RequestCallback;
 import zskj.jkxt.api.WebService;
-import zskj.jkxt.util.DateTimePickDialogUtil;
 import zskj.jkxt.ui.widget.MyMarkerView;
+import zskj.jkxt.util.DateTimePickDialogUtil;
 
 /**
  * Created by WYY on 2017/3/14.
@@ -52,6 +54,8 @@ import zskj.jkxt.ui.widget.MyMarkerView;
  */
 
 public class PowerFragment extends Fragment {
+
+    Context mContext;
 
     ProgressDialog dialog = null;   //进度对话框
     private LineChart mChart;
@@ -66,19 +70,32 @@ public class PowerFragment extends Fragment {
     //    private String date; //chart 日期
     private String station_name;
     private int last_time = 0;
+    GetStationNameTask mGetStationNameTask;
+    GetPowerDataTask mGetPowerDataTask;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_power, container, false);
+        return inflater.inflate(R.layout.fragment_power, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         dialog = new ProgressDialog(getActivity());
         dialog.setMessage("加载中...");     //设置提示信息
         dialog.setCanceledOnTouchOutside(false);   //设置在点击Dialog外是否取消Dialog进度条
 
-        mChart = (LineChart) view.findViewById(R.id.chart1);
+        mChart = (LineChart) getView().findViewById(R.id.chart1);
 
-        select_time = (Button) view.findViewById(R.id.select_time);
-        selected_time = (TextView) view.findViewById(R.id.selected_time);
+        select_time = (Button) getView().findViewById(R.id.select_time);
+        selected_time = (TextView) getView().findViewById(R.id.selected_time);
 
         final Calendar ca = Calendar.getInstance();
         mYear = ca.get(Calendar.YEAR);
@@ -87,7 +104,6 @@ public class PowerFragment extends Fragment {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
 
         selected_time.setText(sdf.format(ca.getTime()));
-//        date = selected_time.getText().toString();
 
         selected_time.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,33 +112,14 @@ public class PowerFragment extends Fragment {
                         getActivity(), selected_time.getText().toString());
                 selected_time.setText("");
                 dateTimePicKDialog.dateTimePicKDialog(selected_time);
-//                date = selected_time.getText().toString();
             }
         });
-//        select_time.setOnClickListener(new View.OnClickListener() {
-//
-//            public void onClick(View v) {
-//
-//                DateTimePickDialogUtil dateTimePicKDialog = new DateTimePickDialogUtil(
-//                        getActivity(), mYear + "年" + (mMonth+1) + "月" + mDay + "日");
-//                dateTimePicKDialog.dateTimePicKDialog(selected_time);
-//
-//            }
-//        });
 
-        select_station = (Button) view.findViewById(R.id.select_station);
-//        selected_station = (TextView) view.findViewById(R.id.selected_station);
-        spinner_station = (Spinner) view.findViewById(R.id.spinner_station);
-//        station_name = spinner_station.getSelectedItem().toString();
+        select_station = (Button) getView().findViewById(R.id.select_station);
+        spinner_station = (Spinner) getView().findViewById(R.id.spinner_station);
         GetStationName();
-//        select_station.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                GetStationName();
-//            }
-//        });
 
-        sure = (Button) view.findViewById(R.id.sure);
+        sure = (Button) getView().findViewById(R.id.sure);
         sure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,8 +127,6 @@ public class PowerFragment extends Fragment {
                 handler.postDelayed(runnable, 1000 * 60);
             }
         });
-
-        return view;
     }
 
     private Handler handler = new Handler();
@@ -151,45 +146,57 @@ public class PowerFragment extends Fragment {
         }
     };
 
-    private void GetData(final String sdate, final String station_names) {
-        dialog.show();   //显示进度条对话框
-//        Log.e("tmpsetdata---->", "start");
-        new Thread() {
-            public void run() {
-                WebService.getInstance().GetStationP2(sdate, station_names, new RequestCallback() {
-
-                    @Override
-                    public void onSuccess(final String result) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                setDataDetail(result);
-                                dialog.dismiss();  //删除该进度条
-//                                setData(100, 30);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onFail(final String errorMsg) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                dialog.dismiss();  //删除该进度条
-                                // Toast：简易的消息提示框，自动消失
-                                // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
-                                // 第二个参数：要显示的字符串。也可是R.string中字符串ID
-                                // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
-                                Toast.makeText(getActivity(), "获取数据失败！" + errorMsg, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-                    }
-                });
-            }
-        }.start();
-//        Log.e("tmpsetdata---->", "end");
+    private void GetData(String sdate, String station_name) {
+        if(TextUtils.isEmpty(sdate) || TextUtils.isEmpty(station_name)){
+            return;
+        }
+        if (mGetPowerDataTask != null) {//不为null 说明操作正在进行，规避多次点击登录按钮操作
+            Toast.makeText(mContext, "加载中，请稍候...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mGetPowerDataTask = new GetPowerDataTask(sdate,station_name);
+        mGetPowerDataTask.execute();
     }
+
+//    private void GetData(final String sdate, final String station_names) {
+//        dialog.show();   //显示进度条对话框
+////        Log.e("tmpsetdata---->", "start");
+//        new Thread() {
+//            public void run() {
+//                WebService.getInstance().GetStationP2(sdate, station_names, new RequestCallback() {
+//
+//                    @Override
+//                    public void onSuccess(final String result) {
+//                        getActivity().runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                setDataDetail(result);
+//                                dialog.dismiss();  //删除该进度条
+////                                setData(100, 30);
+//                            }
+//                        });
+//                    }
+//
+//                    @Override
+//                    public void onFail(final String errorMsg) {
+//                        getActivity().runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                dialog.dismiss();  //删除该进度条
+//                                // Toast：简易的消息提示框，自动消失
+//                                // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
+//                                // 第二个参数：要显示的字符串。也可是R.string中字符串ID
+//                                // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
+//                                Toast.makeText(getActivity(), "获取数据失败！" + errorMsg, Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//
+//                    }
+//                });
+//            }
+//        }.start();
+////        Log.e("tmpsetdata---->", "end");
+//    }
 
     private void GetNewData(final String sdate, final String time, final String station_names) {
         new Thread() {
@@ -499,14 +506,14 @@ public class PowerFragment extends Fragment {
         singleChoiceDialog.show();
     }
 
-    private void setSpinnerData(final Context context, String result) {
+    private void setSpinnerData(String result) {
         Log.e("result-->", result);
         if (result.isEmpty() || result.equals(""))
             return;
         final String[] items = result.split(",");
 
         //将可选内容与ArrayAdapter连接起来
-        adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, items);
+        adapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, items);
 
         //设置下拉列表的风格
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -533,44 +540,75 @@ public class PowerFragment extends Fragment {
     }
 
     private void GetStationName() {
-        dialog.show();   //显示进度条对话框
-//        Log.e("tmpsetdata---->", "start");
-        new Thread() {
-            public void run() {
-                WebService.getInstance().GetStationName(new RequestCallback() {
+        if (mGetStationNameTask != null) {//不为null 说明操作正在进行，规避多次点击登录按钮操作
+            Toast.makeText(mContext, "加载中，请稍候...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mGetStationNameTask = new GetStationNameTask();
+        mGetStationNameTask.execute();
+    }
+    /**
+     * task
+     */
+    private class GetStationNameTask extends AsyncTask<Void, Void, String> {
 
-                    @Override
-                    public void onSuccess(final String result) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                dialog.dismiss();  //删除该进度条
-                                Log.e("result-->", result);
-                                setSpinnerData(getActivity(), result);
-//                                showSingleChoiceDialog(getActivity(),result);
-//                                setData(100, 30);
-                            }
-                        });
-                    }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
 
-                    @Override
-                    public void onFail(final String errorMsg) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                dialog.dismiss();  //删除该进度条
-                                // Toast：简易的消息提示框，自动消失
-                                // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
-                                // 第二个参数：要显示的字符串。也可是R.string中字符串ID
-                                // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
-                                Toast.makeText(getActivity(), "获取数据失败！" + errorMsg, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+        @Override
+        protected String doInBackground(Void... voids) {
+            return WebService.getInstance().GetStationName();
+        }
 
-                    }
-                });
-            }
-        }.start();
-//        Log.e("tmpsetdata---->", "end");
+        @Override
+        protected void onPostExecute(String result) {
+            mGetStationNameTask = null;
+//            progress(false);
+            setSpinnerData(result);
+        }
+
+        @Override
+        protected void onCancelled() {
+            mGetStationNameTask = null;
+//            progress(false);
+        }
+    }
+    /**
+     * task
+     */
+    private class GetPowerDataTask extends AsyncTask<Void, Void, String> {
+
+        String sdate;
+        String station_name;
+
+        GetPowerDataTask(String sdate,String station_name){
+            this.sdate = sdate;
+            this.station_name = station_name;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            return WebService.getInstance().GetStationP2(sdate,station_name);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            mGetPowerDataTask = null;
+//            progress(false);
+            setDataDetail(result);
+        }
+
+        @Override
+        protected void onCancelled() {
+            mGetPowerDataTask = null;
+//            progress(false);
+        }
     }
 }
