@@ -5,17 +5,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.view.Window;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import zskj.jkxt.R;
 import zskj.jkxt.ui.fragment.WarnFragment;
 import zskj.jkxt.ui.fragment.PowerFragment;
-import zskj.jkxt.ui.fragment.SettingFragment;
+import zskj.jkxt.ui.fragment.UserManagementFragment;
 import zskj.jkxt.ui.fragment.StationFragment;
 
 /**
@@ -27,7 +23,7 @@ public class MainActivity extends FragmentActivity {
     private StationFragment mStationFrag;
     private PowerFragment mPowerFrag;
     private WarnFragment mWarnFrag;
-    private SettingFragment mSetFrag;
+    private UserManagementFragment mSetFrag;
     //当前fragment
     private Fragment currentFrag;
     //manager
@@ -87,7 +83,7 @@ public class MainActivity extends FragmentActivity {
                         break;
                     case R.id.rb_set:
                         if (mSetFrag == null) {
-                            mSetFrag = new SettingFragment();
+                            mSetFrag = new UserManagementFragment();
                             transaction.add(R.id.fl_container, mSetFrag, "set");
                         } else {
                             transaction.show(mSetFrag);

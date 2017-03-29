@@ -56,6 +56,27 @@ public class WebService {
             return e.getMessage();
         }
     }
+    public String GetUserInfo() {
+        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
+            return ERRORMSG;
+        }
+        String methodName = "getUserInfo";
+        SoapObject request = new SoapObject(namespace, methodName);
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+        envelope.bodyOut = request;
+        envelope.dotNet = true;
+        HttpTransportSE ht = new HttpTransportSE(serviceUrl);
+        try {
+            ht.call(namespace + methodName, envelope);
+            SoapObject object = (SoapObject) envelope.bodyIn;
+            if (object != null && object.getProperty(0) != null) {
+                return object.getProperty(0).toString();
+            } else
+                return ERRORMSG;
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
 
     public String GetStationInfo(String Str_StationCode) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {

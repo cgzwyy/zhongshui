@@ -132,7 +132,10 @@ public class LoginActivity extends Activity {
     private boolean parserResult(String result) {//stupid back data~
         try {
             int flag = Integer.parseInt(result);
-            return true;
+            if(flag == 1)
+                return true;
+            else
+                return false;
         } catch (NumberFormatException e) {
             e.printStackTrace();
             return false;

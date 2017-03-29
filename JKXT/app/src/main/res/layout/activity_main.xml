@@ -13,7 +13,7 @@
     <RadioGroup
         android:id="@+id/rg_menu"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
         android:background="#ff37474f"
         android:gravity="center"
         android:orientation="horizontal"
