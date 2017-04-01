@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_add_user"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="zskj.jkxt.ui.activity.AddUserActivity">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/add_user_page"
+            android:text="@string/update_user_page"
             android:textColor="@color/white"
             android:textSize="@dimen/dialog_title_text_size" />
     </RelativeLayout>
@@ -29,20 +27,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/activity_vertical_little_margin">
+        android:paddingTop="@dimen/activity_vertical_margin">
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="用户名："
             android:textSize="@dimen/big_text_size"
-            android:gravity="center"/>
-        <EditText
-            android:id="@+id/etName"
+            android:gravity="center|center_vertical"/>
+        <TextView
+            android:id="@+id/update_userName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:hint="@string/user_name"/>
+            android:text="@string/user_name"
+            android:textSize="@dimen/big_text_size"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,32 +56,11 @@
             android:textSize="@dimen/big_text_size"
             android:gravity="center"/>
         <EditText
-            android:id="@+id/etPassword"
+            android:id="@+id/update_userPassword"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:hint="密码"
-            android:inputType="textPassword"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="@dimen/activity_vertical_little_margin">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="确认密码："
-            android:textSize="@dimen/big_text_size"
-            android:gravity="center"/>
-        <EditText
-            android:id="@+id/etPasswordConfirm"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:hint="确认密码"
-            android:inputType="textPassword"/>
+            android:hint="密码"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -102,18 +80,17 @@
             android:layout_weight="2"
             android:orientation="vertical">
             <CheckBox
-                android:id="@+id/cbStation"
+                android:id="@+id/update_rightsStation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="场站"
-                android:checked="true"/>
+                android:text="场站"/>
             <CheckBox
-                android:id="@+id/cbPower"
+                android:id="@+id/update_rightsPower"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="全场功率"/>
             <CheckBox
-                android:id="@+id/cbAlarm"
+                android:id="@+id/update_rightsAlarm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="实时告警"/>
@@ -132,24 +109,23 @@
             android:textSize="@dimen/big_text_size"
             android:gravity="center|center_vertical"/>
         <RadioGroup
-            android:id="@+id/rgLevel"
+            android:id="@+id/update_userLevel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:orientation="horizontal">
             <RadioButton
-                android:id="@+id/rbLevelOne"
+                android:id="@+id/update_rbLevelOne"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="超级用户"/>
             <RadioButton
-                android:id="@+id/rbLevelTwo"
+                android:id="@+id/update_rbLevelTwo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="普通用户"
-                android:checked="true"/>
+                android:text="普通用户"/>
         </RadioGroup>
     </LinearLayout>
     <LinearLayout
@@ -165,18 +141,17 @@
             android:textSize="@dimen/big_text_size"
             android:gravity="center|center_vertical"/>
         <RadioGroup
-            android:id="@+id/rg_range"
+            android:id="@+id/update_userRange"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:orientation="vertical">
 
             <CheckBox
-                android:id="@+id/cbstation1"
+                android:id="@+id/update_rangeStation1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/user_range"
-                android:checked="true"/>
+                android:text="@string/user_range"/>
         </RadioGroup>
     </LinearLayout>
 
@@ -191,10 +166,10 @@
             android:layout_weight="1"
             android:gravity="center">
             <Button
-                android:id="@+id/register"
+                android:id="@+id/update_update"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="确定"
+                android:text="修改"
                 android:textSize="@dimen/big_text_size"/>
         </LinearLayout>
         <LinearLayout
@@ -203,7 +178,7 @@
             android:layout_weight="1"
             android:gravity="center">
             <Button
-                android:id="@+id/cancel"
+                android:id="@+id/update_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="取消"

@@ -43,6 +43,8 @@ import zskj.jkxt.domain.AlarmData;
 public class WarnFragment extends Fragment {
 
     Context mContext;
+    String ranges;
+    String level;
 
     ProgressDialog dialog = null;   //进度对话框
     ListView lv_alarm;
@@ -55,6 +57,13 @@ public class WarnFragment extends Fragment {
     int tmp = 0; //临时变量
     Button first_page, previous_page, next_page, last_page;
     WranTask mTask;
+
+    public void setRanges(String ranges){
+        this.ranges = ranges;
+    }
+    public void setLevel(String level){
+        this.level = level;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -91,7 +100,7 @@ public class WarnFragment extends Fragment {
         sdate = sdf_date.format(ca.getTime());
         stime = sdf_time.format(ca.getTime());
 
-        sdate = "20170317";
+        sdate = "20170316";
         stime = "0";
         getDetail(sdate, stime);
 
@@ -258,7 +267,7 @@ public class WarnFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... voids) {
-            return WebService.getInstance().GetAlarmData(sdate,stime);
+            return WebService.getInstance().GetAlarmData(sdate,stime,ranges,level);
         }
 
         @Override
@@ -365,6 +374,7 @@ public class WarnFragment extends Fragment {
                 holder = new ViewHolder();
                 convertView = View.inflate(context, R.layout.item_alarm, null);
                 holder.alarm_num = (TextView) convertView.findViewById(R.id.alarm_num);
+                holder.alarm_station = (TextView) convertView.findViewById(R.id.alarm_station);
                 holder.alarm_type = (TextView) convertView.findViewById(R.id.alarm_type);
                 holder.alarm_time = (TextView) convertView.findViewById(R.id.alarm_time);
                 holder.alarm_content = (TextView) convertView.findViewById(R.id.alarm_content);
@@ -380,9 +390,9 @@ public class WarnFragment extends Fragment {
             } else {
                 convertView.setBackgroundColor(getResources().getColor(R.color.pale));
             }
-
             final AlarmData model = list.get(position);
             holder.alarm_num.setText(model.alarm_num);
+            holder.alarm_station.setText(model.alarm_station);
             holder.alarm_type.setText(model.alarm_type);
 //            holder.alarm_time.setText(model.alarm_date);
             SimpleDateFormat formatter = new SimpleDateFormat("HHmmssSSS");
@@ -406,6 +416,7 @@ public class WarnFragment extends Fragment {
 
     static class ViewHolder {
         TextView alarm_num;
+        TextView alarm_station;
         TextView alarm_type;
         TextView alarm_time;
         TextView alarm_content;
@@ -417,14 +428,15 @@ public class WarnFragment extends Fragment {
             List<AlarmData> data = new ArrayList<>();
             if (num > 0 && num % 10 == 0) {
                 for (int i = 0; i < 10; i++) {
-                    data.add(map.get(num / 10 * 10 + i));
+                    data.add(map.get((num / 10 -1) * 10 + i));
                 }
             } else {
                 for (int i = 0; i < num % 10; i++) {
                     data.add(map.get(num / 10 * 10 + i));
                 }
             }
-            lv_alarm.setAdapter(new mAdapter(getActivity(), data));
+            if(data.size() > 0)
+                lv_alarm.setAdapter(new mAdapter(getActivity(), data));
         } else {
             tmpAdapter = (mAdapter) lv_alarm.getAdapter();
             List<AlarmData> data = tmpAdapter.getData();
@@ -434,11 +446,19 @@ public class WarnFragment extends Fragment {
                 }
             } else {
                 data.clear();
-                for (int i = 0; i < num % 10; i++) {
-                    data.add(map.get(num / 10 * 10 + i));
+                if(num % 10 == 0){
+                    for (int i = 0; i < num % 10; i++) {
+                        data.add(map.get((num / 10 -1) * 10 + i));
+                    }
+                }else{
+                    for (int i = 0; i < num % 10; i++) {
+                        data.add(map.get(num / 10 * 10 + i));
+                    }
                 }
+
             }
-            tmpAdapter.notifyDataSetChanged();
+            if(data.size() > 0)
+                tmpAdapter.notifyDataSetChanged();
         }
     }
 
@@ -452,6 +472,7 @@ public class WarnFragment extends Fragment {
             JsonObject subObject = alarms.get(i).getAsJsonObject();
 
             AlarmData alarmData = new AlarmData();
+            alarmData.alarm_station = subObject.get("场站").getAsString();
             alarmData.alarm_type = subObject.get("类型名").getAsString();
             alarmData.alarm_date = subObject.get("日期").getAsString();
             alarmData.alarm_time = subObject.get("时间").getAsString();
@@ -484,6 +505,7 @@ public class WarnFragment extends Fragment {
                 JsonObject subObject = alarms.get(i).getAsJsonObject();
 
                 AlarmData alarmData = new AlarmData();
+                alarmData.alarm_station = subObject.get("场站").getAsString();
                 alarmData.alarm_type = subObject.get("类型名").getAsString();
                 alarmData.alarm_date = subObject.get("日期").getAsString();
                 alarmData.alarm_time = subObject.get("时间").getAsString();

@@ -1,16 +1,23 @@
 package zskj.jkxt.ui.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +31,9 @@ import java.util.Map;
 import zskj.jkxt.R;
 import zskj.jkxt.api.WebService;
 import zskj.jkxt.domain.User;
+import zskj.jkxt.ui.widget.UserDetailPopu;
+
+import static zskj.jkxt.R.id.deleteUser;
 
 public class UserManagementActivity extends AppCompatActivity {
 
@@ -32,6 +42,8 @@ public class UserManagementActivity extends AppCompatActivity {
     Map<Integer,User> map = new HashMap<>();
     UserManagementTask mTask;
     int num = 0;
+    DeleteUserTask mDeleteUserTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,10 +137,40 @@ public class UserManagementActivity extends AppCompatActivity {
             lv_user_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Toast.makeText(getApplicationContext(),"item click  " + map.get(position).userName,Toast.LENGTH_SHORT).show();
+                    User user = map.get(position);
+                    showDetailPopu(user);
                 }
             });
         }
+    }
+    UserDetailPopu mPopu;
+
+    private void showDetailPopu(User user) {
+        if (mPopu == null)
+            mPopu = new UserDetailPopu(this);
+
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        mPopu.setWidth((int) (d.getWidth() * 0.8));
+
+        backgroundAlpha(0.5f);
+        mPopu.setUser(user);
+        mPopu.showAtLocation(getWindow().getDecorView().findViewById(android.R.id.content), Gravity.CENTER_VERTICAL, 0, 0);
+
+        mPopu.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                backgroundAlpha(1f);
+            }
+        });
+    }
+
+    //设置背景透明度，1f为不透明
+    public void backgroundAlpha(float bgAlpha)
+    {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = bgAlpha; //0.0-1.0
+        getWindow().setAttributes(lp);
     }
 
     class userListAdapter extends BaseAdapter {
@@ -182,7 +224,7 @@ public class UserManagementActivity extends AppCompatActivity {
                 holder.userRange = (TextView) convertView.findViewById(R.id.userRange);
                 holder.userLevel = (TextView) convertView.findViewById(R.id.userLevel);
                 holder.updateUser = (ImageView) convertView.findViewById(R.id.updateUser);
-                holder.deleteUser = (ImageView) convertView.findViewById(R.id.deleteUser);
+                holder.deleteUser = (ImageView) convertView.findViewById(deleteUser);
                 convertView.setTag(holder);
 
             } else {
@@ -205,14 +247,31 @@ public class UserManagementActivity extends AppCompatActivity {
             holder.updateUser.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(),"update  " + model.userName,Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(UserManagementActivity.this,UpdateUserActivity.class);
+                    intent.putExtra("user",model);
+                    startActivity(intent);
                 }
             });
 
             holder.deleteUser.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(),"delete  "+model.userName,Toast.LENGTH_SHORT).show();
+                    final AlertDialog.Builder normalDialog =new AlertDialog.Builder(UserManagementActivity.this);
+                    normalDialog.setTitle("提示");
+                    normalDialog.setMessage("确认删除？");
+                    normalDialog.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            deleteUser(model.userName);
+                        }
+                    });
+                    normalDialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+//                            finish();
+                        }
+                    });
+                    normalDialog.show();
                 }
             });
             return convertView;
@@ -228,5 +287,63 @@ public class UserManagementActivity extends AppCompatActivity {
         TextView userLevel;
         ImageView updateUser;
         ImageView deleteUser;
+    }
+
+    private void deleteUser(String userName) {
+        if (TextUtils.isEmpty(userName) )
+            return;
+        if (mDeleteUserTask != null) {//不为null 说明操作正在进行，规避多次点击登录按钮操作
+            Toast.makeText(getApplicationContext(), "删除数据中，请稍候...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mDeleteUserTask = new DeleteUserTask(userName);
+        mDeleteUserTask.execute();
+    }
+
+    private class DeleteUserTask extends AsyncTask<Void, Void, String> {
+
+        String userName = "";
+
+        DeleteUserTask(String userName) {
+            this.userName = userName;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//            progress(true);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            return WebService.getInstance().deleteUser(userName);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            mTask = null;
+//            progress(false);
+            deleteResult(result);
+        }
+
+        @Override
+        protected void onCancelled() {
+            mTask = null;
+//            progress(false);
+        }
+    }
+
+    public void deleteResult(String result){
+        if(TextUtils.isEmpty(result)) {
+            Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(result.equals("true")){
+            getUserData();
+        }else{
+            Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
+        }
+
     }
 }

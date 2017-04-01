@@ -16,4 +16,13 @@ public class User implements Serializable {
     public String userRights;//时间
     public String userRange;//事项内容
     public String userLevel;//事项内容
+
+    public User(){
+        userId = "";
+        userName = "";
+        userPassword = "";
+        userRights = "";
+        userRange = "";
+        userLevel = "";
+    }
 }

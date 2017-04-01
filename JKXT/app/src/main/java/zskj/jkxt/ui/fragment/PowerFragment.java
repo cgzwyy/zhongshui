@@ -56,6 +56,7 @@ import zskj.jkxt.util.DateTimePickDialogUtil;
 public class PowerFragment extends Fragment {
 
     Context mContext;
+    String ranges;
 
     ProgressDialog dialog = null;   //进度对话框
     private LineChart mChart;
@@ -72,6 +73,10 @@ public class PowerFragment extends Fragment {
     private int last_time = 0;
     GetStationNameTask mGetStationNameTask;
     GetPowerDataTask mGetPowerDataTask;
+
+    public void setRanges(String ranges){
+        this.ranges = ranges;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -559,7 +564,7 @@ public class PowerFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... voids) {
-            return WebService.getInstance().GetStationName();
+            return WebService.getInstance().GetStationName(ranges);
         }
 
         @Override

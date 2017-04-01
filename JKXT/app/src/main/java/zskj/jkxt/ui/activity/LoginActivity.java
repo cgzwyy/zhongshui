@@ -16,6 +16,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import zskj.jkxt.R;
 import zskj.jkxt.api.WebService;
 
@@ -67,11 +70,11 @@ public class LoginActivity extends Activity {
         String password = mPasswordView.getText().toString();
         boolean cancel = false;
         View focusView = null;
-        if (TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_field_required));
-            focusView = mPasswordView;
-            cancel = true;
-        }
+//        if (TextUtils.isEmpty(password)) {
+//            mPasswordView.setError(getString(R.string.error_field_required));
+//            focusView = mPasswordView;
+//            cancel = true;
+//        }
         if (TextUtils.isEmpty(userName)) {
             mUserNameView.setError(getString(R.string.error_field_required));
             focusView = mUserNameView;
@@ -85,7 +88,7 @@ public class LoginActivity extends Activity {
         }
     }
 
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<Void, Void, String> {
 
         private final String mUser;
         private final String mPassword;
@@ -102,24 +105,15 @@ public class LoginActivity extends Activity {
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-            String result = WebService.getInstance().isUser(mUser, mPassword);
-            return parserResult(result);
+        protected String doInBackground(Void... params) {
+            return WebService.getInstance().isUser(mUser, mPassword);
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(String result) {
             mAuthTask = null;
             showProgress(false);
-            if (success) {
-                Intent intent = new Intent();
-                intent.setClass(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password)); //密码错误
-                mPasswordView.requestFocus();
-            }
+            parserResult(result);
         }
 
         @Override
@@ -129,16 +123,25 @@ public class LoginActivity extends Activity {
         }
     }
 
-    private boolean parserResult(String result) {//stupid back data~
-        try {
-            int flag = Integer.parseInt(result);
-            if(flag == 1)
-                return true;
-            else
-                return false;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            return false;
+    private void parserResult(String result) {//stupid back data~
+        if (!result.contains("{")) {
+            mPasswordView.setError(getString(R.string.error_incorrect_password)); //密码错误
+            mPasswordView.requestFocus();
+            return;
+        } else {
+            JsonParser parser = new JsonParser();//创建JSON解析器
+            JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
+
+            String rights = object.get("rights").getAsString();
+            String ranges = object.get("ranges").getAsString();
+            String level = object.get("level").getAsString();
+            Intent intent = new Intent();
+            intent.setClass(LoginActivity.this, MainActivity.class);
+            intent.putExtra("rights",rights);
+            intent.putExtra("ranges",ranges);
+            intent.putExtra("level",level);
+            startActivity(intent);
+            finish();
         }
     }
 

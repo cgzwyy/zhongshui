@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zskj.jkxt.R;
-import zskj.jkxt.ui.activity.MonitorDetailActivity;
 import zskj.jkxt.domain.Station;
+import zskj.jkxt.ui.activity.MonitorDetailActivity;
 
 /**
  * Created by WYY on 2017/3/14.
@@ -30,9 +30,14 @@ import zskj.jkxt.domain.Station;
 public class StationFragment extends Fragment {
 
     Context mContext;
+    String ranges;
     List<Station> list = new ArrayList<Station>();
     GridView lv_station_name;
     MyAdapter mAdapter;
+
+    public void setRanges(String ranges){
+        this.ranges = ranges;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -59,7 +64,8 @@ public class StationFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        getData();
+        if(ranges != null && !ranges.equals(""))
+            getData();
     }
 
     private void getData() {
@@ -81,11 +87,13 @@ public class StationFragment extends Fragment {
             String station[] = stations.split(";");
             for (int i = 0; i < station.length; i++) {
                 String[] module = station[i].split(",", 3);
-                Station model = new Station();
-                model.columnAddress = module[0]; //位置
-                model.columnName = module[1];  //厂站类型
-                model.columnValue = module[2];  //编号
-                list.add(model);
+                if(ranges.contains(module[0])){
+                    Station model = new Station();
+                    model.columnAddress = module[0]; //位置
+                    model.columnName = module[1];  //厂站类型
+                    model.columnValue = module[2];  //编号
+                    list.add(model);
+                }
             }
             if (mAdapter != null && list != null)
                 mAdapter.notifyDataSetChanged();

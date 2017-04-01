@@ -28,7 +28,7 @@
             android:button="@null"
             android:drawableTop="@drawable/rb_station_selector"
             android:gravity="center"
-            android:text="站点"
+            android:text="场站"
             android:textColor="@color/white"
             android:textSize="15dp" />
 
@@ -52,7 +52,7 @@
             android:button="@null"
             android:drawableTop="@drawable/rb_warn_selector"
             android:gravity="center"
-            android:text="实时警告"
+            android:text="实时告警"
             android:textColor="@color/white"
             android:textSize="15dp" />
 
@@ -64,7 +64,7 @@
             android:button="@null"
             android:drawableTop="@drawable/rb_set_selector"
             android:gravity="center"
-            android:text="设置"
+            android:text="用户管理"
             android:textColor="@color/white"
             android:textSize="15dp" />
     </RadioGroup>

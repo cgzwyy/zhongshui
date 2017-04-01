@@ -8,44 +8,47 @@
     <TextView
         android:id="@+id/userId"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:text="@string/user_id"
         android:textColor="@color/black"
-        android:gravity="center"/>
+        android:gravity="center|center_vertical"/>
     <TextView
         android:id="@+id/userName"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:text="@string/user_name"
         android:textColor="@color/black"
-        android:gravity="center"/>
+        android:gravity="center|center_vertical"/>
     <TextView
         android:id="@+id/userRights"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
         android:text="@string/user_rights"
         android:textColor="@color/black"
-        android:gravity="center"/>
+        android:gravity="center|center_vertical"
+        android:lines="1"
+        android:ellipsize="end"/>
     <TextView
         android:id="@+id/userRange"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="2"
-        android:maxLines="2"
         android:text="@string/user_range"
         android:textColor="@color/black"
-        android:gravity="center"/>
+        android:gravity="center|center_vertical"
+        android:lines="1"
+        android:ellipsize="end"/>
     <TextView
         android:id="@+id/userLevel"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:text="@string/user_level"
         android:textColor="@color/black"
-        android:gravity="center"/>
+        android:gravity="center|center_vertical"/>
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"

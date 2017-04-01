@@ -57,4 +57,7 @@
     <string name="user_operation">操作</string>
     <string name="user_level">等级</string>
     <string name="add_user_page">新增用户</string>
+    <string name="update_user_page">修改用户信息</string>
+    <string name="user_dialog_title">用户信息</string>
+    <string name="alarm_station">场站</string>
 </resources>

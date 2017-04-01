@@ -1,18 +1,26 @@
 package zskj.jkxt.ui.fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +34,9 @@ import java.util.Map;
 import zskj.jkxt.R;
 import zskj.jkxt.api.WebService;
 import zskj.jkxt.domain.User;
+import zskj.jkxt.ui.activity.AddUserActivity;
+import zskj.jkxt.ui.activity.UpdateUserActivity;
+import zskj.jkxt.ui.widget.UserDetailPopu;
 
 /**
  * Created by WYY on 2017/3/14.
@@ -39,6 +50,7 @@ public class UserManagementFragment extends Fragment {
     Map<Integer,User> map = new HashMap<>();
     UserManagementTask mTask;
     int num = 0;
+    DeleteUserTask mDeleteUserTask;
 
     @Override
     public void onAttach(Context context) {
@@ -59,7 +71,9 @@ public class UserManagementFragment extends Fragment {
         newUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext,"add User",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(),"add User",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(mContext,AddUserActivity.class);
+                startActivityForResult(intent,1);
             }
         });
 
@@ -141,10 +155,41 @@ public class UserManagementFragment extends Fragment {
             lv_user_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Toast.makeText(mContext,"item click  " + map.get(position).userName,Toast.LENGTH_SHORT).show();
+                    User user = map.get(position);
+                    showDetailPopu(user);
                 }
             });
         }
+    }
+
+    UserDetailPopu mPopu;
+
+    private void showDetailPopu(User user) {
+        if (mPopu == null)
+            mPopu = new UserDetailPopu(mContext);
+
+        WindowManager m = getActivity().getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        mPopu.setWidth((int) (d.getWidth() * 0.8));
+
+        backgroundAlpha(0.5f);
+        mPopu.setUser(user);
+        mPopu.showAtLocation(getActivity().getWindow().getDecorView().findViewById(android.R.id.content), Gravity.CENTER_VERTICAL, 0, 0);
+
+        mPopu.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                backgroundAlpha(1f);
+            }
+        });
+    }
+
+    //设置背景透明度，1f为不透明
+    public void backgroundAlpha(float bgAlpha)
+    {
+        WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
+        lp.alpha = bgAlpha; //0.0-1.0
+        getActivity().getWindow().setAttributes(lp);
     }
 
     class userListAdapter extends BaseAdapter {
@@ -221,14 +266,32 @@ public class UserManagementFragment extends Fragment {
             holder.updateUser.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(mContext,"update  " + model.userName,Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(mContext,UpdateUserActivity.class);
+                    intent.putExtra("user",model);
+//                    startActivity(intent);
+                    startActivityForResult(intent,1);
                 }
             });
 
             holder.deleteUser.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(mContext,"delete  "+model.userName,Toast.LENGTH_SHORT).show();
+                    final AlertDialog.Builder normalDialog =new AlertDialog.Builder(mContext);
+                    normalDialog.setTitle("提示");
+                    normalDialog.setMessage("确认删除？");
+                    normalDialog.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            deleteUser(model.userName);
+                        }
+                    });
+                    normalDialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+//                            finish();
+                        }
+                    });
+                    normalDialog.show();
                 }
             });
             return convertView;
@@ -244,5 +307,78 @@ public class UserManagementFragment extends Fragment {
         TextView userLevel;
         ImageView updateUser;
         ImageView deleteUser;
+    }
+
+    private void deleteUser(String userName) {
+        if (TextUtils.isEmpty(userName) )
+            return;
+        if (mDeleteUserTask != null) {//不为null 说明操作正在进行，规避多次点击登录按钮操作
+            Toast.makeText(mContext, "删除数据中，请稍候...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mDeleteUserTask = new DeleteUserTask(userName);
+        mDeleteUserTask.execute();
+    }
+
+    private class DeleteUserTask extends AsyncTask<Void, Void, String> {
+
+        String userName = "";
+
+        DeleteUserTask(String userName) {
+            this.userName = userName;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//            progress(true);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            return WebService.getInstance().deleteUser(userName);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            mDeleteUserTask = null;
+//            progress(false);
+            deleteResult(result);
+        }
+
+        @Override
+        protected void onCancelled() {
+            mDeleteUserTask = null;
+//            progress(false);
+        }
+    }
+
+    public void deleteResult(String result){
+        if(TextUtils.isEmpty(result)) {
+            Toast.makeText(mContext,result,Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if(result.equals("true")){
+            getUserData();
+        }else{
+            Toast.makeText(mContext,result,Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (1 == requestCode)
+        {
+//            String result = data.getStringExtra("result");
+//            Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
+            getUserData();
+        }
+        else
+        {
+            Toast.makeText(mContext, "无返回值", Toast.LENGTH_SHORT).show();
+        }
     }
 }

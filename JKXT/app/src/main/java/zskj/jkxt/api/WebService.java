@@ -77,6 +77,81 @@ public class WebService {
             return e.getMessage();
         }
     }
+    public String addUser(String userName,String password,String rights,String range,String level) {
+        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
+            return ERRORMSG;
+        }
+        String methodName = "addUser";
+        SoapObject request = new SoapObject(namespace, methodName);
+        request.addProperty("username", userName);
+        request.addProperty("password", password);
+        request.addProperty("rights", rights);
+        request.addProperty("range", range);
+        request.addProperty("level", level);
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+        envelope.bodyOut = request;
+        envelope.dotNet = true;
+        HttpTransportSE ht = new HttpTransportSE(serviceUrl);
+        try {
+            ht.call(namespace + methodName, envelope);
+            SoapObject object = (SoapObject) envelope.bodyIn;
+            if (object != null && object.getProperty(0) != null) {
+                return object.getProperty(0).toString();
+            } else
+                return ERRORMSG;
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+    public String updateUser(String userName,String password,String rights,String range,String level) {
+        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
+            return ERRORMSG;
+        }
+        String methodName = "updateUser";
+        SoapObject request = new SoapObject(namespace, methodName);
+        request.addProperty("username", userName);
+        request.addProperty("password", password);
+        request.addProperty("rights", rights);
+        request.addProperty("range", range);
+        request.addProperty("level", level);
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+        envelope.bodyOut = request;
+        envelope.dotNet = true;
+        HttpTransportSE ht = new HttpTransportSE(serviceUrl);
+        try {
+            ht.call(namespace + methodName, envelope);
+            SoapObject object = (SoapObject) envelope.bodyIn;
+            if (object != null && object.getProperty(0) != null) {
+                return object.getProperty(0).toString();
+            } else
+                return ERRORMSG;
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    public String deleteUser(String userName) {
+        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
+            return ERRORMSG;
+        }
+        String methodName = "deleteUser";
+        SoapObject request = new SoapObject(namespace, methodName);
+        request.addProperty("username", userName);
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+        envelope.bodyOut = request;
+        envelope.dotNet = true;
+        HttpTransportSE ht = new HttpTransportSE(serviceUrl);
+        try {
+            ht.call(namespace + methodName, envelope);
+            SoapObject object = (SoapObject) envelope.bodyIn;
+            if (object != null && object.getProperty(0) != null) {
+                return object.getProperty(0).toString();
+            } else
+                return ERRORMSG;
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
 
     public String GetStationInfo(String Str_StationCode) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
@@ -129,12 +204,13 @@ public class WebService {
         }
     }
 
-    public String GetStationName() {
+    public String GetStationName(String ranges) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
             return ERRORMSG;
         }
         String methodName = "GetStationName";
         SoapObject request = new SoapObject(namespace, methodName);
+        request.addProperty("ranges", ranges);
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
         envelope.bodyOut = request;
         envelope.dotNet = true;
@@ -174,7 +250,7 @@ public class WebService {
         }
     }
 
-    public String GetAlarmData(String sdate, String stime) {
+    public String GetAlarmData(String sdate, String stime, String ranges, String level) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
             return ERRORMSG;
         }
@@ -182,6 +258,8 @@ public class WebService {
         SoapObject request = new SoapObject(namespace, methodName);
         request.addProperty("sdate", sdate);
         request.addProperty("stime", stime);
+        request.addProperty("ranges", ranges);
+        request.addProperty("level", level);
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
         envelope.bodyOut = request;
         envelope.dotNet = true;
