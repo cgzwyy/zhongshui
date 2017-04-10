@@ -1,5 +1,6 @@
 package zskj.jkxt.ui.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -16,11 +18,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -40,10 +39,12 @@ import com.google.gson.JsonParser;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import zskj.jkxt.R;
-import zskj.jkxt.api.RequestCallback;
 import zskj.jkxt.api.WebService;
 import zskj.jkxt.ui.widget.MyMarkerView;
 import zskj.jkxt.util.DateTimePickDialogUtil;
@@ -55,33 +56,43 @@ import zskj.jkxt.util.DateTimePickDialogUtil;
 
 public class PowerFragment extends Fragment {
 
-    Context mContext;
-    String ranges;
+    public static PowerFragment getInstance(String ranges) {
+        PowerFragment powerFragment = new PowerFragment();
+        Bundle b = new Bundle();
+        b.putString("ranges", ranges);
+        powerFragment.setArguments(b);
+        return powerFragment;
+    }
 
-    ProgressDialog dialog = null;   //进度对话框
+    private static final String TAG = "PowerFragment";
+
+    //view
+    Activity mContext;
+    private Button select_time, select_station, sure;
+    private View mProgressView;
     private LineChart mChart;
-    private Button select_time, select_station;
-    private TextView selected_time;
-    //    private TextView selected_station;
-    private Spinner spinner_station;
-    int mYear, mMonth, mDay;
-    private int station_choice;
-    private ArrayAdapter<String> adapter;
-    private Button sure;
-    //    private String date; //chart 日期
+    //data
+    String ranges;
+    String[] stations;
     private String station_name;
     private int last_time = 0;
+    private int period = 1 * 60 * 1000;//1分钟刷新一次
+
+
+    ArrayList<Entry> forecastData = new ArrayList<>();
+    ArrayList<Entry> pData = new ArrayList<>();
+
+
+    //task
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+    DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
     GetStationNameTask mGetStationNameTask;
     GetPowerDataTask mGetPowerDataTask;
-
-    public void setRanges(String ranges){
-        this.ranges = ranges;
-    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mContext = context;
+        mContext = (Activity) context;
     }
 
     @Nullable
@@ -93,147 +104,193 @@ public class PowerFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        dialog = new ProgressDialog(getActivity());
-        dialog.setMessage("加载中...");     //设置提示信息
-        dialog.setCanceledOnTouchOutside(false);   //设置在点击Dialog外是否取消Dialog进度条
-
-        mChart = (LineChart) getView().findViewById(R.id.chart1);
-
-        select_time = (Button) getView().findViewById(R.id.select_time);
-        selected_time = (TextView) getView().findViewById(R.id.selected_time);
-
-        final Calendar ca = Calendar.getInstance();
-        mYear = ca.get(Calendar.YEAR);
-        mMonth = ca.get(Calendar.MONTH);
-        mDay = ca.get(Calendar.DAY_OF_MONTH);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-
-        selected_time.setText(sdf.format(ca.getTime()));
-
-        selected_time.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DateTimePickDialogUtil dateTimePicKDialog = new DateTimePickDialogUtil(
-                        getActivity(), selected_time.getText().toString());
-                selected_time.setText("");
-                dateTimePicKDialog.dateTimePicKDialog(selected_time);
-            }
-        });
-
-        select_station = (Button) getView().findViewById(R.id.select_station);
-        spinner_station = (Spinner) getView().findViewById(R.id.spinner_station);
-        GetStationName();
-
-        sure = (Button) getView().findViewById(R.id.sure);
-        sure.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GetData(selected_time.getText().toString(), station_name);
-                handler.postDelayed(runnable, 1000 * 60);
-            }
-        });
+        initView();
+        initData();
+        //初始化获取场站信息
+        getStationName();
     }
 
-    private Handler handler = new Handler();
-    private Runnable runnable = new Runnable() {
-        public void run() {
-            while (last_time < 1440) {
-                this.update();
-                handler.postDelayed(this, 1000 * 60 * 10);// 间隔60 * 10秒
+    private void initView() {
+        select_time = (Button) getView().findViewById(R.id.select_time);
+        select_station = (Button) getView().findViewById(R.id.select_station);
+        sure = (Button) getView().findViewById(R.id.sure);
+        mChart = (LineChart) getView().findViewById(R.id.chart);
+        mProgressView = getView().findViewById(R.id.progress);
+        select_time.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DateTimePickDialogUtil dateTimePicKDialog = new DateTimePickDialogUtil(
+                        getActivity(), select_time.getText().toString());
+                dateTimePicKDialog.dateTimePicKDialog(select_time);
             }
+        });
+        select_station.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (stations != null && stations.length > 0) {//有数据则显示选择框，无数据，请求
+                    showStatiosDialog();
+                    return;
+                }
+                getStationName();
+            }
+        });
+        sure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                destoryTimer();
+                //还原time
+                last_time = 0;
+                if (select_time.getText().toString().equals(sdf.format(new Date()))) {//如果是今天，启动轮循
+                    polling();
+                } else {
+                    getStationPower(select_time.getText().toString(), station_name);
+                }
+            }
+        });
+        initChart();
+    }
+
+    private void initData() {
+        ranges = getArguments().getString("ranges");
+        select_time.setText(sdf.format(new Date()));
+
+    }
+
+    /**
+     * 获取场站
+     */
+    private void getStationName() {
+        if (mGetStationNameTask != null) {//不为null 说明操作正在进行，规避多次点击登录按钮操作
+            Toast.makeText(mContext, "正在加厂站列表，请稍候...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mGetStationNameTask = new GetStationNameTask();
+        mGetStationNameTask.execute();
+    }
+
+    /**
+     * 获取场站task
+     */
+    private class GetStationNameTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            return WebService.getInstance().GetStationName(ranges);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            mGetStationNameTask = null;
+            result = "鄯善,青河光伏,布尔津";//TODO delete
+            if (result.isEmpty() || result.equals(""))
+                return;
+            stations = result.split(",");
+            //获取完默认展示第一个场站信息
+            if (stations != null && stations.length > 0)
+                setStation(stations[0]);
 
         }
 
-        void update() {
-            Log.e("last_time----2-------->", selected_time.getText().toString() + "   " + last_time + "   " + station_name);
-            GetNewData(selected_time.getText().toString(), last_time + "", station_name);
-//            last_time += 100;
+        @Override
+        protected void onCancelled() {
+            mGetStationNameTask = null;
         }
-    };
+    }
 
-    private void GetData(String sdate, String station_name) {
-        if(TextUtils.isEmpty(sdate) || TextUtils.isEmpty(station_name)){
+    /**
+     * 显示场站列表
+     */
+    AlertDialog.Builder builder = null;
+
+    private void showStatiosDialog() {
+        if (stations == null || stations.length <= 0)
+            return;
+        if (builder == null) {
+            builder = new AlertDialog.Builder(mContext);
+            builder.setTitle("请选择场站");
+        }
+        builder.setItems(stations, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                setStation(stations[i]);
+            }
+        });
+        builder.create();
+        builder.show();
+    }
+
+    private void setStation(String name) {
+        station_name = name;
+        select_station.setText(station_name);
+    }
+
+    /**
+     * 获取场站功率信息
+     *
+     * @param sdate        日期（精确到天）
+     * @param station_name 场站名 TODO 以场站ID索引
+     */
+    private void getStationPower(String sdate, String station_name) {
+        if (TextUtils.isEmpty(sdate) || TextUtils.isEmpty(station_name)) {
+            Toast.makeText(mContext, "请选择日期和场站", Toast.LENGTH_SHORT).show();
             return;
         }
         if (mGetPowerDataTask != null) {//不为null 说明操作正在进行，规避多次点击登录按钮操作
-            Toast.makeText(mContext, "加载中，请稍候...", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(mContext, "加载中，请稍候...", Toast.LENGTH_SHORT).show();
             return;
         }
-        mGetPowerDataTask = new GetPowerDataTask(sdate,station_name);
+        mGetPowerDataTask = new GetPowerDataTask(sdate, station_name);
         mGetPowerDataTask.execute();
     }
 
-//    private void GetData(final String sdate, final String station_names) {
-//        dialog.show();   //显示进度条对话框
-////        Log.e("tmpsetdata---->", "start");
-//        new Thread() {
-//            public void run() {
-//                WebService.getInstance().GetStationP2(sdate, station_names, new RequestCallback() {
-//
-//                    @Override
-//                    public void onSuccess(final String result) {
-//                        getActivity().runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                setDataDetail(result);
-//                                dialog.dismiss();  //删除该进度条
-////                                setData(100, 30);
-//                            }
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void onFail(final String errorMsg) {
-//                        getActivity().runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                dialog.dismiss();  //删除该进度条
-//                                // Toast：简易的消息提示框，自动消失
-//                                // 第一个参数：当前的上下文环境。可用getApplicationContext()或this
-//                                // 第二个参数：要显示的字符串。也可是R.string中字符串ID
-//                                // 第三个参数：显示的时间长短。Toast默认的有两个LENGTH_LONG(长)和LENGTH_SHORT(短)，也可以使用毫秒，如2000ms
-//                                Toast.makeText(getActivity(), "获取数据失败！" + errorMsg, Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//
-//                    }
-//                });
-//            }
-//        }.start();
-////        Log.e("tmpsetdata---->", "end");
-//    }
+    /**
+     * task
+     */
+    private class GetPowerDataTask extends AsyncTask<Void, Void, String> {
+        String sdate;
+        String station_name;
 
-    private void GetNewData(final String sdate, final String time, final String station_names) {
-        new Thread() {
-            public void run() {
-                WebService.getInstance().GetStationP3(sdate, time, station_names, new RequestCallback() {
+        GetPowerDataTask(String sdate, String station_name) {
+            this.sdate = sdate;
+            this.station_name = station_name;
+        }
 
-                    @Override
-                    public void onSuccess(final String result) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Log.e("getNewData--->", result);
-                                setNewDataDetail(result);
-                            }
-                        });
-                    }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (last_time == 0)
+                showProgress(true);
+        }
 
-                    @Override
-                    public void onFail(final String errorMsg) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getActivity(), "获取数据失败！" + errorMsg, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+        @Override
+        protected String doInBackground(Void... voids) {
+            return WebService.getInstance().getStationPower(sdate, String.valueOf(last_time), station_name);
+        }
 
-                    }
-                });
-            }
-        }.start();
-//        Log.e("tmpsetdata---->", "end");
+        @Override
+        protected void onPostExecute(String result) {
+            Log.e(TAG, "result:" + result);
+            mGetPowerDataTask = null;
+            showProgress(false);
+            //TODO delete
+            if (last_time == 0)
+                result = "{\"pcode\":[{\"time\":\"0\",\"data\":\"7\"},{\"time\":\"1\",\"data\":\"8\"},{\"time\":\"2\",\"data\":\"8\"},{\"time\":\"3\",\"data\":\"0\"},{\"time\":\"4\",\"data\":\"5\"},{\"time\":\"5\",\"data\":\"5\"},{\"time\":\"6\",\"data\":\"2\"},{\"time\":\"7\",\"data\":\"5\"}],\"forecast_pcode\":[{\"time\":\"0\",\"data\":\"1\"},{\"time\":\"1\",\"data\":\"6\"},{\"time\":\"2\",\"data\":\"6\"},{\"time\":\"3\",\"data\":\"4\"},{\"time\":\"4\",\"data\":\"0\"},{\"time\":\"5\",\"data\":\"8\"},{\"time\":\"6\",\"data\":\"3\"},{\"time\":\"7\",\"data\":\"1\"},{\"time\":\"8\",\"data\":\"5\"},{\"time\":\"9\",\"data\":\"3\"},{\"time\":\"10\",\"data\":\"9\"}]}";
+            else
+                result = "{\"pcode\":[{\"time\":\"8\",\"data\":\"1\"},{\"time\":\"9\",\"data\":\"1\"},{\"time\":\"10\",\"data\":\"2\"}],\"forecast_pcode\":[{\"time\":\"0\",\"data\":\"1\"},{\"time\":\"1\",\"data\":\"6\"},{\"time\":\"2\",\"data\":\"6\"},{\"time\":\"3\",\"data\":\"4\"},{\"time\":\"4\",\"data\":\"0\"},{\"time\":\"5\",\"data\":\"8\"},{\"time\":\"6\",\"data\":\"3\"},{\"time\":\"7\",\"data\":\"1\"},{\"time\":\"8\",\"data\":\"5\"},{\"time\":\"9\",\"data\":\"3\"},{\"time\":\"10\",\"data\":\"9\"}]}";
+            setDataDetail(result);
+        }
+
+        @Override
+        protected void onCancelled() {
+            mGetPowerDataTask = null;
+        }
     }
+
 
     public void setDataDetail(String result) {
         if (!result.contains("{")) {
@@ -246,161 +303,119 @@ public class PowerFragment extends Fragment {
         JsonArray parray = object.get("pcode").getAsJsonArray(); //得到为json的数组
         JsonArray forecast_parray = object.get("forecast_pcode").getAsJsonArray(); //得到为json的数组
 
-        DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
-
-        ArrayList<Entry> yVals = new ArrayList<Entry>();
-        last_time = 0;
-        for (int i = 0; i < parray.size(); i++) {
-            JsonObject subObject = parray.get(i).getAsJsonObject();
-//            Log.e("setdata------>",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
-            yVals.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
-            if (subObject.get("time").getAsInt() > last_time)
-                last_time = subObject.get("time").getAsInt();
+        if (last_time == 0) {
+            forecastData.clear();
+            pData.clear();
         }
-
-        ArrayList<Entry> zVals = new ArrayList<Entry>();
-        for (int i = 0; i < forecast_parray.size(); i++) {
-            JsonObject subObject = forecast_parray.get(i).getAsJsonObject();
-//            Log.e("forecast_parray->",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
-            zVals.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
-            if (subObject.get("time").getAsInt() > last_time)
-                last_time = subObject.get("time").getAsInt();
-        }
-
-        // create a dataset and give it a type
-        LineDataSet set1 = new LineDataSet(yVals, "实时出力");
-        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set1.setColor(ColorTemplate.getHoloBlue());
-        set1.setValueTextColor(ColorTemplate.getHoloBlue());
-        set1.setLineWidth(1.5f);//设置线的宽度
-        set1.setDrawCircles(false);  //设置有圆点
-        set1.setDrawValues(false);
-        set1.setFillAlpha(65);
-        set1.setFillColor(ColorTemplate.getHoloBlue());
-        set1.setHighLightColor(Color.rgb(244, 117, 117));
-        set1.setDrawCircleHole(false);
-        set1.setColor(Color.RED);
-//        set1.setLabel("line one");
-
-        LineDataSet set2 = new LineDataSet(zVals, "功率预测");
-        set2.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set2.setColor(ColorTemplate.getHoloBlue());
-        set2.setValueTextColor(ColorTemplate.getHoloBlue());
-        set2.setLineWidth(1.5f);
-        set2.setDrawCircles(false);
-        set2.setDrawValues(false);
-        set2.setFillAlpha(65);
-        set2.setFillColor(ColorTemplate.getHoloBlue());
-        set2.setHighLightColor(Color.rgb(244, 117, 117));
-        set2.setDrawCircleHole(false);
-        set2.setColor(Color.BLUE);
-
-        // create a data object with the datasets
-        LineData data = new LineData(set1);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTextSize(9f);
-        data.addDataSet(set2);
-
-        // set data
-        mChart.setData(data);
-        otherChartSet();
-    }
-
-    public void setNewDataDetail(String result) {
-
-        if (!result.contains("{")) {
-            return;
-        }
-
-        LineData data = mChart.getData();
-        if (data != null) {
-
-            ILineDataSet set1 = data.getDataSetByIndex(0);
-            ILineDataSet set2 = data.getDataSetByIndex(1);
-            // set.addEntry(...); // can be called as well
-
-            if (set1 == null) {
-                set1 = createSet("有功功率");
-                data.addDataSet(set1);
-            }
-            if (set2 == null) {
-                set2 = createSet("预测功率");
-                data.addDataSet(set2);
-            }
-
-            JsonParser parser = new JsonParser();//创建JSON解析器
-            JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
-            JsonArray parray = object.get("pcode").getAsJsonArray(); //得到为json的数组
-            JsonArray forecast_parray = object.get("forecast_pcode").getAsJsonArray(); //得到为json的数组
-
-            DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
-
-            for (int i = 0; i < parray.size(); i++) {
-                JsonObject subObject = parray.get(i).getAsJsonObject();
-//            Log.e("setdata------>",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
-                set1.addEntry(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
-                if (subObject.get("time").getAsInt() > last_time)
-                    last_time = subObject.get("time").getAsInt();
-            }
+        if (forecast_parray != null && forecast_parray.size() > 0 && forecastData.size() <= 0) {//刷新状态不更新预测数据
             for (int i = 0; i < forecast_parray.size(); i++) {
-                JsonObject subObject = forecast_parray.get(i).getAsJsonObject();
-//            Log.e("forecast_parray->",subObject.get("time").getAsString() + "---------------" + subObject.get("data").getAsString());
-                set2.addEntry(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
-                if (subObject.get("time").getAsInt() > last_time)
-                    last_time = subObject.get("time").getAsInt();
+                try {
+                    JsonObject subObject = forecast_parray.get(i).getAsJsonObject();
+                    forecastData.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
             }
-
-            data.clearValues();
-            data.addDataSet(set1);
-            data.addDataSet(set2);
-//            data.addEntry(new Entry(set.getEntryCount(), (float) (Math.random() * 40) + 30f), 0);
-            data.notifyDataChanged();
-
-            // let the chart know it's data has changed
-            mChart.notifyDataSetChanged();
-
-            // limit the number of visible entries
-            mChart.setVisibleXRangeMaximum(120);
-            // mChart.setVisibleYRange(30, AxisDependency.LEFT);
-
-            // move to the latest entry
-//            mChart.moveViewToX(data.getEntryCount());
-
-            // this automatically refreshes the chart (calls invalidate())
-            // mChart.moveViewTo(data.getXValCount()-7, 55f,
-            // AxisDependency.LEFT);
         }
-//        otherChartSet();
+
+        if (parray != null && parray.size() > 0) {
+            int time = 0;
+            for (int i = 0; i < parray.size(); i++) {
+                try {
+                    JsonObject subObject = parray.get(i).getAsJsonObject();
+                    pData.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
+                    if (subObject.get("time").getAsInt() > time)
+                        time = subObject.get("time").getAsInt();
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+            last_time = time;
+        }
+        refreshChartSet();
     }
 
-    private LineDataSet createSet(String des) {
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (mGetPowerDataTask != null)
+                mGetPowerDataTask.cancel(true);//如果正在执行，取消掉 网络请求超时时间设置要小于轮循间隔时间，则可避免
+            getStationPower(select_time.getText().toString(), station_name);
+        }
+    };
+    Timer mTimer;
 
-        LineDataSet set = new LineDataSet(null, des);
-        set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setColor(Color.BLUE);
-        set.setLineWidth(1.5f);
-        set.setFillAlpha(65);
-        set.setFillColor(ColorTemplate.getHoloBlue());
-        set.setHighLightColor(Color.rgb(244, 117, 117));
-        set.setValueTextColor(ColorTemplate.getHoloBlue());
-        set.setValueTextSize(9f);
-        set.setDrawValues(false);
-        set.setDrawCircles(false);
-        set.setDrawCircleHole(false);
-        return set;
+    private void polling() {
+        destoryTimer();
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0);
+            }
+        }, 0, period);
     }
 
-    private void otherChartSet() {
+    private void destoryTimer() {
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+    }
 
-        // no description text
-//        mChart.getDescription().setEnabled(false);
+    LineDataSet forecastline = null;
+    LineDataSet pline = null;
+    LineData dataline = null;
 
-        // enable touch gestures
+    public void refreshChartSet() {
+        dataline = mChart.getData();
+        if (dataline != null) {
+            forecastline = (LineDataSet) dataline.getDataSetByIndex(0);
+            pline = (LineDataSet) dataline.getDataSetByIndex(1);
+            dataline.clearValues();
+            dataline.addDataSet(forecastline);
+            dataline.addDataSet(pline);
+            dataline.notifyDataChanged();
+            mChart.notifyDataSetChanged();
+            mChart.setVisibleXRangeMaximum(120);
+        } else {
+            if (pline == null) {
+                pline = createDataSet(pData, "实时出力", Color.RED);
+            }
+            if (forecastline == null) {
+                forecastline = createDataSet(forecastData, "功率预测", Color.BLUE);
+            }
+            dataline = new LineData();
+            dataline.setValueTextColor(Color.WHITE);
+            dataline.setValueTextSize(9f);
+            dataline.addDataSet(forecastline);
+            dataline.addDataSet(pline);
+            mChart.setData(dataline);
+            mChart.notifyDataSetChanged();
+        }
+    }
+
+    private LineDataSet createDataSet(List<Entry> data, String label, int color) {
+        LineDataSet dataset = new LineDataSet(data, label);
+        dataset.setAxisDependency(YAxis.AxisDependency.LEFT);
+        dataset.setValueTextColor(ColorTemplate.getHoloBlue());
+        dataset.setLineWidth(1.5f);
+        dataset.setDrawCircles(false);
+        dataset.setDrawValues(false);
+        dataset.setFillAlpha(65);
+        dataset.setFillColor(ColorTemplate.getHoloBlue());
+        dataset.setHighLightColor(Color.rgb(244, 117, 117));
+        dataset.setDrawCircleHole(false);
+        dataset.setColor(color);
+        return dataset;
+    }
+
+
+    private void initChart() {
+
         mChart.setTouchEnabled(true);
-
         mChart.setDragDecelerationFrictionCoef(0.9f); //持续滚动时的速度快慢，[0,1) 0代表立即停止。
-
-        // enable scaling and dragging
         mChart.setDragEnabled(true);
         mChart.setScaleEnabled(true);
         mChart.setDrawGridBackground(false);
@@ -409,17 +424,9 @@ public class PowerFragment extends Fragment {
         // set an alternative background color
 //        mChart.setBackgroundColor(Color.WHITE);  //设置图表背景 参数是个Color对象
 //        mChart.setViewPortOffsets(0f, 0f, 0f, 0f);//设置图表显示的偏移量，不建议使用，因为会影响图表的自动计算
-
-
-        // create a custom MarkerView (extend MarkerView) and specify the layout
-        // to use for it
         MyMarkerView mv = new MyMarkerView(getActivity(), R.layout.custom_marker_view);
         mv.setChartView(mChart); // For bounds control
         mChart.setMarker(mv); // Set the marker to the chart
-
-        // add data
-//        setData(100, 30);
-//        GetData();
         mChart.animateX(2500);
 //        mChart.invalidate();
 
@@ -482,138 +489,30 @@ public class PowerFragment extends Fragment {
         rightAxis.setEnabled(false);
     }
 
-    private void showSingleChoiceDialog(final Context context, String result) {
-        if (result.isEmpty() || result.equals(""))
-            return;
-        final String[] items = result.split(",");
-        station_choice = -1;
-        AlertDialog.Builder singleChoiceDialog =
-                new AlertDialog.Builder(context);
-        singleChoiceDialog.setTitle("请选择一个场站");
-        // 第二个参数是默认选项，此处设置为0
-        singleChoiceDialog.setSingleChoiceItems(items, 0,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        station_choice = which;
-                    }
-                });
-        singleChoiceDialog.setPositiveButton("确定",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (station_choice != -1) {
-//                            selected_station.setText(items[station_choice]);
-//                            GetData();
-                        }
-                    }
-                });
-        singleChoiceDialog.show();
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        destoryTimer();
     }
 
-    private void setSpinnerData(String result) {
-        Log.e("result-->", result);
-        if (result.isEmpty() || result.equals(""))
-            return;
-        final String[] items = result.split(",");
-
-        //将可选内容与ArrayAdapter连接起来
-        adapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, items);
-
-        //设置下拉列表的风格
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        //将adapter 添加到spinner中
-        spinner_station.setAdapter(adapter);
-
-        //添加事件Spinner事件监听
-        spinner_station.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                station_name = spinner_station.getSelectedItem().toString();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        //设置默认值
-        spinner_station.setVisibility(View.VISIBLE);
-
+    private void showProgress(final boolean show) {
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    private void GetStationName() {
-        if (mGetStationNameTask != null) {//不为null 说明操作正在进行，规避多次点击登录按钮操作
-            Toast.makeText(mContext, "加载中，请稍候...", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        mGetStationNameTask = new GetStationNameTask();
-        mGetStationNameTask.execute();
-    }
-    /**
-     * task
-     */
-    private class GetStationNameTask extends AsyncTask<Void, Void, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            return WebService.getInstance().GetStationName(ranges);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            mGetStationNameTask = null;
-//            progress(false);
-            setSpinnerData(result);
-        }
-
-        @Override
-        protected void onCancelled() {
-            mGetStationNameTask = null;
-//            progress(false);
-        }
-    }
-    /**
-     * task
-     */
-    private class GetPowerDataTask extends AsyncTask<Void, Void, String> {
-
-        String sdate;
-        String station_name;
-
-        GetPowerDataTask(String sdate,String station_name){
-            this.sdate = sdate;
-            this.station_name = station_name;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            return WebService.getInstance().GetStationP2(sdate,station_name);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            mGetPowerDataTask = null;
-//            progress(false);
-            setDataDetail(result);
-        }
-
-        @Override
-        protected void onCancelled() {
-            mGetPowerDataTask = null;
-//            progress(false);
-        }
-    }
+    //    private Runnable runnable = new Runnable() {
+//        public void run() {
+//            while (last_time < 1440) {
+//                this.update();
+//                handler.postDelayed(this, 1000 * 60 * 10);// 间隔60 * 10秒
+//            }
+//
+//        }
+//
+//        void update() {
+//            Log.e("last_time----2-------->", select_time.getText().toString() + "   " + last_time + "   " + station_name);
+//            GetNewData(select_time.getText().toString(), last_time + "", station_name);
+////            last_time += 100;
+//        }
+//    };
 }

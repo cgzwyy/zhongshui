@@ -1,10 +1,12 @@
 package zskj.jkxt.ui.activity;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.RadioButton;
@@ -22,6 +24,7 @@ import zskj.jkxt.ui.fragment.WarnFragment;
  */
 public class MainActivity extends FragmentActivity {
 
+    private static final String TAG = "MainActivity";
     private StationFragment mStationFrag;
     private PowerFragment mPowerFrag;
     private WarnFragment mWarnFrag;
@@ -32,9 +35,9 @@ public class MainActivity extends FragmentActivity {
     FragmentManager manager;
     //view
     RadioGroup rg_menu;
-    RadioButton rb_station,rb_power,rb_warn,rb_set;
-    String rights,ranges,level;
-    int tabId = 0,flag = 0;
+    RadioButton rb_station, rb_power, rb_warn, rb_set;
+    String rights, ranges, level;
+    int tabId = 0, flag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,47 +54,41 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void initViews() {
+        rights = getIntent().getStringExtra("rights");
+        ranges = getIntent().getStringExtra("ranges");
+        level = getIntent().getStringExtra("level");
 
-//        Intent intent = getIntent();
-//        String className = getArguments() != null ? getArguments().getString("classname") : null;
-//        if (className == null) {
-//            className = intent.getComponent().getClassName();
-//        }
-//        if (className.equals(Class1.class.getName())){}
-        rights = (String) getIntent().getSerializableExtra("rights");
-        ranges = (String) getIntent().getSerializableExtra("ranges");
-        level = (String) getIntent().getSerializableExtra("level");
         rg_menu = (RadioGroup) this.findViewById(R.id.rg_menu);
-
         rb_station = (RadioButton) this.findViewById(R.id.rb_station);
         rb_power = (RadioButton) this.findViewById(R.id.rb_power);
         rb_warn = (RadioButton) this.findViewById(R.id.rb_warn);
         rb_set = (RadioButton) this.findViewById(R.id.rb_set);
+
         rb_station.setVisibility(View.GONE);
         rb_power.setVisibility(View.GONE);
         rb_warn.setVisibility(View.GONE);
         rb_set.setVisibility(View.GONE);
-        if(rights.contains(rb_station.getText().toString())){
+        if (rights.contains(rb_station.getText().toString())) {
             rb_station.setVisibility(View.VISIBLE);
             tabId = R.id.rb_station;
             flag = 1;
         }
-        if(rights.contains(rb_power.getText().toString())){
+        if (rights.contains(rb_power.getText().toString())) {
             rb_power.setVisibility(View.VISIBLE);
-            if(flag == 0){
+            if (flag == 0) {
                 tabId = R.id.rb_power;
                 flag = 1;
             }
         }
-        if(rights.contains(rb_warn.getText().toString())){
+        if (rights.contains(rb_warn.getText().toString())) {
             rb_warn.setVisibility(View.VISIBLE);
-            if(flag == 0){
+            if (flag == 0) {
                 tabId = R.id.rb_warn;
                 flag = 1;
             }
         }
 
-        if(level.equals("1")){
+        if (level.equals("1")) {
             rb_set.setVisibility(View.VISIBLE);
         }
 
@@ -114,8 +111,7 @@ public class MainActivity extends FragmentActivity {
                         break;
                     case R.id.rb_power:
                         if (mPowerFrag == null) {
-                            mPowerFrag = new PowerFragment();
-                            mPowerFrag.setRanges(ranges);
+                            mPowerFrag = PowerFragment.getInstance(ranges);
                             transaction.add(R.id.fl_container, mPowerFrag, "power");
                         } else {
                             transaction.show(mPowerFrag);
@@ -148,7 +144,13 @@ public class MainActivity extends FragmentActivity {
         });
     }
 
-//    @Override
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.e(TAG, "onConfigurationChanged");
+    }
+
+    //    @Override
 //    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        super.onActivityResult(requestCode, resultCode, data);
 //        if (1 == requestCode && RESULT_OK == resultCode)

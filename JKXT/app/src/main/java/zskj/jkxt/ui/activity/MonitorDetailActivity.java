@@ -105,7 +105,7 @@ public class MonitorDetailActivity extends Activity {
         tv_power_title = (TextView) this.findViewById(R.id.tv_power_title); //瞬时总有功
         tv_electricity_title = (TextView) this.findViewById(R.id.tv_electricity_title);  //当日发电量
 
-        if(model.columnName.contains("光伏")){
+        if (model.columnName.contains("光伏")) {
             flag = 1;
         }
 
@@ -118,20 +118,22 @@ public class MonitorDetailActivity extends Activity {
             }
         });
     }
+
     SpannableString msp = null;
+
     private void initData() {
         station_address.setText(model.columnAddress.toString());
         station_type.setText(model.columnName.toString().concat(getResources().getString(R.string.monitor_page)));
         SpannableString plan = new SpannableString(getResources().getString(R.string.title_plan));
         plan.setSpan(new ForegroundColorSpan(Color.GRAY), 4, plan.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         tv_plan_title.setText(plan);
-        if(model.columnName.contains("光伏")){
+        if (model.columnName.contains("光伏")) {
             msp = new SpannableString(getResources().getString(R.string.title_radiation));
             msp.setSpan(new SuperscriptSpan(), 9, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);   //上标
             SpannableString speed = new SpannableString(msp);
             speed.setSpan(new ForegroundColorSpan(Color.GRAY), 4, speed.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             tv_speed_title.setText(speed);
-        }else{
+        } else {
             SpannableString speed = new SpannableString(getResources().getString(R.string.title_speed));
             speed.setSpan(new ForegroundColorSpan(Color.GRAY), 4, speed.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             tv_speed_title.setText(speed);
@@ -151,7 +153,7 @@ public class MonitorDetailActivity extends Activity {
     /**
      * 获取风机详情
      *
-     * @param station
+     * @param model
      */
     private void getDetail(Station model) {
         if (Station.isEmpty(model))
@@ -190,7 +192,7 @@ public class MonitorDetailActivity extends Activity {
         protected void onPostExecute(String result) {
             mTask = null;
             progress(false);
-            dealResult(result,model.columnName);
+            dealResult(result, model.columnName);
         }
 
         @Override
@@ -216,9 +218,9 @@ public class MonitorDetailActivity extends Activity {
         JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
 
         tv_plan.setText(df.format(Double.valueOf(object.get("省调计划").getAsString())));
-        if(colName.contains("光伏")){
+        if (colName.contains("光伏")) {
             tv_speed.setText(df.format(Double.valueOf(object.get("总辐射瞬时值").getAsString())));
-        }else{
+        } else {
             tv_speed.setText(df.format(Double.valueOf(object.get("平均风速").getAsString())));
         }
         tv_power.setText(df.format(Double.valueOf(object.get("瞬时总有功").getAsString())));
@@ -232,11 +234,11 @@ public class MonitorDetailActivity extends Activity {
                 JsonObject subObject = array.get(i).getAsJsonObject();
                 Fan fan = new Fan();
                 fan.fan_number = subObject.get("编号").getAsString();
-                if(colName.contains("光伏")){
+                if (colName.contains("光伏")) {
                     fan.fan_speed = df.format(Double.valueOf(subObject.get("逆变器效率").getAsString()));
                     fan.fan_revs = df.format(Double.valueOf(subObject.get("逆变器日发电量").getAsString()));
                     fan.fan_state = df.format(Double.valueOf(subObject.get("逆变器状态").getAsString()));
-                }else{
+                } else {
                     fan.fan_speed = df.format(Double.valueOf(subObject.get("风速").getAsString()));
                     fan.fan_revs = df.format(Double.valueOf(subObject.get("转速").getAsString()));
                     fan.fan_state = df.format(Double.valueOf(subObject.get("风机运行状态").getAsString()));
@@ -261,7 +263,7 @@ public class MonitorDetailActivity extends Activity {
 
         Station mStation = null;
 
-        MonitorAdapter(Station mStation){
+        MonitorAdapter(Station mStation) {
             this.mStation = mStation;
         }
 
@@ -300,27 +302,27 @@ public class MonitorDetailActivity extends Activity {
             final Fan model = fanList.get(position);
             holder.fan_number.setText(model.fan_number);
 
-            if(mStation.columnName.contains("光伏")){
+            if (mStation.columnName.contains("光伏")) {
                 holder.fan_speed.setText(getResources().getString(R.string.electricity_unit, model.fan_speed));
                 holder.fan_active_power.setText(getResources().getString(R.string.active_power_unit, model.fan_active_power));
                 holder.fan_revs.setText(getResources().getString(R.string.efficiency_unit, model.fan_revs));
-            }else{
+            } else {
                 holder.fan_speed.setText(getResources().getString(R.string.speed_unit, model.fan_speed));
                 holder.fan_active_power.setText(getResources().getString(R.string.active_power_unit, model.fan_active_power));
                 holder.fan_revs.setText(getResources().getString(R.string.revs_unit, model.fan_revs));
             }
             if (Double.valueOf(model.fan_state.trim()) >= 5) { //停机
-                if(mStation.columnName.contains("光伏")){
+                if (mStation.columnName.contains("光伏")) {
                     holder.fan_picture.setImageResource(R.drawable.gf2_2);
-                }else {
+                } else {
                     holder.fan_picture.setImageResource(R.drawable.fj_05);
                 }
                 holder.fan_state.setText(getResources().getString(R.string.stop));
                 holder.fan_state.setVisibility(View.VISIBLE);
             } else {
-                if(mStation.columnName.contains("光伏")){
+                if (mStation.columnName.contains("光伏")) {
                     holder.fan_picture.setImageResource(R.drawable.gf2_1);
-                }else {
+                } else {
                     holder.fan_picture.setImageResource(R.drawable.fj_04);
                 }
                 holder.fan_state.setText("");
@@ -357,10 +359,10 @@ public class MonitorDetailActivity extends Activity {
 
         WindowManager m = getWindowManager();
         Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-        mPopu.setWidth((int)(d.getWidth() * 0.65));
+        mPopu.setWidth((int) (d.getWidth() * 0.65));
 
         backgroundAlpha(0.5f);
-        mPopu.setFan(fan,flag);
+        mPopu.setFan(fan, flag);
         mPopu.showAtLocation(getWindow().getDecorView().findViewById(android.R.id.content), Gravity.CENTER_VERTICAL, 0, 0);
 
         mPopu.setOnDismissListener(new PopupWindow.OnDismissListener() {
@@ -372,8 +374,7 @@ public class MonitorDetailActivity extends Activity {
     }
 
     //设置背景透明度，1f为不透明
-    public void backgroundAlpha(float bgAlpha)
-    {
+    public void backgroundAlpha(float bgAlpha) {
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.alpha = bgAlpha; //0.0-1.0
         getWindow().setAttributes(lp);
