@@ -18,7 +18,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -30,7 +29,6 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -153,7 +151,6 @@ public class PowerFragment extends Fragment {
     private void initData() {
         ranges = getArguments().getString("ranges");
         select_time.setText(sdf.format(new Date()));
-
     }
 
     /**
@@ -224,6 +221,11 @@ public class PowerFragment extends Fragment {
         builder.show();
     }
 
+    /**
+     * 设置当前场站名
+     *
+     * @param name
+     */
     private void setStation(String name) {
         station_name = name;
         select_station.setText(station_name);
@@ -240,16 +242,14 @@ public class PowerFragment extends Fragment {
             Toast.makeText(mContext, "请选择日期和场站", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (mGetPowerDataTask != null) {//不为null 说明操作正在进行，规避多次点击登录按钮操作
-//            Toast.makeText(mContext, "加载中，请稍候...", Toast.LENGTH_SHORT).show();
+        if (mGetPowerDataTask != null)
             return;
-        }
         mGetPowerDataTask = new GetPowerDataTask(sdate, station_name);
         mGetPowerDataTask.execute();
     }
 
     /**
-     * task
+     * 获取场站功率task
      */
     private class GetPowerDataTask extends AsyncTask<Void, Void, String> {
         String sdate;
@@ -292,6 +292,11 @@ public class PowerFragment extends Fragment {
     }
 
 
+    /**
+     * 解析数据刷新界面
+     *
+     * @param result
+     */
     public void setDataDetail(String result) {
         if (!result.contains("{")) {
             Toast.makeText(getActivity(), "获取数据失败：" + result, Toast.LENGTH_SHORT).show();
@@ -335,6 +340,7 @@ public class PowerFragment extends Fragment {
         refreshChartSet();
     }
 
+    //-----------------------------------------------定时操作BEGIN-------------------------------------------------------
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -344,6 +350,7 @@ public class PowerFragment extends Fragment {
             getStationPower(select_time.getText().toString(), station_name);
         }
     };
+
     Timer mTimer;
 
     private void polling() {
@@ -363,6 +370,7 @@ public class PowerFragment extends Fragment {
             mTimer = null;
         }
     }
+    //------------------------------------------定时操作 END -----------------------------------------------
 
     LineDataSet forecastline = null;
     LineDataSet pline = null;
@@ -394,6 +402,7 @@ public class PowerFragment extends Fragment {
             mChart.setData(dataline);
             mChart.notifyDataSetChanged();
         }
+        mChart.invalidate();
     }
 
     private LineDataSet createDataSet(List<Entry> data, String label, int color) {
@@ -413,50 +422,20 @@ public class PowerFragment extends Fragment {
 
 
     private void initChart() {
-
-        mChart.setTouchEnabled(true);
-        mChart.setDragDecelerationFrictionCoef(0.9f); //持续滚动时的速度快慢，[0,1) 0代表立即停止。
-        mChart.setDragEnabled(true);
-        mChart.setScaleEnabled(true);
-        mChart.setDrawGridBackground(false);
-        mChart.setHighlightPerDragEnabled(true);
-
-        // set an alternative background color
-//        mChart.setBackgroundColor(Color.WHITE);  //设置图表背景 参数是个Color对象
-//        mChart.setViewPortOffsets(0f, 0f, 0f, 0f);//设置图表显示的偏移量，不建议使用，因为会影响图表的自动计算
+        mChart.setDragDecelerationFrictionCoef(0.9f);
         MyMarkerView mv = new MyMarkerView(getActivity(), R.layout.custom_marker_view);
-        mv.setChartView(mChart); // For bounds control
-        mChart.setMarker(mv); // Set the marker to the chart
+        mv.setChartView(mChart);
+        mChart.setMarker(mv);
         mChart.animateX(2500);
-//        mChart.invalidate();
-
-        // get the legend (only possible after setting data)
-//        Legend l = mChart.getLegend();
-//        // modify the legend ...
-//        l.setEnabled(false);
-
-        Typeface mTfLight = Typeface.createFromAsset(getActivity().getAssets(),
-                "OpenSans-Regular.ttf");
-
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setTypeface(mTfLight);
         xAxis.setTextSize(10f);
-//        xAxis.setTextColor(Color.WHITE);
-        xAxis.setDrawAxisLine(true); //是否绘制坐标轴的线，即含有坐标的那条线，默认是true
-        xAxis.setDrawGridLines(true);//是否显示X坐标轴上的刻度竖线，默认是true
         xAxis.setTextColor(Color.rgb(255, 192, 56));
-        xAxis.setCenterAxisLabels(false);
-        xAxis.setGranularity(1f); // one hour  设置x轴值之间的最小间隔。这可以用于在放大到为轴设置的小数位数不再允许在两个轴值之间进行区分的点时避免值重复。
+        xAxis.setGranularity(1f);
         xAxis.setDrawLabels(true);
-        xAxis.setValueFormatter(new IAxisValueFormatter() {  //将自定义格式化程序设置为轴。
-
-//            private SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm");
-
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-//                long millis = TimeUnit.HOURS.toMillis((long) value);
-//                return mFormat.format(new Date(millis));
                 int hour = (int) value / 60;
                 int min = (int) value % 60;
                 String result = null;
@@ -477,14 +456,9 @@ public class PowerFragment extends Fragment {
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
-        leftAxis.setTypeface(mTfLight);
         leftAxis.setTextColor(ColorTemplate.getHoloBlue());
-        leftAxis.setDrawGridLines(true);
-        leftAxis.setGranularityEnabled(true);
         leftAxis.setTextColor(Color.rgb(255, 192, 56));
         leftAxis.setDrawLabels(true);
-//        leftAxis.setStartAtZero(true);
-
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
     }
@@ -499,20 +473,4 @@ public class PowerFragment extends Fragment {
     private void showProgress(final boolean show) {
         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
-
-    //    private Runnable runnable = new Runnable() {
-//        public void run() {
-//            while (last_time < 1440) {
-//                this.update();
-//                handler.postDelayed(this, 1000 * 60 * 10);// 间隔60 * 10秒
-//            }
-//
-//        }
-//
-//        void update() {
-//            Log.e("last_time----2-------->", select_time.getText().toString() + "   " + last_time + "   " + station_name);
-//            GetNewData(select_time.getText().toString(), last_time + "", station_name);
-////            last_time += 100;
-//        }
-//    };
 }
