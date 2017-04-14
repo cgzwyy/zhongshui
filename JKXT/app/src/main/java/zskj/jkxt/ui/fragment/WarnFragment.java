@@ -221,25 +221,24 @@ public class WarnFragment extends Fragment {
     private void setDataDetail(String result) {
         Log.e(TAG, result);
         // TODO 异常数据处理
-        //TODO delete
-        if (true) {//make dataSet
-            for (int i = 0; i < 50; i++) {
-                AlarmData data = new AlarmData();
-                data.alarm_num = "编号" + i;
-                data.alarm_station = "站名" + i;
-                data.alarm_type = "类型" + i;
-                data.alarm_date = i + "000000";
-                data.alarm_time = i + ":00:00";
-                data.alarm_content = "事项" + i;
-                if (data.alarm_time.compareTo(last_time) > 0) {
-                    last_time = data.alarm_time;
-                }
-                dataSet.add(data);
-
-            }
-            myAdapter.refresh();
-            return;
-        }
+//        if (true) {//make dataSet
+//            for (int i = 0; i < 50; i++) {
+//                AlarmData data = new AlarmData();
+//                data.alarm_num = "编号" + i;
+//                data.alarm_station = "站名" + i;
+//                data.alarm_type = "类型" + i;
+//                data.alarm_date = i + "000000";
+//                data.alarm_time = i + ":00:00";
+//                data.alarm_content = "事项" + i;
+//                if (data.alarm_time.compareTo(last_time) > 0) {
+//                    last_time = data.alarm_time;
+//                }
+//                dataSet.add(data);
+//
+//            }
+//            myAdapter.refresh();
+//            return;
+//        }
 
         JsonParser parser = new JsonParser();//创建JSON解析器
         JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象

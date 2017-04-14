@@ -379,18 +379,4 @@ public class MonitorDetailActivity extends Activity {
         lp.alpha = bgAlpha; //0.0-1.0
         getWindow().setAttributes(lp);
     }
-
-    //TODO delete
-    private void testData() {
-        fanList.clear();
-        for (int i = 0; i < 10; i++) {
-            Fan fan = new Fan();
-            fan.fan_number = "编号：" + i;
-            fan.fan_speed = "123.33";
-            fan.fan_active_power = "123.44";
-            fan.fan_revs = "123.55";
-            fan.fan_state = "123.66";
-            fanList.add(fan);
-        }
-    }
 }

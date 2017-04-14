@@ -183,7 +183,7 @@ public class PowerFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             mGetStationNameTask = null;
-            result = "鄯善,青河光伏,布尔津";//TODO delete
+//            result = "鄯善,青河光伏,布尔津";
             if (result.isEmpty() || result.equals(""))
                 return;
             stations = result.split(",");
@@ -235,7 +235,7 @@ public class PowerFragment extends Fragment {
      * 获取场站功率信息
      *
      * @param sdate        日期（精确到天）
-     * @param station_name 场站名 TODO 以场站ID索引
+     * @param station_name 场站名 最好以场站ID索引
      */
     private void getStationPower(String sdate, String station_name) {
         if (TextUtils.isEmpty(sdate) || TextUtils.isEmpty(station_name)) {
@@ -277,11 +277,6 @@ public class PowerFragment extends Fragment {
             Log.e(TAG, "result:" + result);
             mGetPowerDataTask = null;
             showProgress(false);
-            //TODO delete
-            if (last_time == 0)
-                result = "{\"pcode\":[{\"time\":\"0\",\"dataSet\":\"7\"},{\"time\":\"1\",\"dataSet\":\"8\"},{\"time\":\"2\",\"dataSet\":\"8\"},{\"time\":\"3\",\"dataSet\":\"0\"},{\"time\":\"4\",\"dataSet\":\"5\"},{\"time\":\"5\",\"dataSet\":\"5\"},{\"time\":\"6\",\"dataSet\":\"2\"},{\"time\":\"7\",\"dataSet\":\"5\"}],\"forecast_pcode\":[{\"time\":\"0\",\"dataSet\":\"1\"},{\"time\":\"1\",\"dataSet\":\"6\"},{\"time\":\"2\",\"dataSet\":\"6\"},{\"time\":\"3\",\"dataSet\":\"4\"},{\"time\":\"4\",\"dataSet\":\"0\"},{\"time\":\"5\",\"dataSet\":\"8\"},{\"time\":\"6\",\"dataSet\":\"3\"},{\"time\":\"7\",\"dataSet\":\"1\"},{\"time\":\"8\",\"dataSet\":\"5\"},{\"time\":\"9\",\"dataSet\":\"3\"},{\"time\":\"10\",\"dataSet\":\"9\"}]}";
-            else
-                result = "{\"pcode\":[{\"time\":\"8\",\"dataSet\":\"1\"},{\"time\":\"9\",\"dataSet\":\"1\"},{\"time\":\"10\",\"dataSet\":\"2\"}],\"forecast_pcode\":[{\"time\":\"0\",\"dataSet\":\"1\"},{\"time\":\"1\",\"dataSet\":\"6\"},{\"time\":\"2\",\"dataSet\":\"6\"},{\"time\":\"3\",\"dataSet\":\"4\"},{\"time\":\"4\",\"dataSet\":\"0\"},{\"time\":\"5\",\"dataSet\":\"8\"},{\"time\":\"6\",\"dataSet\":\"3\"},{\"time\":\"7\",\"dataSet\":\"1\"},{\"time\":\"8\",\"dataSet\":\"5\"},{\"time\":\"9\",\"dataSet\":\"3\"},{\"time\":\"10\",\"dataSet\":\"9\"}]}";
             setDataDetail(result);
         }
 

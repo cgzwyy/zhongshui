@@ -186,29 +186,24 @@ public class UserManagementActivity extends AppCompatActivity {
         }
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
            return map.size();
         }
 
         public Map<Integer,User> getData() {
-            // TODO Auto-generated method stub
             return map;
         }
 
         public int getMinNum() {
-            // TODO Auto-generated method stub
             return Integer.valueOf(map.get(0).userId);
         }
 
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return map.get(position);
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return position;
         }
 
