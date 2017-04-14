@@ -372,7 +372,7 @@ public class UserManagementFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (1 == requestCode)
         {
-//            String result = data.getStringExtra("result");
+//            String result = dataSet.getStringExtra("result");
 //            Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
             getUserData();
         }

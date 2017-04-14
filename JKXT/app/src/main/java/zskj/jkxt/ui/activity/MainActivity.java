@@ -120,9 +120,7 @@ public class MainActivity extends FragmentActivity {
                         break;
                     case R.id.rb_warn:
                         if (mWarnFrag == null) {
-                            mWarnFrag = new WarnFragment();
-                            mWarnFrag.setRanges(ranges);
-                            mWarnFrag.setLevel(level);
+                            mWarnFrag = WarnFragment.getInstance(ranges,level);
                             transaction.add(R.id.fl_container, mWarnFrag, "warn");
                         } else {
                             transaction.show(mWarnFrag);

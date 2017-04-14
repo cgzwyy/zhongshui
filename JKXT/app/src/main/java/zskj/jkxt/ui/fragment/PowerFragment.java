@@ -69,7 +69,7 @@ public class PowerFragment extends Fragment {
     private Button select_time, select_station, sure;
     private View mProgressView;
     private LineChart mChart;
-    //data
+    //dataSet
     String ranges;
     String[] stations;
     private String station_name;
@@ -279,14 +279,15 @@ public class PowerFragment extends Fragment {
             showProgress(false);
             //TODO delete
             if (last_time == 0)
-                result = "{\"pcode\":[{\"time\":\"0\",\"data\":\"7\"},{\"time\":\"1\",\"data\":\"8\"},{\"time\":\"2\",\"data\":\"8\"},{\"time\":\"3\",\"data\":\"0\"},{\"time\":\"4\",\"data\":\"5\"},{\"time\":\"5\",\"data\":\"5\"},{\"time\":\"6\",\"data\":\"2\"},{\"time\":\"7\",\"data\":\"5\"}],\"forecast_pcode\":[{\"time\":\"0\",\"data\":\"1\"},{\"time\":\"1\",\"data\":\"6\"},{\"time\":\"2\",\"data\":\"6\"},{\"time\":\"3\",\"data\":\"4\"},{\"time\":\"4\",\"data\":\"0\"},{\"time\":\"5\",\"data\":\"8\"},{\"time\":\"6\",\"data\":\"3\"},{\"time\":\"7\",\"data\":\"1\"},{\"time\":\"8\",\"data\":\"5\"},{\"time\":\"9\",\"data\":\"3\"},{\"time\":\"10\",\"data\":\"9\"}]}";
+                result = "{\"pcode\":[{\"time\":\"0\",\"dataSet\":\"7\"},{\"time\":\"1\",\"dataSet\":\"8\"},{\"time\":\"2\",\"dataSet\":\"8\"},{\"time\":\"3\",\"dataSet\":\"0\"},{\"time\":\"4\",\"dataSet\":\"5\"},{\"time\":\"5\",\"dataSet\":\"5\"},{\"time\":\"6\",\"dataSet\":\"2\"},{\"time\":\"7\",\"dataSet\":\"5\"}],\"forecast_pcode\":[{\"time\":\"0\",\"dataSet\":\"1\"},{\"time\":\"1\",\"dataSet\":\"6\"},{\"time\":\"2\",\"dataSet\":\"6\"},{\"time\":\"3\",\"dataSet\":\"4\"},{\"time\":\"4\",\"dataSet\":\"0\"},{\"time\":\"5\",\"dataSet\":\"8\"},{\"time\":\"6\",\"dataSet\":\"3\"},{\"time\":\"7\",\"dataSet\":\"1\"},{\"time\":\"8\",\"dataSet\":\"5\"},{\"time\":\"9\",\"dataSet\":\"3\"},{\"time\":\"10\",\"dataSet\":\"9\"}]}";
             else
-                result = "{\"pcode\":[{\"time\":\"8\",\"data\":\"1\"},{\"time\":\"9\",\"data\":\"1\"},{\"time\":\"10\",\"data\":\"2\"}],\"forecast_pcode\":[{\"time\":\"0\",\"data\":\"1\"},{\"time\":\"1\",\"data\":\"6\"},{\"time\":\"2\",\"data\":\"6\"},{\"time\":\"3\",\"data\":\"4\"},{\"time\":\"4\",\"data\":\"0\"},{\"time\":\"5\",\"data\":\"8\"},{\"time\":\"6\",\"data\":\"3\"},{\"time\":\"7\",\"data\":\"1\"},{\"time\":\"8\",\"data\":\"5\"},{\"time\":\"9\",\"data\":\"3\"},{\"time\":\"10\",\"data\":\"9\"}]}";
+                result = "{\"pcode\":[{\"time\":\"8\",\"dataSet\":\"1\"},{\"time\":\"9\",\"dataSet\":\"1\"},{\"time\":\"10\",\"dataSet\":\"2\"}],\"forecast_pcode\":[{\"time\":\"0\",\"dataSet\":\"1\"},{\"time\":\"1\",\"dataSet\":\"6\"},{\"time\":\"2\",\"dataSet\":\"6\"},{\"time\":\"3\",\"dataSet\":\"4\"},{\"time\":\"4\",\"dataSet\":\"0\"},{\"time\":\"5\",\"dataSet\":\"8\"},{\"time\":\"6\",\"dataSet\":\"3\"},{\"time\":\"7\",\"dataSet\":\"1\"},{\"time\":\"8\",\"dataSet\":\"5\"},{\"time\":\"9\",\"dataSet\":\"3\"},{\"time\":\"10\",\"dataSet\":\"9\"}]}";
             setDataDetail(result);
         }
 
         @Override
         protected void onCancelled() {
+            showProgress(false);
             mGetPowerDataTask = null;
         }
     }
@@ -316,7 +317,7 @@ public class PowerFragment extends Fragment {
             for (int i = 0; i < forecast_parray.size(); i++) {
                 try {
                     JsonObject subObject = forecast_parray.get(i).getAsJsonObject();
-                    forecastData.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
+                    forecastData.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("dataSet").getAsString())))));
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
@@ -328,7 +329,7 @@ public class PowerFragment extends Fragment {
             for (int i = 0; i < parray.size(); i++) {
                 try {
                     JsonObject subObject = parray.get(i).getAsJsonObject();
-                    pData.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
+                    pData.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("dataSet").getAsString())))));
                     if (subObject.get("time").getAsInt() > time)
                         time = subObject.get("time").getAsInt();
                 } catch (NumberFormatException e) {
