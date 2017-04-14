@@ -38,7 +38,7 @@ import zskj.jkxt.domain.AlarmData;
  * 实时警告
  */
 
-public class WarnFragment extends Fragment {
+public class WarnFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "WarnFragment";
     private static final int NUM_PER_PAGE = 10;
@@ -100,70 +100,10 @@ public class WarnFragment extends Fragment {
         last_page = (Button) getView().findViewById(R.id.last_page);
         listview = (ListView) getView().findViewById(R.id.listview);
         mProgressView = getView().findViewById(R.id.progress);
-
-        //首页
-        first_page.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (dataSet.size() <= 0)
-                    return;
-                if (currentPage == 0) {
-                    Toast.makeText(mContext, "已是第一页", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                currentPage = 0;
-                myAdapter.refresh();
-            }
-        });
-
-        //上一页
-        previous_page.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (dataSet.size() <= 0)
-                    return;
-
-                if (currentPage <= 0) {
-                    Toast.makeText(mContext, "已是第一页", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                currentPage--;
-                myAdapter.refresh();
-            }
-        });
-        //下一页
-        next_page.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (dataSet.size() <= 0)
-                    return;
-
-                int page = currentPage + 1;
-                if (dataSet.size() <= page * NUM_PER_PAGE) {
-                    Toast.makeText(mContext, "已是最后一页", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                currentPage = page;
-                myAdapter.refresh();
-            }
-        });
-
-        //尾页
-        last_page.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (dataSet.size() <= 0)
-                    return;
-                int page = dataSet.size() % 10 == 0 ? dataSet.size() / 10 - 1 : dataSet.size() / 10;
-                if (page == currentPage) {
-                    Toast.makeText(mContext, "已是最后一页", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                currentPage = page;
-                myAdapter.refresh();
-            }
-        });
-
+        first_page.setOnClickListener(this);
+        previous_page.setOnClickListener(this);
+        next_page.setOnClickListener(this);
+        last_page.setOnClickListener(this);
     }
 
     private void initData() {
@@ -178,19 +118,50 @@ public class WarnFragment extends Fragment {
             return;
         if (mTask != null)
             return;
-        mTask = new WranTask(date, last_time);
+        mTask = new WranTask();
         mTask.execute();
     }
 
-    private class WranTask extends AsyncTask<Void, Void, String> {
-
-        String sdate = "";
-        String stime = "";
-
-        WranTask(String sdate, String stime) {
-            this.sdate = sdate;
-            this.stime = stime;
+    @Override
+    public void onClick(View view) {
+        if (dataSet.size() <= 0)
+            return;
+        switch (view.getId()) {
+            case R.id.first_page:
+                if (currentPage == 0) {
+                    Toast.makeText(mContext, "已是第一页", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                currentPage = 0;
+                break;
+            case R.id.previous_page:
+                if (currentPage <= 0) {
+                    Toast.makeText(mContext, "已是第一页", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                currentPage--;
+                break;
+            case R.id.next_page:
+                int nextpage = currentPage + 1;
+                if (dataSet.size() <= nextpage * NUM_PER_PAGE) {
+                    Toast.makeText(mContext, "已是最后一页", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                currentPage = nextpage;
+                break;
+            case R.id.last_page:
+                int lastpage = dataSet.size() % 10 == 0 ? dataSet.size() / 10 - 1 : dataSet.size() / 10;
+                if (lastpage == currentPage) {
+                    Toast.makeText(mContext, "已是最后一页", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                currentPage = lastpage;
+                break;
         }
+        myAdapter.refresh();
+    }
+
+    private class WranTask extends AsyncTask<Void, Void, String> {
 
         @Override
         protected void onPreExecute() {
@@ -198,10 +169,9 @@ public class WarnFragment extends Fragment {
             if (currentPage == 0)
                 showProgress(true);
         }
-
         @Override
         protected String doInBackground(Void... voids) {
-            return WebService.getInstance().getAlarmData(sdate, stime, ranges, level);
+            return WebService.getInstance().getAlarmData(date, last_time, ranges, level);
         }
 
         @Override
@@ -221,25 +191,6 @@ public class WarnFragment extends Fragment {
     private void setDataDetail(String result) {
         Log.e(TAG, result);
         // TODO 异常数据处理
-//        if (true) {//make dataSet
-//            for (int i = 0; i < 50; i++) {
-//                AlarmData data = new AlarmData();
-//                data.alarm_num = "编号" + i;
-//                data.alarm_station = "站名" + i;
-//                data.alarm_type = "类型" + i;
-//                data.alarm_date = i + "000000";
-//                data.alarm_time = i + ":00:00";
-//                data.alarm_content = "事项" + i;
-//                if (data.alarm_time.compareTo(last_time) > 0) {
-//                    last_time = data.alarm_time;
-//                }
-//                dataSet.add(data);
-//
-//            }
-//            myAdapter.refresh();
-//            return;
-//        }
-
         JsonParser parser = new JsonParser();//创建JSON解析器
         JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
         JsonArray alarms = object.get("AlarmData").getAsJsonArray(); //得到为json的数组
