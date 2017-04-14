@@ -108,7 +108,7 @@ public class UserManagementFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... voids) {
-            return WebService.getInstance().GetUserInfo();
+            return WebService.getInstance().getUserInfo();
         }
 
         @Override

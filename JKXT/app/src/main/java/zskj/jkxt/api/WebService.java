@@ -21,9 +21,6 @@ public class WebService {
     static WebService service = null;
     static int timeoutmiles = 5 * 1000;//TODO 改成20*1000或者30*1000 默认20*1000
 
-    // static public String namespace = "http://WebXml.com.cn/";
-    // static public String serviceUrl =
-    // "http://webservice.webxml.com.cn/WebServices/MobileCodeWS.asmx";
     private WebService() {
     }
 
@@ -58,7 +55,7 @@ public class WebService {
         }
     }
 
-    public String GetUserInfo() {
+    public String getUserInfo() {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
             return ERRORMSG;
         }
@@ -157,7 +154,7 @@ public class WebService {
         }
     }
 
-    public String GetStationInfo(String Str_StationCode) {
+    public String getStationInfo(String Str_StationCode) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
             return ERRORMSG;
         }
@@ -180,7 +177,7 @@ public class WebService {
         }
     }
 
-    public String GetStationName(String ranges) {
+    public String getStationName(String ranges) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
             return ERRORMSG;
         }
@@ -203,30 +200,8 @@ public class WebService {
         }
     }
 
-    public void GetAlarmDataTop10(RequestCallback callback) {
-        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
-            callback.onFail(ERRORMSG);
-            return;
-        }
-        String methodName = "GetAlarmDataTop10";
-        SoapObject request = new SoapObject(namespace, methodName);
-        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
-        envelope.bodyOut = request;
-        envelope.dotNet = true;
-        HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
-        try {
-            ht.call(namespace + methodName, envelope);
-            SoapObject object = (SoapObject) envelope.bodyIn;
-            if (object != null && object.getProperty(0) != null) {
-                callback.onSuccess(object.getProperty(0).toString());
-            } else
-                callback.onFail(ERRORMSG);
-        } catch (Exception e) {
-            callback.onFail(e.getMessage());
-        }
-    }
 
-    public String GetAlarmData(String sdate, String stime, String ranges, String level) {
+    public String getAlarmData(String sdate, String stime, String ranges, String level) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
             return ERRORMSG;
         }

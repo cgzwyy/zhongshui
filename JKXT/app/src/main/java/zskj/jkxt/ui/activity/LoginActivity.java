@@ -126,6 +126,7 @@ public class LoginActivity extends Activity {
     }
 
     private void parserResult(String result) {//stupid back data~
+        //TODO 登录逻辑
 //        if (!result.contains("{")) {
 //            mPasswordView.setError(getString(R.string.error_incorrect_password)); //密码错误
 //            mPasswordView.requestFocus();

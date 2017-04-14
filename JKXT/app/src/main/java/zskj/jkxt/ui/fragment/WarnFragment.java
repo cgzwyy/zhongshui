@@ -201,7 +201,7 @@ public class WarnFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... voids) {
-            return WebService.getInstance().GetAlarmData(sdate, stime, ranges, level);
+            return WebService.getInstance().getAlarmData(sdate, stime, ranges, level);
         }
 
         @Override

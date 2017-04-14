@@ -185,7 +185,7 @@ public class MonitorDetailActivity extends Activity {
 
         @Override
         protected String doInBackground(Void... voids) {
-            return WebService.getInstance().GetStationInfo(model.columnValue);
+            return WebService.getInstance().getStationInfo(model.columnValue);
         }
 
         @Override
@@ -209,8 +209,6 @@ public class MonitorDetailActivity extends Activity {
      */
     private void dealResult(String result, String colName) {
         if (!result.contains("{")) {//非法数据
-//            testData();
-//            monitorAdapter.notifyDataSetChanged();
             Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
             return;
         }
