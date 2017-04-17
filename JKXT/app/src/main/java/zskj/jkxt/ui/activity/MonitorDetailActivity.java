@@ -23,6 +23,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -210,6 +211,8 @@ public class MonitorDetailActivity extends Activity {
     private void dealResult(String result, String colName) {
         if (!result.contains("{")) {//非法数据
             Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+            testData();
+            monitorAdapter.notifyDataSetChanged();
             return;
         }
         JsonParser parser = new JsonParser();//创建JSON解析器
@@ -311,9 +314,11 @@ public class MonitorDetailActivity extends Activity {
             }
             if (Double.valueOf(model.fan_state.trim()) >= 5) { //停机
                 if (mStation.columnName.contains("光伏")) {
-                    holder.fan_picture.setImageResource(R.drawable.gf2_2);
+                    Glide.with(MonitorDetailActivity.this).load(R.drawable.gf2_2).asGif().into(holder.fan_picture);
+//                    holder.fan_picture.setImageResource(R.drawable.gf2_2);
                 } else {
-                    holder.fan_picture.setImageResource(R.drawable.fj_05);
+                    Glide.with(MonitorDetailActivity.this).load(R.drawable.fj_03).asGif().into(holder.fan_picture);
+//                    holder.fan_picture.setImageResource(R.drawable.fj_05);
                 }
                 holder.fan_state.setText(getResources().getString(R.string.stop));
                 holder.fan_state.setVisibility(View.VISIBLE);
@@ -376,5 +381,19 @@ public class MonitorDetailActivity extends Activity {
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.alpha = bgAlpha; //0.0-1.0
         getWindow().setAttributes(lp);
+    }
+
+    //TODO delete
+    private void testData() {
+        fanList.clear();
+        for (int i = 0; i < 10; i++) {
+            Fan fan = new Fan();
+            fan.fan_number = "编号：" + i;
+            fan.fan_speed = "123.33";
+            fan.fan_active_power = "123.44";
+            fan.fan_revs = "123.55";
+            fan.fan_state = "123.66";
+            fanList.add(fan);
+        }
     }
 }
