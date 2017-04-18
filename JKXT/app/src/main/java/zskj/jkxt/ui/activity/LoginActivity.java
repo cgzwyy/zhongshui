@@ -1,13 +1,9 @@
 package zskj.jkxt.ui.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -17,9 +13,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -126,26 +119,25 @@ public class LoginActivity extends Activity {
         try {
             JSONObject obj = new JSONObject(result);
             int code = obj.optInt("code");
-            if(code==1){
-                String rights = obj.optString("rights");
-                String ranges = obj.optString("ranges");
-                String level = obj.optString("level");
-                Intent intent = new Intent();
-                intent.setClass(LoginActivity.this, MainActivity.class);
-                intent.putExtra("rights",rights);
-                intent.putExtra("ranges",ranges);
-                intent.putExtra("level",level);
-                startActivity(intent);
-                finish();
-            }else {
+            if (code == 0) {
                 String msg = obj.optString("msg");
                 mPasswordView.setError(msg); //密码错误
                 mPasswordView.requestFocus();
+                return;
             }
-
+            String rights = obj.optString("rights");
+            String ranges = obj.optString("ranges");
+            String level = obj.optString("level");
+            Intent intent = new Intent();
+            intent.setClass(LoginActivity.this, MainActivity.class);
+            intent.putExtra("rights", rights);
+            intent.putExtra("ranges", ranges);
+            intent.putExtra("level", level);
+            startActivity(intent);
+            finish();
         } catch (JSONException e) {
             e.printStackTrace();
-            mPasswordView.setError(WebService.ERRORMSG); //密码错误
+            mPasswordView.setError(result); //密码错误
             mPasswordView.requestFocus();
         }
 //        Intent intent = new Intent();

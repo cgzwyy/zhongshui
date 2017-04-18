@@ -24,13 +24,11 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import zskj.jkxt.R;
@@ -124,38 +122,43 @@ public class UserManagementFragment extends Fragment {
 
     private void dealResult(String result) {
         Log.e("resutl-->", result);
-        if (!result.contains("{"))
-            return;
-        JsonParser parser = new JsonParser();//创建JSON解析器
-        JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
-        JsonArray users = object.get("userlist").getAsJsonArray(); //得到为json的数组
-        for (int i = 0; i < users.size(); i++) {
-            JsonObject subObject = users.get(i).getAsJsonObject();
-            User user = new User();
-            user.userId = i;
-            user.userName = subObject.get("userName").getAsString();
-            user.userPassword = subObject.get("userPassword").getAsString();
-            user.userRights = subObject.get("userRights").getAsString();
-            user.userRange = subObject.get("userRange").getAsString();
-            user.userLevel = subObject.get("userLevel").getAsString();
-            userList.add(user);
-        }
-        if (userList != null && userList.size() > 0) {
-//            Collections.sort(userList, new Comparator<User>() {
-//                @Override
-//                public int compare(User user, User t1) {
-//                    return user.userId > t1.userId ? 0 : 1;
-//                }
-//            });
-            lv_user_list.setAdapter(new userListAdapter());
-            lv_user_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    User user = userList.get(position);
-                    showDetailPopu(user);
+        try {
+            JSONObject obj = new JSONObject(result);
+            int code = obj.optInt("code");
+            if (code == 0) {
+                String msg = obj.optString("msg");
+                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            JSONArray data = obj.optJSONArray("data");
+            if (data != null && data.length() > 0) {
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject detail = data.optJSONObject(i);
+                    User user = new User();
+                    user.userId = i;
+                    user.userName = detail.optString("userName");
+                    user.userPassword = detail.optString("userPassword");
+                    user.userRights = detail.optString("userRights");
+                    user.userRange = detail.optString("userRange");
+                    user.userLevel = detail.optString("userLevel");
+                    userList.add(user);
                 }
-            });
+            }
+            if (userList != null && userList.size() > 0) {
+                lv_user_list.setAdapter(new userListAdapter());
+                lv_user_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        User user = userList.get(position);
+                        showDetailPopu(user);
+                    }
+                });
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
         }
+
     }
 
     UserDetailPopu mPopu;

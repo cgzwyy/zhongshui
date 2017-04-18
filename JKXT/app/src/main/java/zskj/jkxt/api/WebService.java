@@ -17,7 +17,7 @@ public class WebService {
     static public String serviceUrl = "http://192.168.117.58:8085/H9000Service.asmx";
     public static final String ERRORMSG = "获取数据失败";
     static WebService service = null;
-    static int timeoutmiles = 5 * 1000;//TODO 改成20*1000或者30*1000 默认20*1000
+    static int timeoutmiles = 2 * 1000;//TODO 改成20*1000或者30*1000 默认20*1000
 
     private WebService() {
     }

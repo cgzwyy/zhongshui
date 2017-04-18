@@ -18,9 +18,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -169,6 +169,7 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
             if (currentPage == 0)
                 showProgress(true);
         }
+
         @Override
         protected String doInBackground(Void... voids) {
             return WebService.getInstance().getAlarmData(date, last_time, ranges, level);
@@ -190,25 +191,36 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
 
     private void setDataDetail(String result) {
         Log.e(TAG, result);
-        // TODO 异常数据处理
-        JsonParser parser = new JsonParser();//创建JSON解析器
-        JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
-        JsonArray alarms = object.get("AlarmData").getAsJsonArray(); //得到为json的数组
-
-        for (int i = 0; i < alarms.size(); i++) {
-            JsonObject subObject = alarms.get(i).getAsJsonObject();
-            AlarmData alarmData = new AlarmData();
-            alarmData.alarm_station = subObject.get("场站").getAsString();
-            alarmData.alarm_type = subObject.get("类型名").getAsString();
-            alarmData.alarm_date = subObject.get("日期").getAsString();
-            alarmData.alarm_time = subObject.get("时间").getAsString();
-            alarmData.alarm_content = subObject.get("事项").getAsString();
-            if (alarmData.alarm_time.compareTo(last_time) > 0) {
-                last_time = alarmData.alarm_time;
+        try {
+            JSONObject obj = new JSONObject(result);
+            int code = obj.optInt("code");
+            if (code == 0) {
+                String msg = obj.optString("msg");
+                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                return;
             }
-            dataSet.add(alarmData);
+            JSONArray data = obj.optJSONArray("data");
+            if (data != null && data.length() > 0) {
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject detail = data.optJSONObject(i);
+                    AlarmData alarmData = new AlarmData();
+                    alarmData.alarm_station = detail.optString("station");
+                    alarmData.alarm_type = detail.optString("type");
+                    alarmData.alarm_date = detail.optString("date");
+                    alarmData.alarm_time = detail.optString("time");
+                    alarmData.alarm_content = detail.optString("content");
+                    if (alarmData.alarm_time.compareTo(last_time) > 0) {
+                        last_time = alarmData.alarm_time;
+                    }
+                    dataSet.add(alarmData);
+                }
+            }
+            myAdapter.refresh();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
         }
-        myAdapter.refresh();
+
     }
 
     //-----------------------------------------------定时操作BEGIN-------------------------------------------------------

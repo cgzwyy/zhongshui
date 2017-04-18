@@ -24,9 +24,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -209,55 +210,57 @@ public class MonitorDetailActivity extends Activity {
      * @param result
      */
     private void dealResult(String result, String colName) {
-        if (!result.contains("{")) {//非法数据
-            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-            testData();
-            monitorAdapter.notifyDataSetChanged();
-            return;
-        }
-        JsonParser parser = new JsonParser();//创建JSON解析器
-        JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
 
-        tv_plan.setText(df.format(Double.valueOf(object.get("省调计划").getAsString())));
-        if (colName.contains("光伏")) {
-            tv_speed.setText(df.format(Double.valueOf(object.get("总辐射瞬时值").getAsString())));
-        } else {
-            tv_speed.setText(df.format(Double.valueOf(object.get("平均风速").getAsString())));
-        }
-        tv_power.setText(df.format(Double.valueOf(object.get("瞬时总有功").getAsString())));
-        tv_electricity.setText(df.format(Double.valueOf(object.get("当日发电量").getAsString())));
+        try {
+            JSONObject obj = new JSONObject(result);
+            int code = obj.optInt("code");
+            if (code == 0) {
+                String msg = obj.optString("msg");
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        JsonArray array = object.get("list").getAsJsonArray(); //得到为json的数组
+            JSONObject data = obj.optJSONObject("data");
 
-        if (array != null && array.size() > 0) {
-            fanList.clear();
-            for (int i = 0; i < array.size(); i++) {
-                JsonObject subObject = array.get(i).getAsJsonObject();
-                Fan fan = new Fan();
-                fan.fan_number = subObject.get("编号").getAsString();
-                if (colName.contains("光伏")) {
-                    fan.fan_speed = df.format(Double.valueOf(subObject.get("逆变器效率").getAsString()));
-                    fan.fan_revs = df.format(Double.valueOf(subObject.get("逆变器日发电量").getAsString()));
-                    fan.fan_state = df.format(Double.valueOf(subObject.get("逆变器状态").getAsString()));
-                } else {
-                    fan.fan_speed = df.format(Double.valueOf(subObject.get("风速").getAsString()));
-                    fan.fan_revs = df.format(Double.valueOf(subObject.get("转速").getAsString()));
-                    fan.fan_state = df.format(Double.valueOf(subObject.get("风机运行状态").getAsString()));
+            tv_plan.setText(df.format(Double.valueOf(data.optString("plan"))));
+            if (colName.contains("光伏")) {
+                tv_speed.setText(df.format(Double.valueOf(data.optString("speed"))));
+            } else {
+                tv_speed.setText(df.format(Double.valueOf(data.optString("speed_average"))));
+            }
+            tv_power.setText(df.format(Double.valueOf(data.optString("power"))));
+            tv_electricity.setText(df.format(Double.valueOf(data.optString("electricity"))));
+
+            JSONArray list = data.optJSONArray("list");
+            if (list != null && list.length() > 0) {
+                fanList.clear();
+                for (int i = 0; i < list.length(); i++) {
+                    JSONObject object = list.optJSONObject(i);
+                    Fan fan = new Fan();
+                    fan.fan_number = object.optString("number");
+                    fan.fan_speed = df.format(Double.valueOf(object.optString("speed")));
+                    fan.fan_revs = df.format(Double.valueOf(object.optString("revs")));
+                    fan.fan_state = df.format(Double.valueOf(object.optString("state")));
+                    fan.fan_active_power = df.format(Double.valueOf(object.optString("power")));
+                    fanList.add(fan);
                 }
-                fan.fan_active_power = df.format(Double.valueOf(subObject.get("有功功率").getAsString()));
-                fanList.add(fan);
             }
+            Collections.sort(fanList, new Comparator<Fan>() {
+                @Override
+                public int compare(Fan fan, Fan t1) {
+                    String fan_number = fan.fan_number;
+                    String fan_number1 = t1.fan_number;
+                    int flag = fan_number.compareTo(fan_number1) > 0 ? 1 : 0;
+                    return flag;
+                }
+            });
+            monitorAdapter.notifyDataSetChanged();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
         }
-        Collections.sort(fanList, new Comparator<Fan>() {
-            @Override
-            public int compare(Fan fan, Fan t1) {
-                String fan_number = fan.fan_number;
-                String fan_number1 = t1.fan_number;
-                int flag = fan_number.compareTo(fan_number1) > 0 ? 1 : 0;
-                return flag;
-            }
-        });
-        monitorAdapter.notifyDataSetChanged();
+
+
     }
 
     class MonitorAdapter extends BaseAdapter {
