@@ -28,9 +28,10 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -181,10 +182,7 @@ public class PowerFragment extends Fragment {
         @Override
         protected void onPostExecute(String result) {
             mGetStationNameTask = null;
-//            result = "鄯善,青河光伏,布尔津";
-            if (result.isEmpty() || result.equals(""))
-                return;
-            stations = result.split(",");
+            parserResult(result);
             //获取完默认展示第一个场站信息
             if (stations != null && stations.length > 0)
                 setStation(stations[0]);
@@ -194,6 +192,28 @@ public class PowerFragment extends Fragment {
         @Override
         protected void onCancelled() {
             mGetStationNameTask = null;
+        }
+    }
+
+
+    private void parserResult(String result) {
+        try {
+            JSONObject obj = new JSONObject(result);
+            int code = obj.optInt("code");
+            if (code == 0) {
+                String msg = obj.optString("msg");
+                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            JSONArray data = obj.optJSONArray("data");
+            if (data != null && data.length() > 0) {
+                for (int i = 0; i < data.length(); i++) {
+                    stations[i] = data.optString(i);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, WebService.ERRORMSG, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -292,46 +312,54 @@ public class PowerFragment extends Fragment {
      * @param result
      */
     public void setDataDetail(String result) {
-        if (!result.contains("{")) {
-            Toast.makeText(getActivity(), "获取数据失败：" + result, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        JsonParser parser = new JsonParser();//创建JSON解析器
-        JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
-        JsonArray parray = object.get("pcode").getAsJsonArray(); //得到为json的数组
-        JsonArray forecast_parray = object.get("forecast_pcode").getAsJsonArray(); //得到为json的数组
-
-        if (last_time == 0) {
-            forecastData.clear();
-            pData.clear();
-        }
-        if (forecast_parray != null && forecast_parray.size() > 0 && forecastData.size() <= 0) {//刷新状态不更新预测数据
-            for (int i = 0; i < forecast_parray.size(); i++) {
-                try {
-                    JsonObject subObject = forecast_parray.get(i).getAsJsonObject();
-                    forecastData.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("dataSet").getAsString())))));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+        try {
+            JSONObject obj = new JSONObject(result);
+            int code = obj.optInt("code");
+            if (code == 0) {
+                String msg = obj.optString("msg");
+                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (last_time == 0) {
+                forecastData.clear();
+                pData.clear();
+            }
+            JSONObject data = obj.optJSONObject("data");
+            if (data != null) {
+                JSONArray pcode = data.optJSONArray("pcode");
+                JSONArray fpcode = data.optJSONArray("forecast_pcode");
+                if (pcode != null && pcode.length() > 0) {
+                    int time = 0;
+                    for (int i = 0; i < pcode.length(); i++) {
+                        JSONObject detail = pcode.optJSONObject(i);
+                        try {
+                            pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("dataSet"))))));
+                            if (detail.optInt("time") > time)
+                                time = detail.optInt("time");
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    last_time = time;
+                }
+                if (fpcode != null && fpcode.length() > 0) {
+                    for (int i = 0; i < fpcode.length(); i++) {
+                        JSONObject fdetail = fpcode.optJSONObject(i);
+                        try {
+                            forecastData.add(new Entry(fdetail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(fdetail.optString("dataSet"))))));
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
+            refreshChartSet();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, WebService.ERRORMSG, Toast.LENGTH_SHORT).show();
         }
 
-        if (parray != null && parray.size() > 0) {
-            int time = 0;
-            for (int i = 0; i < parray.size(); i++) {
-                try {
-                    JsonObject subObject = parray.get(i).getAsJsonObject();
-                    pData.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("dataSet").getAsString())))));
-                    if (subObject.get("time").getAsInt() > time)
-                        time = subObject.get("time").getAsInt();
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-            last_time = time;
-        }
-        refreshChartSet();
+
     }
 
     //-----------------------------------------------定时操作BEGIN-------------------------------------------------------

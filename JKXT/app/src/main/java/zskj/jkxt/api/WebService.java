@@ -1,7 +1,5 @@
 package zskj.jkxt.api;
 
-import android.util.Log;
-
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -232,7 +230,7 @@ public class WebService {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
             return ERRORMSG;
         }
-        String methodName = "GetStationP3";
+        String methodName = "GetStationPower";
         SoapObject request = new SoapObject(namespace, methodName);
         request.addProperty("sdate", sdate);
         request.addProperty("time", time);
