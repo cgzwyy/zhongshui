@@ -21,6 +21,9 @@ import android.widget.TextView;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import zskj.jkxt.R;
 import zskj.jkxt.api.WebService;
 
@@ -31,7 +34,6 @@ public class LoginActivity extends Activity {
     private EditText mUserNameView, mPasswordView;
     private Button mSignBtn;
     private View mProgressView;
-//    private View mLoginFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +60,10 @@ public class LoginActivity extends Activity {
                 attemptLogin();
             }
         });
-//        mLoginFormView = findViewById(R.id.email_login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
 
+    //密码可以为空
     private void attemptLogin() {
         if (mAuthTask != null) {//不为null 说明登录操作正在进行，规避多次点击登录按钮操作
             return;
@@ -72,11 +74,6 @@ public class LoginActivity extends Activity {
         String password = mPasswordView.getText().toString();
         boolean cancel = false;
         View focusView = null;
-//        if (TextUtils.isEmpty(password)) {
-//            mPasswordView.setError(getString(R.string.error_field_required));
-//            focusView = mPasswordView;
-//            cancel = true;
-//        }
         if (TextUtils.isEmpty(userName)) {
             mUserNameView.setError(getString(R.string.error_field_required));
             focusView = mUserNameView;
@@ -126,33 +123,38 @@ public class LoginActivity extends Activity {
     }
 
     private void parserResult(String result) {//stupid back data~
-        //TODO 登录逻辑
-//        if (!result.contains("{")) {
-//            mPasswordView.setError(getString(R.string.error_incorrect_password)); //密码错误
-//            mPasswordView.requestFocus();
-//            return;
-//        } else {
-//            JsonParser parser = new JsonParser();//创建JSON解析器
-//            JsonObject object = (JsonObject) parser.parse(result); //创建JsonObject对象
-//
-//            String rights = object.get("rights").getAsString();
-//            String ranges = object.get("ranges").getAsString();
-//            String level = object.get("level").getAsString();
-//            Intent intent = new Intent();
-//            intent.setClass(LoginActivity.this, MainActivity.class);
-//            intent.putExtra("rights",rights);
-//            intent.putExtra("ranges",ranges);
-//            intent.putExtra("level",level);
-//            startActivity(intent);
-//            finish();
-//        }
-        Intent intent = new Intent();
-        intent.setClass(LoginActivity.this, MainActivity.class);
-        intent.putExtra("rights", "场站,全场功率,实时告警");
-        intent.putExtra("ranges", "布尔津,青河光伏,托克逊,鄯善二期,鄯善");
-        intent.putExtra("level", "1");
-        startActivity(intent);
-        finish();
+        try {
+            JSONObject obj = new JSONObject(result);
+            int code = obj.optInt("code");
+            if(code==1){
+                String rights = obj.optString("rights");
+                String ranges = obj.optString("ranges");
+                String level = obj.optString("level");
+                Intent intent = new Intent();
+                intent.setClass(LoginActivity.this, MainActivity.class);
+                intent.putExtra("rights",rights);
+                intent.putExtra("ranges",ranges);
+                intent.putExtra("level",level);
+                startActivity(intent);
+                finish();
+            }else {
+                String msg = obj.optString("msg");
+                mPasswordView.setError(msg); //密码错误
+                mPasswordView.requestFocus();
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            mPasswordView.setError(WebService.ERRORMSG); //密码错误
+            mPasswordView.requestFocus();
+        }
+//        Intent intent = new Intent();
+//        intent.setClass(LoginActivity.this, MainActivity.class);
+//        intent.putExtra("rights", "场站,全场功率,实时告警");
+//        intent.putExtra("ranges", "布尔津,青河光伏,托克逊,鄯善二期,鄯善");
+//        intent.putExtra("level", "1");
+//        startActivity(intent);
+//        finish();
     }
 
     /**
