@@ -10,19 +10,11 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = -2430426435250995216L;
 
-    public String userId;//编号
+    public int userId;//编号
     public String userName;//类型名
     public String userPassword;//日期
     public String userRights;//时间
     public String userRange;//事项内容
     public String userLevel;//事项内容
 
-    public User(){
-        userId = "";
-        userName = "";
-        userPassword = "";
-        userRights = "";
-        userRange = "";
-        userLevel = "";
-    }
 }

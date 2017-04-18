@@ -23,6 +23,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -185,7 +186,7 @@ public class MonitorDetailActivity extends Activity {
 
         @Override
         protected String doInBackground(Void... voids) {
-            return WebService.getInstance().GetStationInfo(model.columnValue);
+            return WebService.getInstance().getStationInfo(model.columnValue);
         }
 
         @Override
@@ -209,9 +210,9 @@ public class MonitorDetailActivity extends Activity {
      */
     private void dealResult(String result, String colName) {
         if (!result.contains("{")) {//非法数据
-//            testData();
-//            monitorAdapter.notifyDataSetChanged();
             Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+            testData();
+            monitorAdapter.notifyDataSetChanged();
             return;
         }
         JsonParser parser = new JsonParser();//创建JSON解析器
@@ -313,9 +314,11 @@ public class MonitorDetailActivity extends Activity {
             }
             if (Double.valueOf(model.fan_state.trim()) >= 5) { //停机
                 if (mStation.columnName.contains("光伏")) {
-                    holder.fan_picture.setImageResource(R.drawable.gf2_2);
+                    Glide.with(MonitorDetailActivity.this).load(R.drawable.gf2_2).asGif().into(holder.fan_picture);
+//                    holder.fan_picture.setImageResource(R.drawable.gf2_2);
                 } else {
-                    holder.fan_picture.setImageResource(R.drawable.fj_05);
+                    Glide.with(MonitorDetailActivity.this).load(R.drawable.fj_03).asGif().into(holder.fan_picture);
+//                    holder.fan_picture.setImageResource(R.drawable.fj_05);
                 }
                 holder.fan_state.setText(getResources().getString(R.string.stop));
                 holder.fan_state.setVisibility(View.VISIBLE);

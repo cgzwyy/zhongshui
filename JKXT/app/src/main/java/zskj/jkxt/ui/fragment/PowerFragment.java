@@ -67,7 +67,7 @@ public class PowerFragment extends Fragment {
     private Button select_time, select_station, sure;
     private View mProgressView;
     private LineChart mChart;
-    //data
+    //dataSet
     String ranges;
     String[] stations;
     private String station_name;
@@ -175,13 +175,13 @@ public class PowerFragment extends Fragment {
 
         @Override
         protected String doInBackground(Void... voids) {
-            return WebService.getInstance().GetStationName(ranges);
+            return WebService.getInstance().getStationName(ranges);
         }
 
         @Override
         protected void onPostExecute(String result) {
             mGetStationNameTask = null;
-            result = "鄯善,青河光伏,布尔津";//TODO delete
+//            result = "鄯善,青河光伏,布尔津";
             if (result.isEmpty() || result.equals(""))
                 return;
             stations = result.split(",");
@@ -233,7 +233,7 @@ public class PowerFragment extends Fragment {
      * 获取场站功率信息
      *
      * @param sdate        日期（精确到天）
-     * @param station_name 场站名 TODO 以场站ID索引
+     * @param station_name 场站名 最好以场站ID索引
      */
     private void getStationPower(String sdate, String station_name) {
         if (TextUtils.isEmpty(sdate) || TextUtils.isEmpty(station_name)) {
@@ -275,16 +275,12 @@ public class PowerFragment extends Fragment {
             Log.e(TAG, "result:" + result);
             mGetPowerDataTask = null;
             showProgress(false);
-            //TODO delete
-            if (last_time == 0)
-                result = "{\"pcode\":[{\"time\":\"0\",\"data\":\"7\"},{\"time\":\"1\",\"data\":\"8\"},{\"time\":\"2\",\"data\":\"8\"},{\"time\":\"3\",\"data\":\"0\"},{\"time\":\"4\",\"data\":\"5\"},{\"time\":\"5\",\"data\":\"5\"},{\"time\":\"6\",\"data\":\"2\"},{\"time\":\"7\",\"data\":\"5\"}],\"forecast_pcode\":[{\"time\":\"0\",\"data\":\"1\"},{\"time\":\"1\",\"data\":\"6\"},{\"time\":\"2\",\"data\":\"6\"},{\"time\":\"3\",\"data\":\"4\"},{\"time\":\"4\",\"data\":\"0\"},{\"time\":\"5\",\"data\":\"8\"},{\"time\":\"6\",\"data\":\"3\"},{\"time\":\"7\",\"data\":\"1\"},{\"time\":\"8\",\"data\":\"5\"},{\"time\":\"9\",\"data\":\"3\"},{\"time\":\"10\",\"data\":\"9\"}]}";
-            else
-                result = "{\"pcode\":[{\"time\":\"8\",\"data\":\"1\"},{\"time\":\"9\",\"data\":\"1\"},{\"time\":\"10\",\"data\":\"2\"}],\"forecast_pcode\":[{\"time\":\"0\",\"data\":\"1\"},{\"time\":\"1\",\"data\":\"6\"},{\"time\":\"2\",\"data\":\"6\"},{\"time\":\"3\",\"data\":\"4\"},{\"time\":\"4\",\"data\":\"0\"},{\"time\":\"5\",\"data\":\"8\"},{\"time\":\"6\",\"data\":\"3\"},{\"time\":\"7\",\"data\":\"1\"},{\"time\":\"8\",\"data\":\"5\"},{\"time\":\"9\",\"data\":\"3\"},{\"time\":\"10\",\"data\":\"9\"}]}";
             setDataDetail(result);
         }
 
         @Override
         protected void onCancelled() {
+            showProgress(false);
             mGetPowerDataTask = null;
         }
     }
@@ -314,7 +310,7 @@ public class PowerFragment extends Fragment {
             for (int i = 0; i < forecast_parray.size(); i++) {
                 try {
                     JsonObject subObject = forecast_parray.get(i).getAsJsonObject();
-                    forecastData.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
+                    forecastData.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("dataSet").getAsString())))));
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
@@ -326,7 +322,7 @@ public class PowerFragment extends Fragment {
             for (int i = 0; i < parray.size(); i++) {
                 try {
                     JsonObject subObject = parray.get(i).getAsJsonObject();
-                    pData.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("data").getAsString())))));
+                    pData.add(new Entry(subObject.get("time").getAsFloat(), Float.parseFloat(df.format(Double.valueOf(subObject.get("dataSet").getAsString())))));
                     if (subObject.get("time").getAsInt() > time)
                         time = subObject.get("time").getAsInt();
                 } catch (NumberFormatException e) {
