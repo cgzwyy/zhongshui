@@ -24,7 +24,6 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -58,7 +57,8 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
     //format
     SimpleDateFormat sdf_date = new SimpleDateFormat("yyyyMMdd");
     SimpleDateFormat sdf_time = new SimpleDateFormat("HHmmssSSS");
-    String date = sdf_date.format(new Date());
+//    String sdate = sdf_date.format(new Date());
+    String sdate = "20170316";
     String last_time = "0"; //取得的最后一条报警数据的时间
 
     MyAdapter myAdapter;
@@ -114,7 +114,7 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
     }
 
     private void getDetail() {
-        if (TextUtils.isEmpty(date) || TextUtils.isEmpty(last_time))
+        if (TextUtils.isEmpty(sdate) || TextUtils.isEmpty(last_time))
             return;
         if (mTask != null)
             return;
@@ -172,7 +172,7 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
 
         @Override
         protected String doInBackground(Void... voids) {
-            return WebService.getInstance().getAlarmData(date, last_time, ranges, level);
+            return WebService.getInstance().getAlarmData(sdate, last_time, ranges, level);
         }
 
         @Override

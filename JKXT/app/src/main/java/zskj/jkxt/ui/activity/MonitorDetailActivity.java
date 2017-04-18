@@ -8,6 +8,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.SuperscriptSpan;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -218,30 +219,38 @@ public class MonitorDetailActivity extends Activity {
                 String msg = obj.optString("msg");
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                 return;
+        }
+
+            Log.e("MonitorDetail----->",result);
+            tv_plan.setText(df.format(Double.valueOf(obj.optString("省调计划"))));
+            if (colName.contains("光伏")) {
+                tv_speed.setText(df.format(Double.valueOf(obj.optString("总辐射瞬时值"))));
+            } else {
+                tv_speed.setText(df.format(Double.valueOf(obj.optString("平均风速"))));
             }
+            tv_power.setText(df.format(Double.valueOf(obj.optString("当日发电量"))));
+            tv_electricity.setText(df.format(Double.valueOf(obj.optString("瞬时总有功"))));
 
             JSONObject data = obj.optJSONObject("data");
-
-            tv_plan.setText(df.format(Double.valueOf(data.optString("plan"))));
-            if (colName.contains("光伏")) {
-                tv_speed.setText(df.format(Double.valueOf(data.optString("speed"))));
-            } else {
-                tv_speed.setText(df.format(Double.valueOf(data.optString("speed_average"))));
-            }
-            tv_power.setText(df.format(Double.valueOf(data.optString("power"))));
-            tv_electricity.setText(df.format(Double.valueOf(data.optString("electricity"))));
-
             JSONArray list = data.optJSONArray("list");
             if (list != null && list.length() > 0) {
                 fanList.clear();
                 for (int i = 0; i < list.length(); i++) {
                     JSONObject object = list.optJSONObject(i);
                     Fan fan = new Fan();
-                    fan.fan_number = object.optString("number");
-                    fan.fan_speed = df.format(Double.valueOf(object.optString("speed")));
-                    fan.fan_revs = df.format(Double.valueOf(object.optString("revs")));
-                    fan.fan_state = df.format(Double.valueOf(object.optString("state")));
-                    fan.fan_active_power = df.format(Double.valueOf(object.optString("power")));
+                    fan.fan_number = object.optString("编号");
+                    if (colName.contains("光伏")) {
+                        fan.fan_speed = df.format(Double.valueOf(object.optString("逆变器日发电量")));
+                        fan.fan_revs = df.format(Double.valueOf(object.optString("逆变器效率")));
+                        fan.fan_state = df.format(Double.valueOf(object.optString("逆变器状态")));
+                        fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
+                    }else{
+                        fan.fan_speed = df.format(Double.valueOf(object.optString("风速")));
+                        fan.fan_revs = df.format(Double.valueOf(object.optString("转速")));
+                        fan.fan_state = df.format(Double.valueOf(object.optString("风机运行状态")));
+                        fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
+                    }
+
                     fanList.add(fan);
                 }
             }
@@ -317,8 +326,9 @@ public class MonitorDetailActivity extends Activity {
             }
             if (Double.valueOf(model.fan_state.trim()) >= 5) { //停机
                 if (mStation.columnName.contains("光伏")) {
-                    Glide.with(MonitorDetailActivity.this).load(R.drawable.gf2_2).asGif().into(holder.fan_picture);
-//                    holder.fan_picture.setImageResource(R.drawable.gf2_2);
+                    // TDTD
+//                    Glide.with(MonitorDetailActivity.this).load(R.drawable.gf2_2).asGif().into(holder.fan_picture);
+                    holder.fan_picture.setImageResource(R.drawable.gf2_2);
                 } else {
                     Glide.with(MonitorDetailActivity.this).load(R.drawable.fj_03).asGif().into(holder.fan_picture);
 //                    holder.fan_picture.setImageResource(R.drawable.fj_05);

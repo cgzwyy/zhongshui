@@ -125,9 +125,10 @@ public class LoginActivity extends Activity {
                 mPasswordView.requestFocus();
                 return;
             }
-            String rights = obj.optString("rights");
-            String ranges = obj.optString("ranges");
-            String level = obj.optString("level");
+            JSONObject data = obj.optJSONObject("data");
+            String rights = data.optString("rights");
+            String ranges = data.optString("ranges");
+            String level = data.optString("level");
             Intent intent = new Intent();
             intent.setClass(LoginActivity.this, MainActivity.class);
             intent.putExtra("rights", rights);

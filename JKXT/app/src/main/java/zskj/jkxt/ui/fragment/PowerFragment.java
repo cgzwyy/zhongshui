@@ -144,7 +144,7 @@ public class PowerFragment extends Fragment {
                 }
             }
         });
-        initChart();
+//        initChart();
     }
 
     private void initData() {
@@ -207,8 +207,10 @@ public class PowerFragment extends Fragment {
             }
             JSONArray data = obj.optJSONArray("data");
             if (data != null && data.length() > 0) {
+                stations = new String[data.length()];
                 for (int i = 0; i < data.length(); i++) {
-                    stations[i] = data.optString(i);
+                    JSONObject object = data.optJSONObject(i);
+                    stations[i] = object.getString("StationName");
                 }
             }
         } catch (JSONException e) {
@@ -292,7 +294,7 @@ public class PowerFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String result) {
-            Log.e(TAG, "result:" + result);
+//            Log.e(TAG, "result:" + result);
             mGetPowerDataTask = null;
             showProgress(false);
             setDataDetail(result);
@@ -328,12 +330,13 @@ public class PowerFragment extends Fragment {
             if (data != null) {
                 JSONArray pcode = data.optJSONArray("pcode");
                 JSONArray fpcode = data.optJSONArray("forecast_pcode");
+                Log.e("data size-->",pcode.length() + "   " + fpcode.length());
                 if (pcode != null && pcode.length() > 0) {
                     int time = 0;
                     for (int i = 0; i < pcode.length(); i++) {
                         JSONObject detail = pcode.optJSONObject(i);
                         try {
-                            pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("dataSet"))))));
+                            pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
                             if (detail.optInt("time") > time)
                                 time = detail.optInt("time");
                         } catch (NumberFormatException e) {
@@ -346,13 +349,14 @@ public class PowerFragment extends Fragment {
                     for (int i = 0; i < fpcode.length(); i++) {
                         JSONObject fdetail = fpcode.optJSONObject(i);
                         try {
-                            forecastData.add(new Entry(fdetail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(fdetail.optString("dataSet"))))));
+                            forecastData.add(new Entry(fdetail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
                         } catch (NumberFormatException e) {
                             e.printStackTrace();
                         }
                     }
                 }
             }
+            Log.e("data size-->",pData.size() + "   " + forecastData.size());
             refreshChartSet();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -423,6 +427,7 @@ public class PowerFragment extends Fragment {
             dataline.addDataSet(pline);
             mChart.setData(dataline);
             mChart.notifyDataSetChanged();
+            initChart();
         }
         mChart.invalidate();
     }
