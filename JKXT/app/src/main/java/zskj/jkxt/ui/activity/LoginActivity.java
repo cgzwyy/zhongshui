@@ -18,7 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import zskj.jkxt.R;
-import zskj.jkxt.api.WebService;
+import zskj.jkxt.WebService;
 
 public class LoginActivity extends Activity {
 
@@ -115,7 +115,7 @@ public class LoginActivity extends Activity {
         }
     }
 
-    private void parserResult(String result) {//stupid back data~
+    private void parserResult(String result) {
         try {
             JSONObject obj = new JSONObject(result);
             int code = obj.optInt("code");
@@ -156,10 +156,8 @@ public class LoginActivity extends Activity {
      */
     private void showProgress(final boolean show) {
         mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-//            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         if (show) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//            inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
         }
 

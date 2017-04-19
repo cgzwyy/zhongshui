@@ -8,10 +8,6 @@ import java.io.Serializable;
 
 public class Station implements Serializable {
 
-
-    /**
-     *
-     */
     private static final long serialVersionUID = -2430426435250995216L;
     public String columnAddress;//位置
     public String columnName;//厂站类型

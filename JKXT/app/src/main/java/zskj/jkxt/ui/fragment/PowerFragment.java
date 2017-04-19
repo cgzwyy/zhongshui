@@ -42,7 +42,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import zskj.jkxt.R;
-import zskj.jkxt.api.WebService;
+import zskj.jkxt.WebService;
 import zskj.jkxt.ui.widget.MyMarkerView;
 import zskj.jkxt.util.DateTimePickDialogUtil;
 
@@ -209,8 +209,7 @@ public class PowerFragment extends Fragment {
             if (data != null && data.length() > 0) {
                 stations = new String[data.length()];
                 for (int i = 0; i < data.length(); i++) {
-                    JSONObject object = data.optJSONObject(i);
-                    stations[i] = object.getString("StationName");
+                    stations[i] = data.optString(i);
                 }
             }
         } catch (JSONException e) {
@@ -330,15 +329,15 @@ public class PowerFragment extends Fragment {
             if (data != null) {
                 JSONArray pcode = data.optJSONArray("pcode");
                 JSONArray fpcode = data.optJSONArray("forecast_pcode");
-                Log.e("data size-->",pcode.length() + "   " + fpcode.length());
+                Log.e("data size-->", pcode.length() + "   " + fpcode.length());
                 if (pcode != null && pcode.length() > 0) {
                     int time = 0;
                     for (int i = 0; i < pcode.length(); i++) {
                         JSONObject detail = pcode.optJSONObject(i);
                         try {
-                            if(i == 0){
+                            if (i == 0) {
                                 pData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
-                            }else{
+                            } else {
                                 pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
                                 if (detail.optInt("time") > time)
                                     time = detail.optInt("time");
@@ -353,9 +352,9 @@ public class PowerFragment extends Fragment {
                     for (int i = 0; i < fpcode.length(); i++) {
                         JSONObject fdetail = fpcode.optJSONObject(i);
                         try {
-                            if(i == 0){
+                            if (i == 0) {
                                 forecastData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
-                            }else{
+                            } else {
                                 forecastData.add(new Entry(fdetail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
                             }
                         } catch (NumberFormatException e) {
@@ -364,7 +363,7 @@ public class PowerFragment extends Fragment {
                     }
                 }
             }
-            Log.e("data size-->",pData.size() + "   " + forecastData.size());
+            Log.e("data size-->", pData.size() + "   " + forecastData.size());
             refreshChartSet();
         } catch (JSONException e) {
             e.printStackTrace();

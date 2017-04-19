@@ -12,9 +12,6 @@ import zskj.jkxt.util.Sort;
 public class Fan implements Serializable {
 
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -2430426435250995216L;
 
     public String fan_number;//风机编号

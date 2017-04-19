@@ -1,11 +1,10 @@
-package zskj.jkxt.api;
+package zskj.jkxt;
 
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
-import zskj.jkxt.JKXTApplication;
 import zskj.jkxt.util.ConnectionChangeReceiver;
 
 /**

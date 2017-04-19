@@ -30,7 +30,8 @@
             android:gravity="center"
             android:text="场站"
             android:textColor="@color/white"
-            android:textSize="15dp" />
+            android:textSize="15dp"
+            android:visibility="gone" />
 
         <RadioButton
             android:id="@+id/rb_power"
@@ -42,7 +43,8 @@
             android:gravity="center"
             android:text="全场功率"
             android:textColor="@color/white"
-            android:textSize="15dp" />
+            android:textSize="15dp"
+            android:visibility="gone" />
 
         <RadioButton
             android:id="@+id/rb_warn"
@@ -54,7 +56,8 @@
             android:gravity="center"
             android:text="实时告警"
             android:textColor="@color/white"
-            android:textSize="15dp" />
+            android:textSize="15dp"
+            android:visibility="gone" />
 
         <RadioButton
             android:id="@+id/rb_set"
@@ -66,7 +69,8 @@
             android:gravity="center"
             android:text="用户管理"
             android:textColor="@color/white"
-            android:textSize="15dp" />
+            android:textSize="15dp"
+            android:visibility="gone" />
     </RadioGroup>
 
 </LinearLayout>

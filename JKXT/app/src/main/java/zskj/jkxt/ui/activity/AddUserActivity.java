@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import zskj.jkxt.R;
-import zskj.jkxt.api.WebService;
+import zskj.jkxt.WebService;
 import zskj.jkxt.domain.User;
 
 

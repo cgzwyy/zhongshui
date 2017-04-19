@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import zskj.jkxt.R;
-import zskj.jkxt.api.WebService;
+import zskj.jkxt.WebService;
 import zskj.jkxt.domain.Fan;
 import zskj.jkxt.domain.Station;
 import zskj.jkxt.ui.widget.StationDetailPopu;
@@ -219,19 +219,19 @@ public class MonitorDetailActivity extends Activity {
                 String msg = obj.optString("msg");
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                 return;
-        }
-
-            Log.e("MonitorDetail----->",result);
-            tv_plan.setText(df.format(Double.valueOf(obj.optString("省调计划"))));
-            if (colName.contains("光伏")) {
-                tv_speed.setText(df.format(Double.valueOf(obj.optString("总辐射瞬时值"))));
-            } else {
-                tv_speed.setText(df.format(Double.valueOf(obj.optString("平均风速"))));
             }
-            tv_power.setText(df.format(Double.valueOf(obj.optString("当日发电量"))));
-            tv_electricity.setText(df.format(Double.valueOf(obj.optString("瞬时总有功"))));
-
             JSONObject data = obj.optJSONObject("data");
+            if (data == null)
+                return;
+            tv_plan.setText(df.format(Double.valueOf(data.optString("省调计划"))));
+            if (colName.contains("光伏")) {
+                tv_speed.setText(df.format(Double.valueOf(data.optString("总辐射瞬时值"))));
+            } else {
+                tv_speed.setText(df.format(Double.valueOf(data.optString("平均风速"))));
+            }
+            tv_power.setText(df.format(Double.valueOf(data.optString("当日发电量"))));
+            tv_electricity.setText(df.format(Double.valueOf(data.optString("瞬时总有功"))));
+
             JSONArray list = data.optJSONArray("list");
             if (list != null && list.length() > 0) {
                 fanList.clear();
@@ -244,7 +244,7 @@ public class MonitorDetailActivity extends Activity {
                         fan.fan_revs = df.format(Double.valueOf(object.optString("逆变器效率")));
                         fan.fan_state = df.format(Double.valueOf(object.optString("逆变器状态")));
                         fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
-                    }else{
+                    } else {
                         fan.fan_speed = df.format(Double.valueOf(object.optString("风速")));
                         fan.fan_revs = df.format(Double.valueOf(object.optString("转速")));
                         fan.fan_state = df.format(Double.valueOf(object.optString("风机运行状态")));
@@ -394,19 +394,5 @@ public class MonitorDetailActivity extends Activity {
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.alpha = bgAlpha; //0.0-1.0
         getWindow().setAttributes(lp);
-    }
-
-    //TODO delete
-    private void testData() {
-        fanList.clear();
-        for (int i = 0; i < 10; i++) {
-            Fan fan = new Fan();
-            fan.fan_number = "编号：" + i;
-            fan.fan_speed = "123.33";
-            fan.fan_active_power = "123.44";
-            fan.fan_revs = "123.55";
-            fan.fan_state = "123.66";
-            fanList.add(fan);
-        }
     }
 }

@@ -30,7 +30,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import zskj.jkxt.R;
-import zskj.jkxt.api.WebService;
+import zskj.jkxt.WebService;
 import zskj.jkxt.domain.AlarmData;
 
 /**
@@ -58,7 +58,7 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
     //format
     SimpleDateFormat sdf_date = new SimpleDateFormat("yyyyMMdd");
     SimpleDateFormat sdf_time = new SimpleDateFormat("HHmmssSSS");
-//    String sdate = sdf_date.format(new Date());
+    //    String sdate = sdf_date.format(new Date());
     String sdate = "20170316";
     String last_time = "0"; //取得的最后一条报警数据的时间
 
@@ -200,12 +200,11 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 return;
             }
-            JSONObject data = obj.optJSONObject("data");
-            JSONArray AlarmDatas = data.optJSONArray("AlarmData");
-            if (AlarmDatas != null && AlarmDatas.length() > 0) {
+            JSONArray data = obj.optJSONArray("data");
+            if (data != null && data.length() > 0) {
                 dataSet.clear();
-                for (int i = 0; i < AlarmDatas.length(); i++) {
-                    JSONObject detail = AlarmDatas.optJSONObject(i);
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject detail = data.optJSONObject(i);
                     AlarmData alarmData = new AlarmData();
                     alarmData.alarm_num = i + "";
                     alarmData.alarm_station = detail.optString("station");

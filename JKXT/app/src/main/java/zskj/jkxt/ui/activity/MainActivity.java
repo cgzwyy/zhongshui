@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -37,13 +38,17 @@ public class MainActivity extends FragmentActivity {
     RadioGroup rg_menu;
     RadioButton rb_station, rb_power, rb_warn, rb_set;
     String rights, ranges, level;
-    int tabId = 0, flag = 0;
+    int tabId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        rights = getIntent().getStringExtra("rights");
+        ranges = getIntent().getStringExtra("ranges");
+        level = getIntent().getStringExtra("level");
+
         initViews();//初始化控件
         initData();
     }
@@ -54,41 +59,28 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void initViews() {
-        rights = getIntent().getStringExtra("rights");
-        ranges = getIntent().getStringExtra("ranges");
-        level = getIntent().getStringExtra("level");
-
         rg_menu = (RadioGroup) this.findViewById(R.id.rg_menu);
         rb_station = (RadioButton) this.findViewById(R.id.rb_station);
         rb_power = (RadioButton) this.findViewById(R.id.rb_power);
         rb_warn = (RadioButton) this.findViewById(R.id.rb_warn);
         rb_set = (RadioButton) this.findViewById(R.id.rb_set);
 
-        rb_station.setVisibility(View.GONE);
-        rb_power.setVisibility(View.GONE);
-        rb_warn.setVisibility(View.GONE);
-        rb_set.setVisibility(View.GONE);
-        if (rights.contains(rb_station.getText().toString())) {
-            rb_station.setVisibility(View.VISIBLE);
-            tabId = R.id.rb_station;
-            flag = 1;
-        }
-        if (rights.contains(rb_power.getText().toString())) {
-            rb_power.setVisibility(View.VISIBLE);
-            if (flag == 0) {
-                tabId = R.id.rb_power;
-                flag = 1;
-            }
-        }
-        if (rights.contains(rb_warn.getText().toString())) {
-            rb_warn.setVisibility(View.VISIBLE);
-            if (flag == 0) {
+        //优先显示，逆序排列
+        if (!TextUtils.isEmpty(rights)) {
+            if (rights.contains(rb_warn.getText().toString())) {
+                rb_warn.setVisibility(View.VISIBLE);
                 tabId = R.id.rb_warn;
-                flag = 1;
+            }
+            if (rights.contains(rb_power.getText().toString())) {
+                rb_power.setVisibility(View.VISIBLE);
+                tabId = R.id.rb_power;
+            }
+            if (rights.contains(rb_station.getText().toString())) {
+                rb_station.setVisibility(View.VISIBLE);
+                tabId = R.id.rb_station;
             }
         }
-
-        if (level.equals("1")) {
+        if (!TextUtils.isEmpty(level) && level.equals("1")) {
             rb_set.setVisibility(View.VISIBLE);
         }
 
@@ -120,7 +112,7 @@ public class MainActivity extends FragmentActivity {
                         break;
                     case R.id.rb_warn:
                         if (mWarnFrag == null) {
-                            mWarnFrag = WarnFragment.getInstance(ranges,level);
+                            mWarnFrag = WarnFragment.getInstance(ranges, level);
                             transaction.add(R.id.fl_container, mWarnFrag, "warn");
                         } else {
                             transaction.show(mWarnFrag);
@@ -142,6 +134,7 @@ public class MainActivity extends FragmentActivity {
         });
     }
 
+    //重要，不要删
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);

@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zskj.jkxt.R;
-import zskj.jkxt.api.WebService;
+import zskj.jkxt.WebService;
 import zskj.jkxt.domain.User;
 import zskj.jkxt.ui.activity.AddUserActivity;
 import zskj.jkxt.ui.activity.UpdateUserActivity;
@@ -245,7 +245,6 @@ public class UserManagementFragment extends Fragment {
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, UpdateUserActivity.class);
                     intent.putExtra("user", model);
-//                    startActivity(intent);
                     startActivityForResult(intent, 1);
                 }
             });
@@ -349,16 +348,6 @@ public class UserManagementFragment extends Fragment {
             e.printStackTrace();
             Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
         }
-//        if (TextUtils.isEmpty(result)) {
-//            Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
-//            return;
-//        }
-//
-//        if (result.equals("true")) {
-//            getUserData();
-//        } else {
-//            Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
-//        }
     }
 
     @Override
