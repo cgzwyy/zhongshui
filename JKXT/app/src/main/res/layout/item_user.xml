@@ -12,7 +12,8 @@
         android:layout_weight="1"
         android:text="@string/user_id"
         android:textColor="@color/black"
-        android:gravity="center|center_vertical"/>
+        android:gravity="center|center_vertical"
+        android:textSize="@dimen/content_text_size"/>
     <TextView
         android:id="@+id/userName"
         android:layout_width="0dp"
@@ -20,7 +21,8 @@
         android:layout_weight="1"
         android:text="@string/user_name"
         android:textColor="@color/black"
-        android:gravity="center|center_vertical"/>
+        android:gravity="center|center_vertical"
+        android:textSize="@dimen/content_text_size"/>
     <TextView
         android:id="@+id/userRights"
         android:layout_width="0dp"
@@ -30,7 +32,8 @@
         android:textColor="@color/black"
         android:gravity="center|center_vertical"
         android:lines="1"
-        android:ellipsize="end"/>
+        android:ellipsize="end"
+        android:textSize="@dimen/content_text_size"/>
     <TextView
         android:id="@+id/userRange"
         android:layout_width="0dp"
@@ -40,7 +43,8 @@
         android:textColor="@color/black"
         android:gravity="center|center_vertical"
         android:lines="1"
-        android:ellipsize="end"/>
+        android:ellipsize="end"
+        android:textSize="@dimen/content_text_size"/>
     <TextView
         android:id="@+id/userLevel"
         android:layout_width="0dp"
@@ -48,7 +52,8 @@
         android:layout_weight="1"
         android:text="@string/user_level"
         android:textColor="@color/black"
-        android:gravity="center|center_vertical"/>
+        android:gravity="center|center_vertical"
+        android:textSize="@dimen/content_text_size"/>
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"

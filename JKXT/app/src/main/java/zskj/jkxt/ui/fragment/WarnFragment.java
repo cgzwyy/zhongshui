@@ -22,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -199,11 +200,14 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 return;
             }
-            JSONArray data = obj.optJSONArray("data");
-            if (data != null && data.length() > 0) {
-                for (int i = 0; i < data.length(); i++) {
-                    JSONObject detail = data.optJSONObject(i);
+            JSONObject data = obj.optJSONObject("data");
+            JSONArray AlarmDatas = data.optJSONArray("AlarmData");
+            if (AlarmDatas != null && AlarmDatas.length() > 0) {
+                dataSet.clear();
+                for (int i = 0; i < AlarmDatas.length(); i++) {
+                    JSONObject detail = AlarmDatas.optJSONObject(i);
                     AlarmData alarmData = new AlarmData();
+                    alarmData.alarm_num = i + "";
                     alarmData.alarm_station = detail.optString("station");
                     alarmData.alarm_type = detail.optString("type");
                     alarmData.alarm_date = detail.optString("date");
@@ -215,6 +219,7 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
                     dataSet.add(alarmData);
                 }
             }
+            currentPage = dataSet.size() % 10 == 0 ? dataSet.size() / 10 - 1 : dataSet.size() / 10;
             myAdapter.refresh();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -322,21 +327,20 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
             holder.alarm_station.setText(model.alarm_station);
             holder.alarm_type.setText(model.alarm_type);
             holder.alarm_content.setText(model.alarm_content);
-            holder.alarm_time.setText(model.alarm_date);
+//            holder.alarm_time.setText(model.alarm_time);
             //TODO 乱七八糟什么东西
-//            SimpleDateFormat formatter = new SimpleDateFormat("HHmmssSSS");
-//            SimpleDateFormat formatter2 = new SimpleDateFormat("HH:mm:ss:SSS");
-//            String formatStr = null;
-//            String s = model.alarm_time;
-//            String str = "000000000";
-//            try {
-////                formatStr = formatter2.format(formatter.parse(String.format("%1$0"+(9-s.length())+"d",0)+s));
-//
-//                formatStr = formatter2.format(formatter.parse(str.substring(0, 9 - s.length()) + s));
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-//            holder.alarm_time.setText(formatStr);
+            SimpleDateFormat formatter = new SimpleDateFormat("HHmmssSSS");
+            SimpleDateFormat formatter2 = new SimpleDateFormat("HH:mm:ss:SSS");
+            String formatStr = null;
+            String s = model.alarm_time;
+            String str = "000000000";
+            try {
+//                formatStr = formatter2.format(formatter.parse(String.format("%1$0"+(9-s.length())+"d",0)+s));
+                formatStr = formatter2.format(formatter.parse(str.substring(0, 9 - s.length()) + s));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            holder.alarm_time.setText(formatStr);
 
             return convertView;
         }

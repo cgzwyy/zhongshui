@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:text="@string/test_value"
             android:textColor="@color/black"
-            android:textSize="@dimen/dialog_content_text_size"
+            android:textSize="@dimen/content_text_size"
             android:paddingLeft="@dimen/activity_vertical_little_margin"
             android:paddingTop="@dimen/activity_vertical_little_margin"
             android:paddingBottom="@dimen/activity_vertical_little_margin"/>
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:text="@string/test_value"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/dialog_content_text_size"
+            android:textSize="@dimen/content_text_size"
             android:paddingLeft="@dimen/activity_vertical_little_margin"
             android:paddingTop="@dimen/activity_vertical_little_margin"
             android:paddingBottom="@dimen/activity_vertical_little_margin" />
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:text="@string/test_value"
             android:textColor="@color/black"
-            android:textSize="@dimen/dialog_content_text_size"
+            android:textSize="@dimen/content_text_size"
             android:paddingLeft="@dimen/activity_vertical_little_margin"
             android:paddingTop="@dimen/activity_vertical_little_margin"
             android:paddingBottom="@dimen/activity_vertical_little_margin"/>

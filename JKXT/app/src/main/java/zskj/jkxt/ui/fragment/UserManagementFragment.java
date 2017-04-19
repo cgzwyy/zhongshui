@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -121,7 +120,6 @@ public class UserManagementFragment extends Fragment {
     }
 
     private void dealResult(String result) {
-        Log.e("resutl-->", result);
         try {
             JSONObject obj = new JSONObject(result);
             int code = obj.optInt("code");
@@ -130,10 +128,12 @@ public class UserManagementFragment extends Fragment {
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 return;
             }
-            JSONArray data = obj.optJSONArray("data");
-            if (data != null && data.length() > 0) {
-                for (int i = 0; i < data.length(); i++) {
-                    JSONObject detail = data.optJSONObject(i);
+            JSONObject data = obj.optJSONObject("data");
+            JSONArray userLists = data.optJSONArray("userlist");
+            if (userLists != null && userLists.length() > 0) {
+                userList.clear();
+                for (int i = 0; i < userLists.length(); i++) {
+                    JSONObject detail = userLists.optJSONObject(i);
                     User user = new User();
                     user.userId = i;
                     user.userName = detail.optString("userName");
@@ -332,17 +332,33 @@ public class UserManagementFragment extends Fragment {
     }
 
     public void deleteResult(String result) {
-        if (TextUtils.isEmpty(result)) {
-            Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
-            return;
+        try {
+            JSONObject obj = new JSONObject(result);
+            int code = obj.optInt("code");
+            if (code == 0) {
+                String msg = obj.optString("msg");
+                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (obj.optString("data").equals("true")) {
+                getUserData();
+            } else {
+                Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
         }
-
-        if (result.equals("true")) {
-            getUserData();
-        } else {
-            Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
-        }
-
+//        if (TextUtils.isEmpty(result)) {
+//            Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
+//            return;
+//        }
+//
+//        if (result.equals("true")) {
+//            getUserData();
+//        } else {
+//            Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
+//        }
     }
 
     @Override

@@ -336,9 +336,13 @@ public class PowerFragment extends Fragment {
                     for (int i = 0; i < pcode.length(); i++) {
                         JSONObject detail = pcode.optJSONObject(i);
                         try {
-                            pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
-                            if (detail.optInt("time") > time)
-                                time = detail.optInt("time");
+                            if(i == 0){
+                                pData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+                            }else{
+                                pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+                                if (detail.optInt("time") > time)
+                                    time = detail.optInt("time");
+                            }
                         } catch (NumberFormatException e) {
                             e.printStackTrace();
                         }
@@ -349,7 +353,11 @@ public class PowerFragment extends Fragment {
                     for (int i = 0; i < fpcode.length(); i++) {
                         JSONObject fdetail = fpcode.optJSONObject(i);
                         try {
-                            forecastData.add(new Entry(fdetail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
+                            if(i == 0){
+                                forecastData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
+                            }else{
+                                forecastData.add(new Entry(fdetail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
+                            }
                         } catch (NumberFormatException e) {
                             e.printStackTrace();
                         }

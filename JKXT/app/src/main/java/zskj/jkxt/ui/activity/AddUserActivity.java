@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -16,6 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -178,17 +181,14 @@ public class AddUserActivity extends AppCompatActivity {
                 if(i == 0) {
                     mCheckBox = (CheckBox) this.findViewById(R.id.cbstation1);
                     mCheckBox.setText(module[0]);
+                    mCheckBox.setTextSize(TypedValue.COMPLEX_UNIT_SP,12);
                     range.put(finalI,module[0]);
-                    Log.e("Listener1--->","sssss" + "\t" + finalI + "\t" + module[0]);
                     mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            Log.e("Listener1--->",finalI+"\t"+module[0]);
                             if(isChecked){
-                                Log.e("Listener1--->","checked" + "\t" + finalI);
                                 range.put(finalI,module[0]);
                             }else{
-                                Log.e("Listener1--->","unchecked" + "\t" + finalI);
                                 range.remove(finalI);
                             }
                         }
@@ -196,15 +196,13 @@ public class AddUserActivity extends AppCompatActivity {
                 }else{
                     mCheckBox = new CheckBox(this);
                     mCheckBox.setText(module[0]);
+                    mCheckBox.setTextSize(TypedValue.COMPLEX_UNIT_SP,12);
                     mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            Log.e("Listener2--->",finalI+"\t"+module[0]);
                             if(isChecked){
-                                Log.e("Listener2--->","checked");
                                 range.put(finalI,module[0]);
                             }else{
-                                Log.e("Listener2--->","unchecked");
                                 range.remove(finalI);
                             }
                         }
@@ -214,7 +212,6 @@ public class AddUserActivity extends AppCompatActivity {
                 }
             }
         }
-        Log.e("rg_range.ChildCount-->",rg_range.getChildCount() + "");
 
         register = (Button) this.findViewById(R.id.register);
         register.setOnClickListener(new View.OnClickListener() {
@@ -333,20 +330,38 @@ public class AddUserActivity extends AppCompatActivity {
     }
 
     public void dealResult(String result){
-        if(TextUtils.isEmpty(result)) {
-            Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
-            return;
+        try {
+            JSONObject obj = new JSONObject(result);
+            int code = obj.optInt("code");
+            if (code == 0) {
+                String msg = obj.optString("msg");
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (obj.optString("data").equals("true")) {
+                setResult(1);
+                finish();
+            } else {
+                Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
         }
-
-        if(result.equals("true")){
-//            Intent intent = new Intent(AddUserActivity.this,UserManagementActivity.class);
-//            startActivity(intent);
-            setResult(1);
-            finish();
-        }else{
-            etName.setError("用户名重复");
-//            Toast.makeText(getApplicationContext(),"用户名重复",Toast.LENGTH_LONG).show();
-        }
+//        if(TextUtils.isEmpty(result)) {
+//            Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
+//            return;
+//        }
+//
+//        if(result.equals("true")){
+////            Intent intent = new Intent(AddUserActivity.this,UserManagementActivity.class);
+////            startActivity(intent);
+//            setResult(1);
+//            finish();
+//        }else{
+//            etName.setError("用户名重复");
+////            Toast.makeText(getApplicationContext(),"用户名重复",Toast.LENGTH_LONG).show();
+//        }
 
     }
 

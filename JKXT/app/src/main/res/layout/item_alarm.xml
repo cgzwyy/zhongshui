@@ -12,6 +12,7 @@
         android:layout_weight="1"
         android:text="@string/alarm_num"
         android:textColor="@color/black"
+        android:textSize="@dimen/content_text_size"
         android:gravity="center"/>
     <TextView
         android:id="@+id/alarm_station"
@@ -20,6 +21,7 @@
         android:layout_weight="1"
         android:text="@string/alarm_station"
         android:textColor="@color/black"
+        android:textSize="@dimen/content_text_size"
         android:gravity="center"/>
     <TextView
         android:id="@+id/alarm_type"
@@ -28,6 +30,7 @@
         android:layout_weight="1"
         android:text="@string/alarm_type"
         android:textColor="@color/black"
+        android:textSize="@dimen/content_text_size"
         android:gravity="center"/>
     <TextView
         android:id="@+id/alarm_time"
@@ -36,6 +39,7 @@
         android:layout_weight="1"
         android:text="@string/alarm_time"
         android:textColor="@color/black"
+        android:textSize="@dimen/content_text_size"
         android:gravity="center"/>
     <TextView
         android:id="@+id/alarm_content"
@@ -45,5 +49,6 @@
         android:maxLines="5"
         android:text="@string/alarm_content"
         android:textColor="@color/black"
+        android:textSize="@dimen/content_text_size"
         android:paddingLeft="@dimen/gridview_margin"/>
 </LinearLayout>

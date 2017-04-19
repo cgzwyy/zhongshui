@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -17,6 +18,9 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -167,6 +171,7 @@ public class UpdateUserActivity extends AppCompatActivity {
                 if(i == 0) {
                     update_rangeStation = (CheckBox) this.findViewById(R.id.update_rangeStation1);
                     update_rangeStation.setText(module[0]);
+                    update_rangeStation.setTextSize(TypedValue.COMPLEX_UNIT_SP,12);
                     update_rangeStation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -180,6 +185,7 @@ public class UpdateUserActivity extends AppCompatActivity {
                 }else{
                     update_rangeStation = new CheckBox(this);
                     update_rangeStation.setText(module[0]);
+                    update_rangeStation.setTextSize(TypedValue.COMPLEX_UNIT_SP,12);
                     update_rangeStation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -313,21 +319,39 @@ public class UpdateUserActivity extends AppCompatActivity {
     }
 
     public void dealResult(String result){
-        if(TextUtils.isEmpty(result)) {
-            Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
-            return;
+        try {
+            JSONObject obj = new JSONObject(result);
+            int code = obj.optInt("code");
+            if (code == 0) {
+                String msg = obj.optString("msg");
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (obj.optString("data").equals("true")) {
+                setResult(1);
+                finish();
+            } else {
+                Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
         }
-
-        if(result.equals("true")){
-//            Intent intent = new Intent(UpdateUserActivity.this,UserManagementActivity.class);
-//            startActivity(intent);
-//            Intent intent = new Intent(UpdateUserActivity.this, MainActivity.class);
-//            startActivityForResult(intent,1);
-            setResult(1);
-            finish();
-        }else{
-            Toast.makeText(getApplicationContext(),"修改失败，请检查输入或网络",Toast.LENGTH_LONG).show();
-        }
+//        if(TextUtils.isEmpty(result)) {
+//            Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
+//            return;
+//        }
+//
+//        if(result.equals("true")){
+////            Intent intent = new Intent(UpdateUserActivity.this,UserManagementActivity.class);
+////            startActivity(intent);
+////            Intent intent = new Intent(UpdateUserActivity.this, MainActivity.class);
+////            startActivityForResult(intent,1);
+//            setResult(1);
+//            finish();
+//        }else{
+//            Toast.makeText(getApplicationContext(),"修改失败，请检查输入或网络",Toast.LENGTH_LONG).show();
+//        }
 
     }
 }

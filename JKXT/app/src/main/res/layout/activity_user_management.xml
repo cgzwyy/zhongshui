@@ -42,7 +42,8 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/user_id"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/content_text_size"/>
 
         <TextView
             android:layout_width="0dp"
@@ -50,7 +51,8 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/user_name"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/content_text_size"/>
 
         <TextView
             android:layout_width="0dp"
@@ -58,7 +60,8 @@
             android:layout_weight="2"
             android:gravity="center"
             android:text="@string/user_rights"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/content_text_size"/>
 
         <TextView
             android:layout_width="0dp"
@@ -67,7 +70,8 @@
             android:gravity="center"
             android:maxLines="2"
             android:text="@string/user_range"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/content_text_size"/>
 
         <TextView
             android:layout_width="0dp"
@@ -75,7 +79,8 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/user_level"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/content_text_size"/>
 
         <TextView
             android:layout_width="0dp"
@@ -83,7 +88,8 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/user_operation"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/content_text_size"/>
     </LinearLayout>
 
     <RelativeLayout
