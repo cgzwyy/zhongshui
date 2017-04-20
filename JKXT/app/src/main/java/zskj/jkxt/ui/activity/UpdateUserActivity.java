@@ -1,5 +1,6 @@
 package zskj.jkxt.ui.activity;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -49,6 +51,8 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
     String[] stations;//所有 站点
     //按钮
     Button update_update, update_cancel;
+    //pro
+    private View mProgressView;
     UpdateUserTask mTask;
 
     @Override
@@ -56,15 +60,6 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_user);
         mUser = (User) getIntent().getSerializableExtra("user");
-//        mUser = new User();
-//        mUser.userId = 1;
-//        mUser.userLevel = "1";
-//        mUser.userName = "test";
-//        mUser.userPassword = "123456";
-//        mUser.userRights = "场站,全场功率";
-//        mUser.userRange = "托克逊,布尔津,呵呵";
-
-
         initView();
         initData();
     }
@@ -97,12 +92,19 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
         update_update.setOnClickListener(this);
         update_cancel.setOnClickListener(this);
 
+        mProgressView = findViewById(R.id.login_progress);
+
     }
 
     private void initData() {
+        if (mUser == null)
+            return;
         update_userName.setText(mUser.userName);
         update_userPassword.setText(mUser.userPassword);
-        String[] userRights = mUser.userRights.split(",");
+        String[] userRights = null;
+        if (!TextUtils.isEmpty(mUser.userRights)) {
+            userRights = mUser.userRights.split(",");
+        }
         if (userRights != null && userRights.length > 0) {
             for (int i = 0; i < userRights.length; i++) {
                 if (userRights[i].equals(update_rightsStation.getText().toString())) {
@@ -119,13 +121,17 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
                 }
             }
         }
-        if (mUser.userLevel.equals("1")) {
-            update_rbLevelOne.setChecked(true);
-        } else {
-            update_rbLevelTwo.setChecked(true);
+        if (!TextUtils.isEmpty(mUser.userLevel)) {
+            if (mUser.userLevel.equals("1")) {
+                update_rbLevelOne.setChecked(true);
+            } else {
+                update_rbLevelTwo.setChecked(true);
+            }
         }
-
-        String[] userRanges = mUser.userRange.split(",");
+        String[] userRanges = null;
+        if (!TextUtils.isEmpty(mUser.userRange)) {
+            userRanges = mUser.userRange.split(",");
+        }
         if (userRanges != null && userRanges.length > 0) {
             List<String> rangList = Arrays.asList(userRanges);
             for (int i = 0; i < update_userRange.getChildCount(); i++) {
@@ -211,7 +217,7 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-//            progress(true);
+            showProgress(true);
         }
 
         @Override
@@ -222,14 +228,14 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
         @Override
         protected void onPostExecute(String result) {
             mTask = null;
-//            progress(false);
+            showProgress(false);
             dealResult(result);
         }
 
         @Override
         protected void onCancelled() {
             mTask = null;
-//            progress(false);
+            showProgress(false);
         }
     }
 
@@ -278,5 +284,9 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
                 }
             }
         }
+    }
+
+    private void showProgress(final boolean show) {
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }
