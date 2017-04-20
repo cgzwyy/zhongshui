@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import zskj.jkxt.JKXTApplication;
 import zskj.jkxt.R;
 import zskj.jkxt.WebService;
 import zskj.jkxt.domain.User;
@@ -48,7 +49,6 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
     RadioButton update_rbLevelOne, update_rbLevelTwo;
     //管理范围
     LinearLayout update_userRange;
-    String[] stations;//所有 站点
     //按钮
     Button update_update, update_cancel;
     //pro
@@ -76,11 +76,11 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
         update_rbLevelTwo = (RadioButton) this.findViewById(R.id.update_rbLevelTwo);
 
         update_userRange = (LinearLayout) this.findViewById(R.id.update_userRange);
-        getStation();
-        if (stations != null && stations.length > 0) {
-            for (int i = 0; i < stations.length; i++) {
+
+        if (JKXTApplication.stations != null && JKXTApplication.stations.length > 0) {
+            for (int i = 0; i < JKXTApplication.stations.length; i++) {
                 CheckBox child = new CheckBox(this);
-                child.setText(stations[i]);
+                child.setText(JKXTApplication.stations[i]);
                 child.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
                 update_userRange.addView(child);
             }
@@ -158,10 +158,18 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void updateUser() {
+        if (mTask != null) {
+            Toast.makeText(getApplicationContext(), "onLoading...", Toast.LENGTH_SHORT).show();
+            return;
+        }
         String userName = update_userName.getText().toString();
         String pwd = update_userPassword.getText().toString();
-        if (TextUtils.isEmpty(pwd))
+        if (TextUtils.isEmpty(pwd)) {
+            update_userPassword.setError("password  is required");
+            update_userPassword.requestFocus();
             return;
+        }
+
         String rights = "";
         if (update_rightsStation.isChecked())
             rights += update_rightsStation.getText().toString();
@@ -169,34 +177,28 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
             rights += TextUtils.isEmpty(rights) ? update_rightsPower.getText().toString() : "," + update_rightsPower.getText().toString();
         if (update_rightsAlarm.isChecked())
             rights += TextUtils.isEmpty(rights) ? update_rightsAlarm.getText().toString() : "," + update_rightsAlarm.getText().toString();
-        if (TextUtils.isEmpty(rights))
+        if (TextUtils.isEmpty(rights)) {
+            Toast.makeText(this, "choose user rights", Toast.LENGTH_SHORT).show();
             return;
+        }
+
         String range = "";
         for (int i = 0; i < update_userRange.getChildCount(); i++) {
             CheckBox child = (CheckBox) update_userRange.getChildAt(i);
             if (child.isChecked())
                 range += TextUtils.isEmpty(range) ? child.getText().toString() : "," + child.getText().toString();
         }
-        if (TextUtils.isEmpty(range))
+        if (TextUtils.isEmpty(range)) {
+            Toast.makeText(this, "choose user control rang", Toast.LENGTH_SHORT).show();
             return;
+        }
+
         String level = "0";
         if (update_rbLevelOne.isChecked())
             level = "1";
-        updateUser(userName, pwd, rights, range, level);
-    }
-
-
-    private void updateUser(String userName, String password, String rights, String range, String level) {
-        if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(rights) || TextUtils.isEmpty(range) || TextUtils.isEmpty(level))
-            return;
-        if (mTask != null) {//不为null 说明操作正在进行，规避多次点击登录按钮操作
-            Toast.makeText(getApplicationContext(), "修改数据中，请稍候...", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        mTask = new UpdateUserTask(userName, password, rights, range, level);
+        mTask = new UpdateUserTask(userName, pwd, rights, range, level);
         mTask.execute();
     }
-
 
     private class UpdateUserTask extends AsyncTask<Void, Void, String> {
 
@@ -259,31 +261,6 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
             Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
         }
 
-    }
-
-
-    private void getStation() {
-        String station = "";
-        try {
-            InputStream in = getResources().openRawResource(R.raw.stations);//获取
-            int length = in.available();
-            byte[] buffer = new byte[length];
-            in.read(buffer);
-            station = new String(buffer, "UTF-8");
-            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (!TextUtils.isEmpty(station)) {
-            String[] dataSet = station.split(";");
-            if (dataSet != null && dataSet.length > 0) {
-                stations = new String[dataSet.length];
-                for (int i = 0; i < dataSet.length; i++) {
-                    String[] data = dataSet[i].split(",");
-                    stations[i] = data[0];
-                }
-            }
-        }
     }
 
     private void showProgress(final boolean show) {

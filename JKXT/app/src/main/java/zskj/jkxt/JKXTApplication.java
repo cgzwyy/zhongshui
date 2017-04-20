@@ -16,8 +16,12 @@ import zskj.jkxt.util.ConnectionChangeReceiver;
 
 public class JKXTApplication extends Application {
 
+    private static final String sp_app = "config";
+
     public static String webServiceUrl = "";
+    public static String[] stations;
     public static int NETWORK_FLAG = ConnectionChangeReceiver.NET_NONE;
+
 
     @Override
     public void onCreate() {
@@ -26,36 +30,79 @@ public class JKXTApplication extends Application {
                 .detectNetwork().penaltyLog().build());
         StrictMode.setVmPolicy(
                 new StrictMode.VmPolicy.Builder().detectLeakedSqlLiteObjects().penaltyLog().penaltyDeath().build());
-        getUrl();
         NETWORK_FLAG = ConnectionChangeReceiver.ConnectionDetect(this);
         Log.e("NETWORK_FLAG", "------------------".concat(String.valueOf(NETWORK_FLAG)));
+
+        getUrl();
+        getStations();
+
     }
 
     private void getUrl() {
-        SharedPreferences sp = this.getSharedPreferences("url", this.MODE_PRIVATE);
+        SharedPreferences sp = this.getSharedPreferences(sp_app, this.MODE_PRIVATE);
         webServiceUrl = sp.getString("url", "");
 
         if (TextUtils.isEmpty(webServiceUrl)) {
             webServiceUrl = readUrlFile();
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putString("url", webServiceUrl);
-            editor.commit();
+            if (!TextUtils.isEmpty(webServiceUrl)) {
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("url", webServiceUrl);
+                editor.commit();
+            }
+        }
+    }
+
+    private void getStations() {
+        SharedPreferences sp = this.getSharedPreferences(sp_app, this.MODE_PRIVATE);
+        String station = sp.getString("station", "");
+        if (TextUtils.isEmpty(station)) {
+            station = readStationFile();
+            if (!TextUtils.isEmpty(station)) {
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("station", station);
+                editor.commit();
+            }
         }
     }
 
     private String readUrlFile() {
-        String res = "";
+        String url = "";
         try {
             InputStream in = getResources().openRawResource(R.raw.url);
             int length = in.available();
             byte[] buffer = new byte[length];
             in.read(buffer);
             //res = EncodingUtils.getString(buffer, "BIG5");
-            res = new String(buffer, "BIG5");
+            url = new String(buffer, "BIG5");
             in.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return res;
+        return url;
+    }
+
+    private String readStationFile() {
+        String station = "";
+        try {
+            InputStream in = getResources().openRawResource(R.raw.stations);//获取
+            int length = in.available();
+            byte[] buffer = new byte[length];
+            in.read(buffer);
+            station = new String(buffer, "UTF-8");
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (!TextUtils.isEmpty(station)) {
+            String[] dataSet = station.split(";");
+            if (dataSet != null && dataSet.length > 0) {
+                stations = new String[dataSet.length];
+                for (int i = 0; i < dataSet.length; i++) {
+                    String[] data = dataSet[i].split(",");
+                    stations[i] = data[0];
+                }
+            }
+        }
+        return station;
     }
 }
