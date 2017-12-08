@@ -8,6 +8,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.SuperscriptSpan;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -69,6 +70,7 @@ public class MonitorDetailActivity extends Activity {
         setContentView(R.layout.activity_monitor_detail);
         //接收传入的参数
         model = (Station) getIntent().getSerializableExtra("model");
+        Log.e("接收到的参数，model----->",model.columnAddress + "  " + model.columnValue + "    " + model.columnName);
         initView();
         initData();
         refresh.performClick();
@@ -213,6 +215,7 @@ public class MonitorDetailActivity extends Activity {
 
         try {
             JSONObject obj = new JSONObject(result);
+            Log.e("getStationInfo------>",result);
             int code = obj.optInt("code");
             if (code == 0) {
                 String msg = obj.optString("msg");
@@ -222,15 +225,41 @@ public class MonitorDetailActivity extends Activity {
             JSONObject data = obj.optJSONObject("data");
             if (data == null)
                 return;
-            tv_plan.setText(df.format(Double.valueOf(data.optString("省调计划"))));
-            if (colName.contains("光伏")) {
-                tv_speed.setText(df.format(Double.valueOf(data.optString("总辐射瞬时值"))));
-            } else {
-                tv_speed.setText(df.format(Double.valueOf(data.optString("平均风速"))));
+//            tv_plan.setText(df.format(Double.valueOf(data.optString("省调计划"))));
+            if(data.has("省调计划")){
+                tv_plan.setText(df.format(Double.valueOf(data.optString("省调计划"))));
+            }else{
+                tv_plan.setText("0.00");
             }
-            tv_power.setText(df.format(Double.valueOf(data.optString("当日发电量"))));
-            tv_electricity.setText(df.format(Double.valueOf(data.optString("瞬时总有功"))));
+            if (colName.contains("光伏")) {
+//                tv_speed.setText(df.format(Double.valueOf(data.optString("总辐射瞬时值"))));
+                if(data.has("总辐射瞬时值")){
+                    tv_speed.setText(df.format(Double.valueOf(data.optString("总辐射瞬时值"))));
+                }else{
+                    tv_speed.setText("0.00");
+                }
+            } else {
+//                tv_speed.setText(df.format(Double.valueOf(data.optString("平均风速"))));
+                if(data.has("平均风速")){
+                    tv_speed.setText(df.format(Double.valueOf(data.optString("平均风速"))));
+                }else{
+                    tv_speed.setText("0.00");
+                }
+            }
+//            tv_power.setText(df.format(Double.valueOf(data.optString("当日发电量"))));
+//            tv_electricity.setText(df.format(Double.valueOf(data.optString("瞬时总有功"))));
+            if(data.has("当日发电量")){
+                tv_power.setText(df.format(Double.valueOf(data.optString("当日发电量"))));
+            }else{
+                tv_power.setText("0.00");
+            }
+            if(data.has("瞬时总有功")){
+                tv_electricity.setText(df.format(Double.valueOf(data.optString("瞬时总有功"))));
+            }else{
+                tv_electricity.setText("0.00");
+            }
 
+            Log.e("当日发电量---->",df.format(Double.valueOf(data.optString("当日发电量"))));
             JSONArray list = data.optJSONArray("list");
             if (list != null && list.length() > 0) {
                 fanList.clear();
@@ -238,21 +267,59 @@ public class MonitorDetailActivity extends Activity {
                     JSONObject object = list.optJSONObject(i);
                     Fan fan = new Fan();
                     fan.fan_number = object.optString("编号");
+                    Log.e("fan  fan_number------>",fan.fan_number);
                     if (colName.contains("光伏")) {
-                        fan.fan_speed = df.format(Double.valueOf(object.optString("逆变器日发电量")));
-                        fan.fan_revs = df.format(Double.valueOf(object.optString("逆变器效率")));
-                        fan.fan_state = df.format(Double.valueOf(object.optString("逆变器状态")));
-                        fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
+                        if(object.has("逆变器日发电量")){
+                            fan.fan_speed = df.format(Double.valueOf(object.optString("逆变器日发电量")));
+                        }else{
+                            fan.fan_speed = "0.00";
+                        }
+                        if(object.has("逆变器效率")){
+                            fan.fan_revs = df.format(Double.valueOf(object.optString("逆变器效率")));
+                        }else{
+                            fan.fan_revs = "0.00";
+                        }
+                        if(object.has("逆变器状态")){
+                            fan.fan_state = df.format(Double.valueOf(object.optString("逆变器状态")));
+                        }else{
+                            fan.fan_state = "0.00";
+                        }
+                        if(object.has("有功功率")){
+                            fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
+                        }else{
+                            fan.fan_active_power = "0.00";
+                        }
                     } else {
-                        fan.fan_speed = df.format(Double.valueOf(object.optString("风速")));
-                        fan.fan_revs = df.format(Double.valueOf(object.optString("转速")));
-                        fan.fan_state = df.format(Double.valueOf(object.optString("风机运行状态")));
-                        fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
+                        if(object.has("风速")){
+                            fan.fan_speed = df.format(Double.valueOf(object.optString("风速")));
+                        }else{
+                            fan.fan_speed = "0.00";
+                        }
+                        if(object.has("转速")){
+                            fan.fan_revs = df.format(Double.valueOf(object.optString("转速")));
+                        }else{
+                            fan.fan_revs = "0.00";
+                        }
+                        if(object.has("风机运行状态")){
+                            fan.fan_state = df.format(Double.valueOf(object.optString("风机运行状态")));
+                        }else{
+                            fan.fan_state = "0.00";
+                        }
+                        if(object.has("有功功率")){
+                            fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
+                        }else{
+                            fan.fan_active_power = "0.00";
+                        }
+//                        fan.fan_speed = df.format(Double.valueOf(object.optString("风速")));
+//                        fan.fan_revs = df.format(Double.valueOf(object.optString("转速")));
+//                        fan.fan_state = df.format(Double.valueOf(object.optString("风机运行状态")));
+//                        fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
                     }
 
                     fanList.add(fan);
                 }
             }
+            Log.e("fan  nums------>",fanList.size()+"");
             Collections.sort(fanList, new Comparator<Fan>() {
                 @Override
                 public int compare(Fan fan, Fan t1) {
@@ -329,8 +396,7 @@ public class MonitorDetailActivity extends Activity {
 //                    Glide.with(MonitorDetailActivity.this).load(R.drawable.gf2_2).asGif().into(holder.fan_picture);
                     holder.fan_picture.setImageResource(R.drawable.gf2_2);
                 } else {
-                    Glide.with(MonitorDetailActivity.this).load(R.drawable.fj_03).asGif().into(holder.fan_picture);
-//                    holder.fan_picture.setImageResource(R.drawable.fj_05);
+                    holder.fan_picture.setImageResource(R.drawable.fj_05);
                 }
                 holder.fan_state.setText(getResources().getString(R.string.stop));
                 holder.fan_state.setVisibility(View.VISIBLE);
@@ -338,7 +404,8 @@ public class MonitorDetailActivity extends Activity {
                 if (mStation.columnName.contains("光伏")) {
                     holder.fan_picture.setImageResource(R.drawable.gf2_1);
                 } else {
-                    holder.fan_picture.setImageResource(R.drawable.fj_04);
+//                    holder.fan_picture.setImageResource(R.drawable.fj_04);
+                    Glide.with(MonitorDetailActivity.this).load(R.drawable.fj_03).asGif().into(holder.fan_picture);
                 }
                 holder.fan_state.setText("");
                 holder.fan_state.setVisibility(View.INVISIBLE);

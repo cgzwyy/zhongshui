@@ -58,6 +58,14 @@
                 android:maxLines="1"
                 android:singleLine="true" />
 
+            <CheckBox
+                android:id="@+id/cb_mima"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="@string/remember_the_password"
+                android:textSize="@dimen/dialog_content_text_size"/>
+
             <Button
                 android:id="@+id/sign_in_button"
                 android:layout_width="match_parent"

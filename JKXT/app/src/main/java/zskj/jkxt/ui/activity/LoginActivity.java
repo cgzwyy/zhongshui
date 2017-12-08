@@ -3,6 +3,7 @@ package zskj.jkxt.ui.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,6 +12,8 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -27,14 +30,27 @@ public class LoginActivity extends Activity {
     private EditText mUserNameView, mPasswordView;
     private Button mSignBtn;
     private View mProgressView;
+    private CheckBox rem_pw;
+    private SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        mSharedPreferences = this.getSharedPreferences("userInfo",MODE_PRIVATE);
         mUserNameView = (EditText) this.findViewById(R.id.userName);
         mPasswordView = (EditText) this.findViewById(R.id.password);
+        rem_pw = (CheckBox) this.findViewById(R.id.cb_mima);
+
+        //判断记住密码多选框的状态
+        if(mSharedPreferences.getBoolean("ISCHECK",false)){
+            //设置默认为记录密码状态
+            rem_pw.setChecked(true);
+            mUserNameView.setText(mSharedPreferences.getString("userName",""));
+            mPasswordView.setText(mSharedPreferences.getString("password",""));
+        }
+
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -54,6 +70,18 @@ public class LoginActivity extends Activity {
             }
         });
         mProgressView = findViewById(R.id.login_progress);
+
+        rem_pw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(rem_pw.isChecked()){
+                    mSharedPreferences.edit().putBoolean("ISCHECK",true).commit();
+                }else{
+                    mSharedPreferences.edit().putBoolean("ISCHECK",false).commit();
+                }
+            }
+        });
+
     }
 
     //密码可以为空
@@ -125,10 +153,23 @@ public class LoginActivity extends Activity {
                 mPasswordView.requestFocus();
                 return;
             }
+//            Log.e("resutl rights----->","获取data数据");
             JSONObject data = obj.optJSONObject("data");
             String rights = data.optString("rights");
             String ranges = data.optString("ranges");
             String level = data.optString("level");
+//            Log.e("resutl rights----->",rights);
+//            Log.e("resutl range----->",ranges);
+//            Log.e("resutl level----->",level);
+            //登录成功和记住密码框为选中状态才保存用户信息
+            if(rem_pw.isChecked())
+            {
+                //记住用户名、密码、
+                SharedPreferences.Editor editor = mSharedPreferences.edit();
+                editor.putString("userName", mUserNameView.getText().toString());
+                editor.putString("password",mPasswordView.getText().toString());
+                editor.commit();
+            }
             Intent intent = new Intent();
             intent.setClass(LoginActivity.this, MainActivity.class);
             intent.putExtra("rights", rights);

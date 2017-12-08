@@ -128,8 +128,9 @@ public class UserManagementFragment extends Fragment {
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 return;
             }
-            JSONObject data = obj.optJSONObject("data");
-            JSONArray userLists = data.optJSONArray("userlist");
+            //JSONObject data = obj.optJSONObject("data");
+            //JSONArray userLists = data.optJSONArray("userlist");
+            JSONArray userLists = obj.optJSONArray("data");
             if (userLists != null && userLists.length() > 0) {
                 userList.clear();
                 for (int i = 0; i < userLists.length(); i++) {

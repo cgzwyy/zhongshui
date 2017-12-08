@@ -1,9 +1,13 @@
 package zskj.jkxt;
 
+import android.util.Log;
+
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
+
+import java.io.UnsupportedEncodingException;
 
 import zskj.jkxt.util.ConnectionChangeReceiver;
 
@@ -12,13 +16,14 @@ import zskj.jkxt.util.ConnectionChangeReceiver;
  */
 
 public class WebService {
-    static public String namespace = "http://tempuri.org/";
-    static public String serviceUrl = "http://192.168.117.58:8085/H9000Service.asmx";
+    static public String namespace = "http://tempuri.org/ns.xsd";
+    static public String serviceUrl = "http://192.168.1.12:8081";
     public static final String ERRORMSG = "获取数据失败";
     static WebService service = null;
     static int timeoutmiles = 2 * 1000;//TODO 改成20*1000或者30*1000 默认20*1000
 
     private WebService() {
+        serviceUrl = JKXTApplication.webServiceUrl;
     }
 
     public static WebService getInstance() {
@@ -34,17 +39,31 @@ public class WebService {
         }
         String methodName = "isUser";
         SoapObject request = new SoapObject(namespace, methodName);
-        request.addProperty("username", userName);
-        request.addProperty("password", password);
+//        request.addProperty("username", userName);
+//        request.addProperty("password", password);
+        try {
+            request.addProperty("username", new String(userName.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("password", new String(password.getBytes("gbk"),"ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
         envelope.bodyOut = request;
         envelope.dotNet = true;
         HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
         try {
             ht.call(namespace + methodName, envelope);
-            SoapObject object = (SoapObject) envelope.bodyIn;
-            if (object != null && object.getProperty(0) != null) {
-                return object.getProperty(0).toString();
+            //SoapObject object = (SoapObject) envelope.bodyIn;
+//            SoapObject object = (SoapObject) envelope.getResponse();
+//            if (object != null && object.getProperty(0) != null) {
+//                Log.e("resutl----->",object.getProperty(0).toString());
+//                return object.getProperty(0).toString();
+//            } else
+//                return ERRORMSG;
+            Object object = envelope.getResponse();
+            if (object != null && object.toString() != null) {
+                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+                return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
         } catch (Exception e) {
@@ -64,9 +83,15 @@ public class WebService {
         HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
         try {
             ht.call(namespace + methodName, envelope);
-            SoapObject object = (SoapObject) envelope.bodyIn;
-            if (object != null && object.getProperty(0) != null) {
-                return object.getProperty(0).toString();
+//            SoapObject object = (SoapObject) envelope.bodyIn;
+//            if (object != null && object.getProperty(0) != null) {
+//                return object.getProperty(0).toString();
+//            } else
+//                return ERRORMSG;
+            Object object = envelope.getResponse();
+            if (object != null && object.toString() != null) {
+                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+                return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
         } catch (Exception e) {
@@ -80,20 +105,35 @@ public class WebService {
         }
         String methodName = "addUser";
         SoapObject request = new SoapObject(namespace, methodName);
-        request.addProperty("username", userName);
-        request.addProperty("password", password);
-        request.addProperty("rights", rights);
-        request.addProperty("range", range);
-        request.addProperty("level", level);
+//        request.addProperty("username", userName);
+//        request.addProperty("password", password);
+//        request.addProperty("rights", rights);
+//        request.addProperty("range", range);
+//        request.addProperty("level", level);
+        try {
+            request.addProperty("username", new String(userName.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("password", new String(password.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("rights", new String(rights.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("ranges", new String(range.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("level", new String(level.getBytes("gbk"),"ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
         envelope.bodyOut = request;
         envelope.dotNet = true;
         HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
         try {
             ht.call(namespace + methodName, envelope);
-            SoapObject object = (SoapObject) envelope.bodyIn;
-            if (object != null && object.getProperty(0) != null) {
-                return object.getProperty(0).toString();
+//            SoapObject object = (SoapObject) envelope.bodyIn;
+//            if (object != null && object.getProperty(0) != null) {
+//                return object.getProperty(0).toString();
+//            } else
+//                return ERRORMSG;
+            Object object = envelope.getResponse();
+            if (object != null && object.toString() != null) {
+                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+                return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
         } catch (Exception e) {
@@ -107,20 +147,35 @@ public class WebService {
         }
         String methodName = "updateUser";
         SoapObject request = new SoapObject(namespace, methodName);
-        request.addProperty("username", userName);
-        request.addProperty("password", password);
-        request.addProperty("rights", rights);
-        request.addProperty("range", range);
-        request.addProperty("level", level);
+//        request.addProperty("username", userName);
+//        request.addProperty("password", password);
+//        request.addProperty("rights", rights);
+//        request.addProperty("range", range);
+//        request.addProperty("level", level);
+        try {
+            request.addProperty("username", new String(userName.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("password", new String(password.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("rights", new String(rights.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("ranges", new String(range.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("level", new String(level.getBytes("gbk"),"ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
         envelope.bodyOut = request;
         envelope.dotNet = true;
         HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
         try {
             ht.call(namespace + methodName, envelope);
-            SoapObject object = (SoapObject) envelope.bodyIn;
-            if (object != null && object.getProperty(0) != null) {
-                return object.getProperty(0).toString();
+//            SoapObject object = (SoapObject) envelope.bodyIn;
+//            if (object != null && object.getProperty(0) != null) {
+//                return object.getProperty(0).toString();
+//            } else
+//                return ERRORMSG;
+            Object object = envelope.getResponse();
+            if (object != null && object.toString() != null) {
+                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+                return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
         } catch (Exception e) {
@@ -134,16 +189,27 @@ public class WebService {
         }
         String methodName = "deleteUser";
         SoapObject request = new SoapObject(namespace, methodName);
-        request.addProperty("username", userName);
+//        request.addProperty("username", userName);
+        try {
+            request.addProperty("username", new String(userName.getBytes("gbk"),"ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
         envelope.bodyOut = request;
         envelope.dotNet = true;
         HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
         try {
             ht.call(namespace + methodName, envelope);
-            SoapObject object = (SoapObject) envelope.bodyIn;
-            if (object != null && object.getProperty(0) != null) {
-                return object.getProperty(0).toString();
+//            SoapObject object = (SoapObject) envelope.bodyIn;
+//            if (object != null && object.getProperty(0) != null) {
+//                return object.getProperty(0).toString();
+//            } else
+//                return ERRORMSG;
+            Object object = envelope.getResponse();
+            if (object != null && object.toString() != null) {
+                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+                return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
         } catch (Exception e) {
@@ -157,16 +223,27 @@ public class WebService {
         }
         String methodName = "GetStationInfo";
         SoapObject request = new SoapObject(namespace, methodName);
-        request.addProperty("Str_StationCode", Str_StationCode);
+//        request.addProperty("stationCode", Str_StationCode);
+        try {
+            request.addProperty("stationCode", new String(Str_StationCode.getBytes("gbk"),"ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
         envelope.bodyOut = request;
         envelope.dotNet = true;
         HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
         try {
             ht.call(namespace + methodName, envelope);
-            SoapObject object = (SoapObject) envelope.bodyIn;
-            if (object != null && object.getProperty(0) != null) {
-                return object.getProperty(0).toString();
+//            SoapObject object = (SoapObject) envelope.bodyIn;
+//            if (object != null && object.getProperty(0) != null) {
+//                return object.getProperty(0).toString();
+//            } else
+//                return ERRORMSG;
+            Object object = envelope.getResponse();
+            if (object != null && object.toString() != null) {
+                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+                return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
         } catch (Exception e) {
@@ -180,16 +257,26 @@ public class WebService {
         }
         String methodName = "GetStationName";
         SoapObject request = new SoapObject(namespace, methodName);
-        request.addProperty("ranges", ranges);
+        try {
+            request.addProperty("ranges", new String(ranges.getBytes("gbk"),"ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
         envelope.bodyOut = request;
         envelope.dotNet = true;
         HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
         try {
             ht.call(namespace + methodName, envelope);
-            SoapObject object = (SoapObject) envelope.bodyIn;
-            if (object != null && object.getProperty(0) != null) {
-                return object.getProperty(0).toString();
+//            SoapObject object = (SoapObject) envelope.bodyIn;
+//            if (object != null && object.getProperty(0) != null) {
+//                return object.getProperty(0).toString();
+//            } else
+//                return ERRORMSG;
+            Object object = envelope.getResponse();
+            if (object != null && object.toString() != null) {
+                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+                return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
         } catch (Exception e) {
@@ -204,19 +291,33 @@ public class WebService {
         }
         String methodName = "GetAlarmData";
         SoapObject request = new SoapObject(namespace, methodName);
-        request.addProperty("sdate", sdate);
-        request.addProperty("stime", stime);
-        request.addProperty("ranges", ranges);
-        request.addProperty("level", level);
+//        request.addProperty("sdate", sdate);
+//        request.addProperty("stime", stime);
+//        request.addProperty("ranges", ranges);
+//        request.addProperty("level", level);
+        try {
+            request.addProperty("sdate", new String(sdate.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("stime", new String(stime.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("ranges", new String(ranges.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("level", new String(level.getBytes("gbk"),"ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
         envelope.bodyOut = request;
         envelope.dotNet = true;
         HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
         try {
             ht.call(namespace + methodName, envelope);
-            SoapObject object = (SoapObject) envelope.bodyIn;
-            if (object != null && object.getProperty(0) != null) {
-                return object.getProperty(0).toString();
+//            SoapObject object = (SoapObject) envelope.bodyIn;
+//            if (object != null && object.getProperty(0) != null) {
+//                return object.getProperty(0).toString();
+//            } else
+//                return ERRORMSG;
+            Object object = envelope.getResponse();
+            if (object != null && object.toString() != null) {
+                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+                return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
         } catch (Exception e) {
@@ -231,18 +332,31 @@ public class WebService {
         }
         String methodName = "GetStationPower";
         SoapObject request = new SoapObject(namespace, methodName);
-        request.addProperty("sdate", sdate);
-        request.addProperty("time", time);
-        request.addProperty("station_name", station_names);
+//        request.addProperty("sdate", sdate);
+//        request.addProperty("stime", time);
+//        request.addProperty("stationName", station_names);
+        try {
+            request.addProperty("sdate", new String(sdate.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("stime", new String(time.getBytes("gbk"),"ISO-8859-1"));
+            request.addProperty("stationName", new String(station_names.getBytes("gbk"),"ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
         envelope.bodyOut = request;
         envelope.dotNet = true;
         HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
         try {
             ht.call(namespace + methodName, envelope);
-            SoapObject object = (SoapObject) envelope.bodyIn;
-            if (object != null && object.getProperty(0) != null) {
-                return object.getProperty(0).toString();
+//            SoapObject object = (SoapObject) envelope.bodyIn;
+//            if (object != null && object.getProperty(0) != null) {
+//                return object.getProperty(0).toString();
+//            } else
+//                return ERRORMSG;
+            Object object = envelope.getResponse();
+            if (object != null && object.toString() != null) {
+                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+                return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
         } catch (Exception e) {

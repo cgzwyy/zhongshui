@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +81,9 @@ public class StationFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (!TextUtils.isEmpty(stations)) {
+       if (!TextUtils.isEmpty(stations)) {
+
+           Log.e("读文件，得到station---->",stations);
 
             if (list != null && list.size() > 0)
                 list.clear();
@@ -95,6 +98,7 @@ public class StationFragment extends Fragment {
                     list.add(model);
                 }
             }
+           Log.e("读文件，得到list size---->",list.size()+"");
             if (mAdapter != null && list != null)
                 mAdapter.notifyDataSetChanged();
         }

@@ -57,6 +57,7 @@ public class JKXTApplication extends Application {
         String station = sp.getString("station", "");
         if (TextUtils.isEmpty(station)) {
             station = readStationFile();
+            Log.e("get station---->",station);
             if (!TextUtils.isEmpty(station)) {
                 SharedPreferences.Editor editor = sp.edit();
                 editor.putString("station", station);

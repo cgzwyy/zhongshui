@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Date;
 
 import zskj.jkxt.R;
 import zskj.jkxt.WebService;
@@ -58,8 +59,8 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
     //format
     SimpleDateFormat sdf_date = new SimpleDateFormat("yyyyMMdd");
     SimpleDateFormat sdf_time = new SimpleDateFormat("HHmmssSSS");
-    //    String sdate = sdf_date.format(new Date());
-    String sdate = "20170316";
+    String sdate = sdf_date.format(new Date());
+    //String sdate = "20170316";
     String last_time = "0"; //取得的最后一条报警数据的时间
 
     MyAdapter myAdapter;
@@ -197,7 +198,7 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
             int code = obj.optInt("code");
             if (code == 0) {
                 String msg = obj.optString("msg");
-                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 return;
             }
             JSONArray data = obj.optJSONArray("data");

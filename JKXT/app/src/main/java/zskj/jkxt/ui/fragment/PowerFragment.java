@@ -205,12 +205,17 @@ public class PowerFragment extends Fragment {
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 return;
             }
-            JSONArray data = obj.optJSONArray("data");
+//            JSONArray data = obj.optJSONArray("data");
+//            if (data != null && data.length() > 0) {
+//                stations = new String[data.length()];
+//                for (int i = 0; i < data.length(); i++) {
+//                    stations[i] = data.optString(i);
+//                }
+//            }
+            String data = obj.optString("data");
             if (data != null && data.length() > 0) {
-                stations = new String[data.length()];
-                for (int i = 0; i < data.length(); i++) {
-                    stations[i] = data.optString(i);
-                }
+                stations = data.split(",");
+                Log.e("stations length--->",data+"    "+stations.length);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -316,55 +321,93 @@ public class PowerFragment extends Fragment {
         try {
             JSONObject obj = new JSONObject(result);
             int code = obj.optInt("code");
-            if (code == 0) {
+            if (code == 0) { //获取数据失败
                 String msg = obj.optString("msg");
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 return;
-            }
-            if (last_time == 0) {
-                forecastData.clear();
-                pData.clear();
-            }
-            JSONObject data = obj.optJSONObject("data");
-            if (data != null) {
-                JSONArray pcode = data.optJSONArray("pcode");
-                JSONArray fpcode = data.optJSONArray("forecast_pcode");
-                Log.e("data size-->", pcode.length() + "   " + fpcode.length());
-                if (pcode != null && pcode.length() > 0) {
-                    int time = 0;
-                    for (int i = 0; i < pcode.length(); i++) {
-                        JSONObject detail = pcode.optJSONObject(i);
-                        try {
-                            if (i == 0) {
-                                pData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
-                            } else {
+            }else if(code == 2){  //只获取到有功功率数据，没有预测功率数据
+                if (last_time == 0) {
+                    forecastData.clear();
+                    pData.clear();
+                }
+                JSONObject data = obj.optJSONObject("data");
+                if (data != null) {
+                    JSONArray pcode = data.optJSONArray("pcode");
+                    Log.e("data size-->", pcode.length() + "   ");
+                    if (pcode != null && pcode.length() > 0) {
+                        int time = 0;
+                        for (int i = 0; i < pcode.length(); i++) {
+                            JSONObject detail = pcode.optJSONObject(i);
+                            try {
+//                                if (i == 0) {
+//                                    pData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+//                                } else {
+//                                    pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+//                                    if (detail.optInt("time") > time)
+//                                        time = detail.optInt("time");
+//                                }
+                                pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+                                    if (detail.optInt("time") > time)
+                                        time = detail.optInt("time");
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        last_time = time;
+                    }
+                }
+                Log.e("data size-->", pData.size() + "   " + last_time);
+                refreshChartSet();
+            }else{  //获取数据成功，包括有功功率数据和预测功率数据
+                if (last_time == 0) {
+                    forecastData.clear();
+                    pData.clear();
+                }
+                JSONObject data = obj.optJSONObject("data");
+                if (data != null) {
+                    JSONArray pcode = data.optJSONArray("pcode");
+                    JSONArray fpcode = data.optJSONArray("forecast_pcode");
+                    Log.e("data size-->", pcode.length() + "   " + fpcode.length());
+                    if (pcode != null && pcode.length() > 0) {
+                        int time = 0;
+                        for (int i = 0; i < pcode.length(); i++) {
+                            JSONObject detail = pcode.optJSONObject(i);
+                            try {
+//                                if (i == 0) {
+//                                    pData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+//                                } else {
+//                                    pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+//                                    if (detail.optInt("time") > time)
+//                                        time = detail.optInt("time");
+//                                }
                                 pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
                                 if (detail.optInt("time") > time)
                                     time = detail.optInt("time");
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
                             }
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
+                        }
+                        last_time = time;
+                    }
+                    if (fpcode != null && fpcode.length() > 0) {
+                        for (int i = 0; i < fpcode.length(); i++) {
+                            JSONObject fdetail = fpcode.optJSONObject(i);
+                            try {
+                                if (i == 0) {
+                                    forecastData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
+                                } else {
+                                    forecastData.add(new Entry(fdetail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
+                                }
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
-                    last_time = time;
                 }
-                if (fpcode != null && fpcode.length() > 0) {
-                    for (int i = 0; i < fpcode.length(); i++) {
-                        JSONObject fdetail = fpcode.optJSONObject(i);
-                        try {
-                            if (i == 0) {
-                                forecastData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
-                            } else {
-                                forecastData.add(new Entry(fdetail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
-                            }
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+                Log.e("data size-->", pData.size() + "   " + forecastData.size());
+                refreshChartSet();
             }
-            Log.e("data size-->", pData.size() + "   " + forecastData.size());
-            refreshChartSet();
+
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(mContext, WebService.ERRORMSG, Toast.LENGTH_SHORT).show();
@@ -415,11 +458,16 @@ public class PowerFragment extends Fragment {
             forecastline = (LineDataSet) dataline.getDataSetByIndex(0);
             pline = (LineDataSet) dataline.getDataSetByIndex(1);
             dataline.clearValues();
-            dataline.addDataSet(forecastline);
-            dataline.addDataSet(pline);
+            if(forecastline != null && forecastline.getEntryCount()>0)
+                dataline.addDataSet(forecastline);
+            if(pline != null && pline.getEntryCount()>0)
+                dataline.addDataSet(pline);
             dataline.notifyDataChanged();
-            mChart.notifyDataSetChanged();
+            mChart.clear();
+            mChart.setData(dataline);
+//            mChart.notifyDataSetChanged();
             mChart.setVisibleXRangeMaximum(120);
+            mChart.moveViewToX(dataline.getEntryCount());
         } else {
             if (pline == null) {
                 pline = createDataSet(pData, "实时出力", Color.RED);
@@ -430,8 +478,12 @@ public class PowerFragment extends Fragment {
             dataline = new LineData();
             dataline.setValueTextColor(Color.WHITE);
             dataline.setValueTextSize(9f);
-            dataline.addDataSet(forecastline);
-            dataline.addDataSet(pline);
+//            dataline.addDataSet(forecastline);
+//            dataline.addDataSet(pline);
+            if(forecastline != null && forecastline.getEntryCount()>0)
+                dataline.addDataSet(forecastline);
+            if(pline != null && pline.getEntryCount()>0)
+                dataline.addDataSet(pline);
             mChart.setData(dataline);
             mChart.notifyDataSetChanged();
             initChart();
