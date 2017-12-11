@@ -40,17 +40,18 @@ public class MyMarkerView extends MarkerView {
             int min = (int)e.getX() % 60;
             String result = null;
             if(hour < 10){
-                result = "0" + hour + ":";
+                result = "0" + hour + "时";
             }else{
-                result = hour + ":";
+                result = hour + "时";
             }
 
             if(min < 10){
-                result += "0" + min ;
+                result += "0" + min + "分";
             }else{
-                result += min ;
+                result += min + "分";
             }
-            tvContent.setText( result  +" : " + Utils.formatNumber(e.getY(), 0, true));
+//            tvContent.setText( result  +": " + Utils.formatNumber(e.getY(), 0, true));//值为整数
+            tvContent.setText( result  +": " + String.format("%.2f",e.getY()));//值保留两位小数
         }
 
         super.refreshContent(e, highlight);

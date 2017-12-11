@@ -53,17 +53,29 @@ public class JKXTApplication extends Application {
     }
 
     private void getStations() {
+        //取SP内容
         SharedPreferences sp = this.getSharedPreferences(sp_app, this.MODE_PRIVATE);
         String station = sp.getString("station", "");
-        if (TextUtils.isEmpty(station)) {
+        //SP为空，读文件,寫進SP
+        if(TextUtils.isEmpty(station)){
             station = readStationFile();
-            Log.e("get station---->",station);
             if (!TextUtils.isEmpty(station)) {
                 SharedPreferences.Editor editor = sp.edit();
                 editor.putString("station", station);
                 editor.commit();
             }
         }
+        //不为空，赋值stations[]
+        if(!TextUtils.isEmpty(station)){
+            String[] dataSet = station.split(";");
+            if (dataSet != null && dataSet.length > 0) {
+                stations = new String[dataSet.length];
+                for (int i = 0; i < dataSet.length; i++) {
+                    String[] data = dataSet[i].split(",");
+                    stations[i] = data[0];
+                }
+            }
+        }//再为空说明文件读取失败，Stations[]为null
     }
 
     private String readUrlFile() {
@@ -93,16 +105,6 @@ public class JKXTApplication extends Application {
             in.close();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        if (!TextUtils.isEmpty(station)) {
-            String[] dataSet = station.split(";");
-            if (dataSet != null && dataSet.length > 0) {
-                stations = new String[dataSet.length];
-                for (int i = 0; i < dataSet.length; i++) {
-                    String[] data = dataSet[i].split(",");
-                    stations[i] = data[0];
-                }
-            }
         }
         return station;
     }

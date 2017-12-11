@@ -12,7 +12,6 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +63,7 @@ public class PowerFragment extends Fragment {
     private static final String TAG = "PowerFragment";
 
     //view
-    Activity mContext;
+    Context mContext;
     private Button select_time, select_station, sure;
     private View mProgressView;
     private LineChart mChart;
@@ -87,9 +86,9 @@ public class PowerFragment extends Fragment {
     GetPowerDataTask mGetPowerDataTask;
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mContext = (Activity) context;
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mContext = activity;
     }
 
     @Nullable
@@ -215,7 +214,7 @@ public class PowerFragment extends Fragment {
             String data = obj.optString("data");
             if (data != null && data.length() > 0) {
                 stations = data.split(",");
-                Log.e("stations length--->",data+"    "+stations.length);
+//                Log.e("stations length--->",data+"    "+stations.length);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -333,7 +332,7 @@ public class PowerFragment extends Fragment {
                 JSONObject data = obj.optJSONObject("data");
                 if (data != null) {
                     JSONArray pcode = data.optJSONArray("pcode");
-                    Log.e("data size-->", pcode.length() + "   ");
+//                    Log.e("data size-->", pcode.length() + "   ");
                     if (pcode != null && pcode.length() > 0) {
                         int time = 0;
                         for (int i = 0; i < pcode.length(); i++) {
@@ -346,9 +345,12 @@ public class PowerFragment extends Fragment {
 //                                    if (detail.optInt("time") > time)
 //                                        time = detail.optInt("time");
 //                                }
-                                pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+                                if(Double.valueOf(detail.optString("data")) >= -100){
+//                                    Log.e("data too small:","----->"+Double.valueOf(detail.optString("data")));
+                                    pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
                                     if (detail.optInt("time") > time)
                                         time = detail.optInt("time");
+                                }
                             } catch (NumberFormatException e) {
                                 e.printStackTrace();
                             }
@@ -356,7 +358,7 @@ public class PowerFragment extends Fragment {
                         last_time = time;
                     }
                 }
-                Log.e("data size-->", pData.size() + "   " + last_time);
+//                Log.e("data size-->", pData.size() + "   " + last_time);
                 refreshChartSet();
             }else{  //获取数据成功，包括有功功率数据和预测功率数据
                 if (last_time == 0) {
@@ -367,7 +369,7 @@ public class PowerFragment extends Fragment {
                 if (data != null) {
                     JSONArray pcode = data.optJSONArray("pcode");
                     JSONArray fpcode = data.optJSONArray("forecast_pcode");
-                    Log.e("data size-->", pcode.length() + "   " + fpcode.length());
+//                    Log.e("data size-->", pcode.length() + "   " + fpcode.length());
                     if (pcode != null && pcode.length() > 0) {
                         int time = 0;
                         for (int i = 0; i < pcode.length(); i++) {
@@ -404,7 +406,7 @@ public class PowerFragment extends Fragment {
                         }
                     }
                 }
-                Log.e("data size-->", pData.size() + "   " + forecastData.size());
+//                Log.e("data size-->", pData.size() + "   " + forecastData.size());
                 refreshChartSet();
             }
 
@@ -454,20 +456,31 @@ public class PowerFragment extends Fragment {
 
     public void refreshChartSet() {
         dataline = mChart.getData();
-        if (dataline != null) {
-            forecastline = (LineDataSet) dataline.getDataSetByIndex(0);
-            pline = (LineDataSet) dataline.getDataSetByIndex(1);
-            dataline.clearValues();
-            if(forecastline != null && forecastline.getEntryCount()>0)
-                dataline.addDataSet(forecastline);
-            if(pline != null && pline.getEntryCount()>0)
-                dataline.addDataSet(pline);
+        if (dataline != null && dataline.getDataSetCount() > 0) {
+            if(dataline.getDataSetCount() == 1){
+                pline = (LineDataSet) dataline.getDataSetByIndex(0);
+            }else{
+                pline = (LineDataSet) dataline.getDataSetByIndex(0);
+                forecastline = (LineDataSet) dataline.getDataSetByIndex(1);
+            }
+//            dataline.clearValues();
+//            if(forecastline != null && forecastline.getEntryCount()>0){
+////                dataline.addDataSet(forecastline);
+//                forecastline.setValues(forecastData);
+//            }
+//            if(pline != null && pline.getEntryCount()>0) {
+////                dataline.addDataSet(pline);
+//                pline.setValues(pData);
+//            }
+            if(forecastData != null && forecastData.size()>0)
+                forecastline.setValues(forecastData);
+            if(pData != null && pData.size()>0)
+                pline.setValues(pData);
             dataline.notifyDataChanged();
-            mChart.clear();
-            mChart.setData(dataline);
-//            mChart.notifyDataSetChanged();
-            mChart.setVisibleXRangeMaximum(120);
-            mChart.moveViewToX(dataline.getEntryCount());
+//            mChart.setData(dataline);
+            mChart.notifyDataSetChanged();
+//            mChart.setVisibleXRangeMaximum(120);
+//            mChart.moveViewToX(dataline.getEntryCount());
         } else {
             if (pline == null) {
                 pline = createDataSet(pData, "实时出力", Color.RED);
@@ -480,10 +493,12 @@ public class PowerFragment extends Fragment {
             dataline.setValueTextSize(9f);
 //            dataline.addDataSet(forecastline);
 //            dataline.addDataSet(pline);
-            if(forecastline != null && forecastline.getEntryCount()>0)
-                dataline.addDataSet(forecastline);
-            if(pline != null && pline.getEntryCount()>0)
+            if(pline != null && pline.getEntryCount()>0) {
                 dataline.addDataSet(pline);
+            }
+            if(forecastline != null && forecastline.getEntryCount()>0){
+                dataline.addDataSet(forecastline);
+            }
             mChart.setData(dataline);
             mChart.notifyDataSetChanged();
             initChart();
@@ -509,16 +524,22 @@ public class PowerFragment extends Fragment {
 
     private void initChart() {
         mChart.setDragDecelerationFrictionCoef(0.9f);
+        //设置某个点数值显示方式
         MyMarkerView mv = new MyMarkerView(getActivity(), R.layout.custom_marker_view);
         mv.setChartView(mChart);
         mChart.setMarker(mv);
         mChart.animateX(2500);
+        mChart.setTouchEnabled(true);
+        mChart.setDragEnabled(true);
+        mChart.setScaleEnabled(true);
+        mChart.setPinchZoom(true);
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextSize(10f);
         xAxis.setTextColor(Color.rgb(255, 192, 56));
         xAxis.setGranularity(1f);
         xAxis.setDrawLabels(true);
+        xAxis.resetAxisMaximum();
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {

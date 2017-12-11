@@ -1,7 +1,5 @@
 package zskj.jkxt;
 
-import android.util.Log;
-
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -62,7 +60,7 @@ public class WebService {
 //                return ERRORMSG;
             Object object = envelope.getResponse();
             if (object != null && object.toString() != null) {
-                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+//                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
@@ -90,7 +88,7 @@ public class WebService {
 //                return ERRORMSG;
             Object object = envelope.getResponse();
             if (object != null && object.toString() != null) {
-                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+//                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
@@ -132,7 +130,7 @@ public class WebService {
 //                return ERRORMSG;
             Object object = envelope.getResponse();
             if (object != null && object.toString() != null) {
-                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+//                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
@@ -174,7 +172,7 @@ public class WebService {
 //                return ERRORMSG;
             Object object = envelope.getResponse();
             if (object != null && object.toString() != null) {
-                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+//                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
@@ -208,7 +206,7 @@ public class WebService {
 //                return ERRORMSG;
             Object object = envelope.getResponse();
             if (object != null && object.toString() != null) {
-                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+//                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
@@ -242,7 +240,7 @@ public class WebService {
 //                return ERRORMSG;
             Object object = envelope.getResponse();
             if (object != null && object.toString() != null) {
-                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+//                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
@@ -275,7 +273,7 @@ public class WebService {
 //                return ERRORMSG;
             Object object = envelope.getResponse();
             if (object != null && object.toString() != null) {
-                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+//                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
@@ -316,7 +314,7 @@ public class WebService {
 //                return ERRORMSG;
             Object object = envelope.getResponse();
             if (object != null && object.toString() != null) {
-                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+//                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;
@@ -355,7 +353,7 @@ public class WebService {
 //                return ERRORMSG;
             Object object = envelope.getResponse();
             if (object != null && object.toString() != null) {
-                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+//                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
                 return ERRORMSG;

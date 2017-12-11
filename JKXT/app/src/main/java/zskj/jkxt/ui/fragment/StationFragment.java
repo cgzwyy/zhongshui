@@ -1,12 +1,12 @@
 package zskj.jkxt.ui.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +41,7 @@ public class StationFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(Activity context) {
         super.onAttach(context);
         mContext = context;
     }
@@ -83,7 +83,7 @@ public class StationFragment extends Fragment {
         }
        if (!TextUtils.isEmpty(stations)) {
 
-           Log.e("读文件，得到station---->",stations);
+//           Log.e("读文件，得到station---->",stations);
 
             if (list != null && list.size() > 0)
                 list.clear();
@@ -98,7 +98,7 @@ public class StationFragment extends Fragment {
                     list.add(model);
                 }
             }
-           Log.e("读文件，得到list size---->",list.size()+"");
+//           Log.e("读文件，得到list size---->",list.size()+"");
             if (mAdapter != null && list != null)
                 mAdapter.notifyDataSetChanged();
         }

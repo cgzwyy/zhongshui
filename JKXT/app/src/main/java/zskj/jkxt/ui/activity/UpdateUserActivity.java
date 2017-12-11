@@ -67,6 +67,7 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
 
         update_userRange = (LinearLayout) this.findViewById(R.id.update_userRange);
 
+//        Toast.makeText(getApplicationContext(), "stations:"+JKXTApplication.stations , Toast.LENGTH_SHORT).show();
         if (JKXTApplication.stations != null && JKXTApplication.stations.length > 0) {
             for (int i = 0; i < JKXTApplication.stations.length; i++) {
                 CheckBox child = new CheckBox(this);

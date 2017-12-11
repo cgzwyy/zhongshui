@@ -1,5 +1,6 @@
 package zskj.jkxt.ui.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -53,7 +54,7 @@ public class UserManagementFragment extends Fragment {
     DeleteUserTask mDeleteUserTask;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(Activity context) {
         super.onAttach(context);
         mContext = context;
     }

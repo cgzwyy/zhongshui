@@ -1,5 +1,6 @@
 package zskj.jkxt.ui.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,10 +26,10 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Date;
 
 import zskj.jkxt.R;
 import zskj.jkxt.WebService;
@@ -76,7 +77,7 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(Activity context) {
         super.onAttach(context);
         mContext = context;
     }

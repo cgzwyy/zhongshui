@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -61,7 +60,9 @@ public class AddUserActivity extends AppCompatActivity {
         rbLevelOne = (RadioButton) this.findViewById(R.id.rbLevelOne);
         rbLevelTwo = (RadioButton) this.findViewById(R.id.rbLevelTwo);
         rg_range = (LinearLayout) this.findViewById(R.id.rg_range);
-        Log.e("stations length------>",JKXTApplication.stations.length+"");
+//        Log.e("stations length------>",JKXTApplication.stations.length+"");
+//        if (JKXTApplication.stations != null)
+//            Toast.makeText(getApplicationContext(), "stations:" + JKXTApplication.stations.toString(), Toast.LENGTH_SHORT).show();
         if (JKXTApplication.stations != null && JKXTApplication.stations.length > 0) {
             for (int i = 0; i < JKXTApplication.stations.length; i++) {
                 CheckBox child = new CheckBox(this);
