@@ -234,22 +234,26 @@ public class UpdateUserActivity extends AppCompatActivity implements View.OnClic
 
     public void dealResult(String result) {
         try {
-            JSONObject obj = new JSONObject(result);
-            int code = obj.optInt("code");
-            if (code == 0) {
-                String msg = obj.optString("msg");
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (obj.optString("data").equals("true")) {
-                setResult(1);
-                finish();
-            } else {
-                Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
+            if(result != null && result.toString() != null){
+                JSONObject obj = new JSONObject(result);
+                int code = obj.optInt("code");
+                if (code == 0) {
+                    String msg = obj.optString("msg");
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (obj.optString("data").equals("true")) {
+                    setResult(1);
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
+                }
+            }else{
+                Toast.makeText(getApplicationContext(), "更新用户信息失败1", Toast.LENGTH_LONG).show();
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "更新用户信息失败2", Toast.LENGTH_SHORT).show();
         }
 
     }

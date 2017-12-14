@@ -122,43 +122,47 @@ public class UserManagementFragment extends Fragment {
 
     private void dealResult(String result) {
         try {
-            JSONObject obj = new JSONObject(result);
-            int code = obj.optInt("code");
-            if (code == 0) {
-                String msg = obj.optString("msg");
-                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            //JSONObject data = obj.optJSONObject("data");
-            //JSONArray userLists = data.optJSONArray("userlist");
-            JSONArray userLists = obj.optJSONArray("data");
-            if (userLists != null && userLists.length() > 0) {
-                userList.clear();
-                for (int i = 0; i < userLists.length(); i++) {
-                    JSONObject detail = userLists.optJSONObject(i);
-                    User user = new User();
-                    user.userId = i;
-                    user.userName = detail.optString("userName");
-                    user.userPassword = detail.optString("userPassword");
-                    user.userRights = detail.optString("userRights");
-                    user.userRange = detail.optString("userRange");
-                    user.userLevel = detail.optString("userLevel");
-                    userList.add(user);
+            if(result != null && result.toString() != null){
+                JSONObject obj = new JSONObject(result);
+                int code = obj.optInt("code");
+                if (code == 0) {
+                    String msg = obj.optString("msg");
+                    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                    return;
                 }
-            }
-            if (userList != null && userList.size() > 0) {
-                lv_user_list.setAdapter(new userListAdapter());
-                lv_user_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        User user = userList.get(position);
-                        showDetailPopu(user);
+                //JSONObject data = obj.optJSONObject("data");
+                //JSONArray userLists = data.optJSONArray("userlist");
+                JSONArray userLists = obj.optJSONArray("data");
+                if (userLists != null && userLists.length() > 0) {
+                    userList.clear();
+                    for (int i = 0; i < userLists.length(); i++) {
+                        JSONObject detail = userLists.optJSONObject(i);
+                        User user = new User();
+                        user.userId = i;
+                        user.userName = detail.optString("userName");
+                        user.userPassword = detail.optString("userPassword");
+                        user.userRights = detail.optString("userRights");
+                        user.userRange = detail.optString("userRange");
+                        user.userLevel = detail.optString("userLevel");
+                        userList.add(user);
                     }
-                });
+                }
+                if (userList != null && userList.size() > 0) {
+                    lv_user_list.setAdapter(new userListAdapter());
+                    lv_user_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            User user = userList.get(position);
+                            showDetailPopu(user);
+                        }
+                    });
+                }
+            }else{
+                Toast.makeText(mContext, "获取用户信息失败1", Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "获取用户信息失败2", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -334,21 +338,25 @@ public class UserManagementFragment extends Fragment {
 
     public void deleteResult(String result) {
         try {
-            JSONObject obj = new JSONObject(result);
-            int code = obj.optInt("code");
-            if (code == 0) {
-                String msg = obj.optString("msg");
-                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (obj.optString("data").equals("true")) {
-                getUserData();
-            } else {
-                Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
+            if(result != null && result.toString() != null){
+                JSONObject obj = new JSONObject(result);
+                int code = obj.optInt("code");
+                if (code == 0) {
+                    String msg = obj.optString("msg");
+                    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (obj.optString("data").equals("true")) {
+                    getUserData();
+                } else {
+                    Toast.makeText(mContext, result, Toast.LENGTH_LONG).show();
+                }
+            }else{
+                Toast.makeText(mContext, "删除用户信息失败1", Toast.LENGTH_LONG).show();
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "删除用户信息失败2", Toast.LENGTH_SHORT).show();
         }
     }
 

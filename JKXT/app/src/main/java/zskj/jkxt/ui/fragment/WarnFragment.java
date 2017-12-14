@@ -195,36 +195,40 @@ public class WarnFragment extends Fragment implements View.OnClickListener {
     private void setDataDetail(String result) {
         Log.e(TAG, result);
         try {
-            JSONObject obj = new JSONObject(result);
-            int code = obj.optInt("code");
-            if (code == 0) {
-                String msg = obj.optString("msg");
+            if(result != null && result.toString() != null){
+                JSONObject obj = new JSONObject(result);
+                int code = obj.optInt("code");
+                if (code == 0) {
+                    String msg = obj.optString("msg");
 //                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            JSONArray data = obj.optJSONArray("data");
-            if (data != null && data.length() > 0) {
-                dataSet.clear();
-                for (int i = 0; i < data.length(); i++) {
-                    JSONObject detail = data.optJSONObject(i);
-                    AlarmData alarmData = new AlarmData();
-                    alarmData.alarm_num = i + "";
-                    alarmData.alarm_station = detail.optString("station");
-                    alarmData.alarm_type = detail.optString("type");
-                    alarmData.alarm_date = detail.optString("date");
-                    alarmData.alarm_time = detail.optString("time");
-                    alarmData.alarm_content = detail.optString("content");
-                    if (alarmData.alarm_time.compareTo(last_time) > 0) {
-                        last_time = alarmData.alarm_time;
-                    }
-                    dataSet.add(alarmData);
+                    return;
                 }
+                JSONArray data = obj.optJSONArray("data");
+                if (data != null && data.length() > 0) {
+                    dataSet.clear();
+                    for (int i = 0; i < data.length(); i++) {
+                        JSONObject detail = data.optJSONObject(i);
+                        AlarmData alarmData = new AlarmData();
+                        alarmData.alarm_num = i + "";
+                        alarmData.alarm_station = detail.optString("station");
+                        alarmData.alarm_type = detail.optString("type");
+                        alarmData.alarm_date = detail.optString("date");
+                        alarmData.alarm_time = detail.optString("time");
+                        alarmData.alarm_content = detail.optString("content");
+                        if (alarmData.alarm_time.compareTo(last_time) > 0) {
+                            last_time = alarmData.alarm_time;
+                        }
+                        dataSet.add(alarmData);
+                    }
+                }
+                currentPage = dataSet.size() % 10 == 0 ? dataSet.size() / 10 - 1 : dataSet.size() / 10;
+                myAdapter.refresh();
+            }else{
+                Toast.makeText(mContext, "获取告警信息失败1", Toast.LENGTH_SHORT).show();
             }
-            currentPage = dataSet.size() % 10 == 0 ? dataSet.size() / 10 - 1 : dataSet.size() / 10;
-            myAdapter.refresh();
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "获取告警信息失败2", Toast.LENGTH_SHORT).show();
         }
 
     }

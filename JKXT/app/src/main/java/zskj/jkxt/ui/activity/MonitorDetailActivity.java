@@ -214,125 +214,129 @@ public class MonitorDetailActivity extends Activity {
     private void dealResult(String result, String colName) {
 
         try {
-            JSONObject obj = new JSONObject(result);
-            Log.e("getStationInfo------>",result);
-            int code = obj.optInt("code");
-            if (code == 0) {
-                String msg = obj.optString("msg");
-                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            JSONObject data = obj.optJSONObject("data");
-            if (data == null)
-                return;
+            if(result != null && result.toString() != null){
+                JSONObject obj = new JSONObject(result);
+                //Log.e("getStationInfo------>",result);
+                int code = obj.optInt("code");
+                if (code == 0) {
+                    String msg = obj.optString("msg");
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                JSONObject data = obj.optJSONObject("data");
+                if (data == null)
+                    return;
 //            tv_plan.setText(df.format(Double.valueOf(data.optString("省调计划"))));
-            if(data.has("省调计划")){
-                tv_plan.setText(df.format(Double.valueOf(data.optString("省调计划"))));
-            }else{
-                tv_plan.setText("0.00");
-            }
-            if (colName.contains("光伏")) {
+                if(data.has("省调计划")){
+                    tv_plan.setText(df.format(Double.valueOf(data.optString("省调计划"))));
+                }else{
+                    tv_plan.setText("0.00");
+                }
+                if (colName.contains("光伏")) {
 //                tv_speed.setText(df.format(Double.valueOf(data.optString("总辐射瞬时值"))));
-                if(data.has("总辐射瞬时值")){
-                    tv_speed.setText(df.format(Double.valueOf(data.optString("总辐射瞬时值"))));
-                }else{
-                    tv_speed.setText("0.00");
-                }
-            } else {
+                    if(data.has("总辐射瞬时值")){
+                        tv_speed.setText(df.format(Double.valueOf(data.optString("总辐射瞬时值"))));
+                    }else{
+                        tv_speed.setText("0.00");
+                    }
+                } else {
 //                tv_speed.setText(df.format(Double.valueOf(data.optString("平均风速"))));
-                if(data.has("平均风速")){
-                    tv_speed.setText(df.format(Double.valueOf(data.optString("平均风速"))));
-                }else{
-                    tv_speed.setText("0.00");
+                    if(data.has("平均风速")){
+                        tv_speed.setText(df.format(Double.valueOf(data.optString("平均风速"))));
+                    }else{
+                        tv_speed.setText("0.00");
+                    }
                 }
-            }
-//            tv_power.setText(df.format(Double.valueOf(data.optString("当日发电量"))));
-//            tv_electricity.setText(df.format(Double.valueOf(data.optString("瞬时总有功"))));
-            if(data.has("当日发电量")){
-                tv_power.setText(df.format(Double.valueOf(data.optString("当日发电量"))));
-            }else{
-                tv_power.setText("0.00");
-            }
-            if(data.has("瞬时总有功")){
-                tv_electricity.setText(df.format(Double.valueOf(data.optString("瞬时总有功"))));
-            }else{
-                tv_electricity.setText("0.00");
-            }
+//            tv_power.setText(df.format(Double.valueOf(data.optString("瞬时总有功"))));
+//            tv_electricity.setText(df.format(Double.valueOf(data.optString("当日发电量"))));
+                if(data.has("瞬时总有功")){
+                    tv_power.setText(df.format(Double.valueOf(data.optString("瞬时总有功"))));
+                }else{
+                    tv_power.setText("0.00");
+                }
+                if(data.has("当日发电量")){
+                    tv_electricity.setText(df.format(Double.valueOf(data.optString("当日发电量"))));
+                }else{
+                    tv_electricity.setText("0.00");
+                }
 
-            Log.e("当日发电量---->",df.format(Double.valueOf(data.optString("当日发电量"))));
-            JSONArray list = data.optJSONArray("list");
-            if (list != null && list.length() > 0) {
-                fanList.clear();
-                for (int i = 0; i < list.length(); i++) {
-                    JSONObject object = list.optJSONObject(i);
-                    Fan fan = new Fan();
-                    fan.fan_number = object.optString("编号");
-                    Log.e("fan  fan_number------>",fan.fan_number);
-                    if (colName.contains("光伏")) {
-                        if(object.has("逆变器日发电量")){
-                            fan.fan_speed = df.format(Double.valueOf(object.optString("逆变器日发电量")));
-                        }else{
-                            fan.fan_speed = "0.00";
-                        }
-                        if(object.has("逆变器效率")){
-                            fan.fan_revs = df.format(Double.valueOf(object.optString("逆变器效率")));
-                        }else{
-                            fan.fan_revs = "0.00";
-                        }
-                        if(object.has("逆变器状态")){
-                            fan.fan_state = df.format(Double.valueOf(object.optString("逆变器状态")));
-                        }else{
-                            fan.fan_state = "0.00";
-                        }
-                        if(object.has("有功功率")){
-                            fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
-                        }else{
-                            fan.fan_active_power = "0.00";
-                        }
-                    } else {
-                        if(object.has("风速")){
-                            fan.fan_speed = df.format(Double.valueOf(object.optString("风速")));
-                        }else{
-                            fan.fan_speed = "0.00";
-                        }
-                        if(object.has("转速")){
-                            fan.fan_revs = df.format(Double.valueOf(object.optString("转速")));
-                        }else{
-                            fan.fan_revs = "0.00";
-                        }
-                        if(object.has("风机运行状态")){
-                            fan.fan_state = df.format(Double.valueOf(object.optString("风机运行状态")));
-                        }else{
-                            fan.fan_state = "0.00";
-                        }
-                        if(object.has("有功功率")){
-                            fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
-                        }else{
-                            fan.fan_active_power = "0.00";
-                        }
+//            Log.e("当日发电量---->",df.format(Double.valueOf(data.optString("当日发电量"))));
+                JSONArray list = data.optJSONArray("list");
+                if (list != null && list.length() > 0) {
+                    fanList.clear();
+                    for (int i = 0; i < list.length(); i++) {
+                        JSONObject object = list.optJSONObject(i);
+                        Fan fan = new Fan();
+                        fan.fan_number = object.optString("编号");
+//                    Log.e("fan  fan_number------>",fan.fan_number);
+                        if (colName.contains("光伏")) {
+                            if(object.has("逆变器日发电量")){
+                                fan.fan_speed = df.format(Double.valueOf(object.optString("逆变器日发电量")));
+                            }else{
+                                fan.fan_speed = "0.00";
+                            }
+                            if(object.has("逆变器效率")){
+                                fan.fan_revs = df.format(Double.valueOf(object.optString("逆变器效率")));
+                            }else{
+                                fan.fan_revs = "0.00";
+                            }
+                            if(object.has("逆变器状态")){
+                                fan.fan_state = df.format(Double.valueOf(object.optString("逆变器状态")));
+                            }else{
+                                fan.fan_state = "0.00";
+                            }
+                            if(object.has("有功功率")){
+                                fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
+                            }else{
+                                fan.fan_active_power = "0.00";
+                            }
+                        } else {
+                            if(object.has("风速")){
+                                fan.fan_speed = df.format(Double.valueOf(object.optString("风速")));
+                            }else{
+                                fan.fan_speed = "0.00";
+                            }
+                            if(object.has("转速")){
+                                fan.fan_revs = df.format(Double.valueOf(object.optString("转速")));
+                            }else{
+                                fan.fan_revs = "0.00";
+                            }
+                            if(object.has("风机运行状态")){
+                                fan.fan_state = df.format(Double.valueOf(object.optString("风机运行状态")));
+                            }else{
+                                fan.fan_state = "0.00";
+                            }
+                            if(object.has("有功功率")){
+                                fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
+                            }else{
+                                fan.fan_active_power = "0.00";
+                            }
 //                        fan.fan_speed = df.format(Double.valueOf(object.optString("风速")));
 //                        fan.fan_revs = df.format(Double.valueOf(object.optString("转速")));
 //                        fan.fan_state = df.format(Double.valueOf(object.optString("风机运行状态")));
 //                        fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
-                    }
+                        }
 
-                    fanList.add(fan);
+                        fanList.add(fan);
+                    }
                 }
+                Log.e("fan  nums------>",fanList.size()+"");
+                Collections.sort(fanList, new Comparator<Fan>() {
+                    @Override
+                    public int compare(Fan fan, Fan t1) {
+                        String fan_number = fan.fan_number;
+                        String fan_number1 = t1.fan_number;
+                        int flag = fan_number.compareTo(fan_number1) > 0 ? 1 : 0;
+                        return flag;
+                    }
+                });
+                monitorAdapter.notifyDataSetChanged();
+            }else{
+                Toast.makeText(this, "查询电场信息失败1", Toast.LENGTH_SHORT).show();
             }
-            Log.e("fan  nums------>",fanList.size()+"");
-            Collections.sort(fanList, new Comparator<Fan>() {
-                @Override
-                public int compare(Fan fan, Fan t1) {
-                    String fan_number = fan.fan_number;
-                    String fan_number1 = t1.fan_number;
-                    int flag = fan_number.compareTo(fan_number1) > 0 ? 1 : 0;
-                    return flag;
-                }
-            });
-            monitorAdapter.notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "查询电场信息失败2", Toast.LENGTH_SHORT).show();
         }
 
 

@@ -48,13 +48,13 @@ public class StationDetailPopu extends PopupWindow {
 
     private void initPage(int flag) {
         if(flag == 1){
-            fan_detail_speed.setText(mContext.getResources().getString(R.string.electricity_unit, mFan.fan_speed));
-            fan_detail_power.setText(mContext.getResources().getString(R.string.active_power_unit, mFan.fan_active_power));
-            fan_detail_revs.setText(mContext.getResources().getString(R.string.efficiency_unit, mFan.fan_revs));
+            fan_detail_speed.setText(mContext.getResources().getString(R.string.electricity_unit2 , mFan.fan_speed));
+            fan_detail_power.setText(mContext.getResources().getString(R.string.active_power_unit2, mFan.fan_active_power));
+            fan_detail_revs.setText(mContext.getResources().getString(R.string.efficiency_unit2, mFan.fan_revs));
         }else{
-            fan_detail_speed.setText(mContext.getResources().getString(R.string.speed_unit, mFan.fan_speed));
-            fan_detail_power.setText(mContext.getResources().getString(R.string.active_power_unit, mFan.fan_active_power));
-            fan_detail_revs.setText(mContext.getResources().getString(R.string.revs_unit, mFan.fan_revs));
+            fan_detail_speed.setText(mContext.getResources().getString(R.string.speed_unit2, mFan.fan_speed));
+            fan_detail_power.setText(mContext.getResources().getString(R.string.active_power_unit3, mFan.fan_active_power));
+            fan_detail_revs.setText(mContext.getResources().getString(R.string.revs_unit2, mFan.fan_revs));
         }
     }
 

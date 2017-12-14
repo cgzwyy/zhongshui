@@ -197,13 +197,14 @@ public class PowerFragment extends Fragment {
 
     private void parserResult(String result) {
         try {
-            JSONObject obj = new JSONObject(result);
-            int code = obj.optInt("code");
-            if (code == 0) {
-                String msg = obj.optString("msg");
-                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-                return;
-            }
+            if(result != null && result.toString() != null){
+                JSONObject obj = new JSONObject(result);
+                int code = obj.optInt("code");
+                if (code == 0) {
+                    String msg = obj.optString("msg");
+                    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                    return;
+                }
 //            JSONArray data = obj.optJSONArray("data");
 //            if (data != null && data.length() > 0) {
 //                stations = new String[data.length()];
@@ -211,14 +212,17 @@ public class PowerFragment extends Fragment {
 //                    stations[i] = data.optString(i);
 //                }
 //            }
-            String data = obj.optString("data");
-            if (data != null && data.length() > 0) {
-                stations = data.split(",");
+                String data = obj.optString("data");
+                if (data != null && data.length() > 0) {
+                    stations = data.split(",");
 //                Log.e("stations length--->",data+"    "+stations.length);
+                }
+            }else{
+                Toast.makeText(mContext, "获取场站名称失败1", Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(mContext, WebService.ERRORMSG, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "获取场站名称失败2", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -318,26 +322,27 @@ public class PowerFragment extends Fragment {
      */
     public void setDataDetail(String result) {
         try {
-            JSONObject obj = new JSONObject(result);
-            int code = obj.optInt("code");
-            if (code == 0) { //获取数据失败
-                String msg = obj.optString("msg");
-                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-                return;
-            }else if(code == 2){  //只获取到有功功率数据，没有预测功率数据
-                if (last_time == 0) {
-                    forecastData.clear();
-                    pData.clear();
-                }
-                JSONObject data = obj.optJSONObject("data");
-                if (data != null) {
-                    JSONArray pcode = data.optJSONArray("pcode");
+            if(result != null && result.toString() != null){
+                JSONObject obj = new JSONObject(result);
+                int code = obj.optInt("code");
+                if (code == 0) { //获取数据失败
+                    String msg = obj.optString("msg");
+                    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                    return;
+                }else if(code == 2){  //只获取到有功功率数据，没有预测功率数据
+                    if (last_time == 0) {
+                        forecastData.clear();
+                        pData.clear();
+                    }
+                    JSONObject data = obj.optJSONObject("data");
+                    if (data != null) {
+                        JSONArray pcode = data.optJSONArray("pcode");
 //                    Log.e("data size-->", pcode.length() + "   ");
-                    if (pcode != null && pcode.length() > 0) {
-                        int time = 0;
-                        for (int i = 0; i < pcode.length(); i++) {
-                            JSONObject detail = pcode.optJSONObject(i);
-                            try {
+                        if (pcode != null && pcode.length() > 0) {
+                            int time = 0;
+                            for (int i = 0; i < pcode.length(); i++) {
+                                JSONObject detail = pcode.optJSONObject(i);
+                                try {
 //                                if (i == 0) {
 //                                    pData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
 //                                } else {
@@ -345,74 +350,76 @@ public class PowerFragment extends Fragment {
 //                                    if (detail.optInt("time") > time)
 //                                        time = detail.optInt("time");
 //                                }
-                                if(Double.valueOf(detail.optString("data")) >= -100){
+                                    if(Double.valueOf(detail.optString("data")) >= -100){
 //                                    Log.e("data too small:","----->"+Double.valueOf(detail.optString("data")));
+                                        pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+                                        if (detail.optInt("time") > time)
+                                            time = detail.optInt("time");
+                                    }
+                                } catch (NumberFormatException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            last_time = time;
+                        }
+                    }
+//                Log.e("data size-->", pData.size() + "   " + last_time);
+                    refreshChartSet();
+                }else{  //获取数据成功，包括有功功率数据和预测功率数据
+                    if (last_time == 0) {
+                        forecastData.clear();
+                        pData.clear();
+                    }
+                    JSONObject data = obj.optJSONObject("data");
+                    if (data != null) {
+                        JSONArray pcode = data.optJSONArray("pcode");
+                        JSONArray fpcode = data.optJSONArray("forecast_pcode");
+//                    Log.e("data size-->", pcode.length() + "   " + fpcode.length());
+                        if (pcode != null && pcode.length() > 0) {
+                            int time = 0;
+                            for (int i = 0; i < pcode.length(); i++) {
+                                JSONObject detail = pcode.optJSONObject(i);
+                                try {
+//                                if (i == 0) {
+//                                    pData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+//                                } else {
+//                                    pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+//                                    if (detail.optInt("time") > time)
+//                                        time = detail.optInt("time");
+//                                }
                                     pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
                                     if (detail.optInt("time") > time)
                                         time = detail.optInt("time");
+                                } catch (NumberFormatException e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (NumberFormatException e) {
-                                e.printStackTrace();
                             }
+                            last_time = time;
                         }
-                        last_time = time;
-                    }
-                }
-//                Log.e("data size-->", pData.size() + "   " + last_time);
-                refreshChartSet();
-            }else{  //获取数据成功，包括有功功率数据和预测功率数据
-                if (last_time == 0) {
-                    forecastData.clear();
-                    pData.clear();
-                }
-                JSONObject data = obj.optJSONObject("data");
-                if (data != null) {
-                    JSONArray pcode = data.optJSONArray("pcode");
-                    JSONArray fpcode = data.optJSONArray("forecast_pcode");
-//                    Log.e("data size-->", pcode.length() + "   " + fpcode.length());
-                    if (pcode != null && pcode.length() > 0) {
-                        int time = 0;
-                        for (int i = 0; i < pcode.length(); i++) {
-                            JSONObject detail = pcode.optJSONObject(i);
-                            try {
-//                                if (i == 0) {
-//                                    pData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
-//                                } else {
-//                                    pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
-//                                    if (detail.optInt("time") > time)
-//                                        time = detail.optInt("time");
-//                                }
-                                pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
-                                if (detail.optInt("time") > time)
-                                    time = detail.optInt("time");
-                            } catch (NumberFormatException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        last_time = time;
-                    }
-                    if (fpcode != null && fpcode.length() > 0) {
-                        for (int i = 0; i < fpcode.length(); i++) {
-                            JSONObject fdetail = fpcode.optJSONObject(i);
-                            try {
-                                if (i == 0) {
-                                    forecastData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
-                                } else {
-                                    forecastData.add(new Entry(fdetail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
+                        if (fpcode != null && fpcode.length() > 0) {
+                            for (int i = 0; i < fpcode.length(); i++) {
+                                JSONObject fdetail = fpcode.optJSONObject(i);
+                                try {
+                                    if (i == 0) {
+                                        forecastData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
+                                    } else {
+                                        forecastData.add(new Entry(fdetail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
+                                    }
+                                } catch (NumberFormatException e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (NumberFormatException e) {
-                                e.printStackTrace();
                             }
                         }
                     }
-                }
 //                Log.e("data size-->", pData.size() + "   " + forecastData.size());
-                refreshChartSet();
+                    refreshChartSet();
+                }
+            }else {
+                Toast.makeText(mContext, "获取场站功率数据失败1", Toast.LENGTH_SHORT).show();
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(mContext, WebService.ERRORMSG, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "获取场站功率数据失败2", Toast.LENGTH_SHORT).show();
         }
 
 

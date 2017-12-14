@@ -63,15 +63,15 @@ public class WebService {
 //                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
-                return ERRORMSG;
+                return null;
         } catch (Exception e) {
-            return e.getMessage();
+            return null;
         }
     }
 
     public String getUserInfo() {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
-            return ERRORMSG;
+            return null;
         }
         String methodName = "getUserInfo";
         SoapObject request = new SoapObject(namespace, methodName);
@@ -91,15 +91,16 @@ public class WebService {
 //                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
-                return ERRORMSG;
+                return null;
         } catch (Exception e) {
-            return e.getMessage();
+//            return e.getMessage();
+            return null;
         }
     }
 
     public String addUser(String userName, String password, String rights, String range, String level) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
-            return ERRORMSG;
+            return null;
         }
         String methodName = "addUser";
         SoapObject request = new SoapObject(namespace, methodName);
@@ -133,15 +134,15 @@ public class WebService {
 //                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
-                return ERRORMSG;
+                return null;
         } catch (Exception e) {
-            return e.getMessage();
+            return null;
         }
     }
 
     public String updateUser(String userName, String password, String rights, String range, String level) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
-            return ERRORMSG;
+            return null;
         }
         String methodName = "updateUser";
         SoapObject request = new SoapObject(namespace, methodName);
@@ -175,9 +176,9 @@ public class WebService {
 //                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
-                return ERRORMSG;
+                return null;
         } catch (Exception e) {
-            return e.getMessage();
+            return null;
         }
     }
 
@@ -209,15 +210,15 @@ public class WebService {
 //                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
-                return ERRORMSG;
+                return null;
         } catch (Exception e) {
-            return e.getMessage();
+            return null;
         }
     }
 
     public String getStationInfo(String Str_StationCode) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
-            return ERRORMSG;
+            return null;
         }
         String methodName = "GetStationInfo";
         SoapObject request = new SoapObject(namespace, methodName);
@@ -243,15 +244,15 @@ public class WebService {
 //                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
-                return ERRORMSG;
+                return null;
         } catch (Exception e) {
-            return e.getMessage();
+            return null;
         }
     }
 
     public String getStationName(String ranges) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
-            return ERRORMSG;
+            return null;
         }
         String methodName = "GetStationName";
         SoapObject request = new SoapObject(namespace, methodName);
@@ -276,16 +277,16 @@ public class WebService {
 //                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
-                return ERRORMSG;
+                return null;
         } catch (Exception e) {
-            return e.getMessage();
+            return null;
         }
     }
 
 
     public String getAlarmData(String sdate, String stime, String ranges, String level) {
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
-            return ERRORMSG;
+            return null;
         }
         String methodName = "GetAlarmData";
         SoapObject request = new SoapObject(namespace, methodName);
@@ -317,16 +318,16 @@ public class WebService {
 //                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
-                return ERRORMSG;
+                return null;
         } catch (Exception e) {
-            return e.getMessage();
+            return null;
         }
     }
 
     public String getStationPower(String sdate, String time, String station_names) {
 
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
-            return ERRORMSG;
+            return null;
         }
         String methodName = "GetStationPower";
         SoapObject request = new SoapObject(namespace, methodName);
@@ -356,9 +357,9 @@ public class WebService {
 //                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
                 return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
             } else
-                return ERRORMSG;
+                return null;
         } catch (Exception e) {
-            return e.getMessage();
+            return null;
         }
     }
 }

@@ -145,41 +145,46 @@ public class LoginActivity extends Activity {
 
     private void parserResult(String result) {
         try {
-            JSONObject obj = new JSONObject(result);
-            int code = obj.optInt("code");
-            if (code == 0) {
-                String msg = obj.optString("msg");
-                mPasswordView.setError(msg); //密码错误
-                mPasswordView.requestFocus();
-                return;
-            }
+            if(result != null && result.toString() != null){
+                JSONObject obj = new JSONObject(result);
+                int code = obj.optInt("code");
+                if (code == 0) {
+                    String msg = obj.optString("msg");
+                    mPasswordView.setError(msg); //密码错误
+                    mPasswordView.requestFocus();
+                    return;
+                }
 //            Log.e("resutl rights----->","获取data数据");
-            JSONObject data = obj.optJSONObject("data");
-            String rights = data.optString("rights");
-            String ranges = data.optString("ranges");
-            String level = data.optString("level");
+                JSONObject data = obj.optJSONObject("data");
+                String rights = data.optString("rights");
+                String ranges = data.optString("ranges");
+                String level = data.optString("level");
 //            Log.e("resutl rights----->",rights);
 //            Log.e("resutl range----->",ranges);
 //            Log.e("resutl level----->",level);
-            //登录成功和记住密码框为选中状态才保存用户信息
-            if(rem_pw.isChecked())
-            {
-                //记住用户名、密码、
-                SharedPreferences.Editor editor = mSharedPreferences.edit();
-                editor.putString("userName", mUserNameView.getText().toString());
-                editor.putString("password",mPasswordView.getText().toString());
-                editor.commit();
+                //登录成功和记住密码框为选中状态才保存用户信息
+                if(rem_pw.isChecked())
+                {
+                    //记住用户名、密码、
+                    SharedPreferences.Editor editor = mSharedPreferences.edit();
+                    editor.putString("userName", mUserNameView.getText().toString());
+                    editor.putString("password",mPasswordView.getText().toString());
+                    editor.commit();
+                }
+                Intent intent = new Intent();
+                intent.setClass(LoginActivity.this, MainActivity.class);
+                intent.putExtra("rights", rights);
+                intent.putExtra("ranges", ranges);
+                intent.putExtra("level", level);
+                startActivity(intent);
+                finish();
+            }else{
+                mPasswordView.setError("密码错误或网络访问失败1"); //密码错误
+                mPasswordView.requestFocus();
             }
-            Intent intent = new Intent();
-            intent.setClass(LoginActivity.this, MainActivity.class);
-            intent.putExtra("rights", rights);
-            intent.putExtra("ranges", ranges);
-            intent.putExtra("level", level);
-            startActivity(intent);
-            finish();
         } catch (JSONException e) {
             e.printStackTrace();
-            mPasswordView.setError(result); //密码错误
+            mPasswordView.setError("密码错误或网络访问失败2"); //密码错误
             mPasswordView.requestFocus();
         }
 //        Intent intent = new Intent();
@@ -201,8 +206,6 @@ public class LoginActivity extends Activity {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
         }
-
-
     }
 
 }
