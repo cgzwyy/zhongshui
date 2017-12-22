@@ -67,6 +67,20 @@
             android:paddingLeft="@dimen/activity_vertical_little_margin"
             android:paddingTop="@dimen/activity_vertical_little_margin"
             android:paddingBottom="@dimen/activity_vertical_little_margin"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/dialog_line_size"
+            android:background="@color/silver" />
+        <TextView
+            android:id="@+id/fan_detail_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/stop"
+            android:textColor="@color/black"
+            android:textSize="@dimen/content_text_size"
+            android:paddingLeft="@dimen/activity_vertical_little_margin"
+            android:paddingTop="@dimen/activity_vertical_little_margin"
+            android:paddingBottom="@dimen/activity_vertical_little_margin"/>
     </LinearLayout>
 
 </LinearLayout>

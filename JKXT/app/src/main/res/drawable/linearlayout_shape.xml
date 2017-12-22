@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:andrpid="http://schemas.android.com/apk/res/android">
+
+    //这里是Linearlayout布局的背景颜色
+    <solid andrpid:color="@color/white"></solid>
+    //这里是设置边框线的粗细和颜色
+    <stroke andrpid:width="@dimen/linealayout_padding_width"
+        andrpid:color="@color/silver">
+    </stroke>
+
+    <padding
+        andrpid:bottom="@dimen/linealayout_padding"
+        andrpid:left="@dimen/linealayout_padding"
+        andrpid:right="@dimen/linealayout_padding"
+        andrpid:top="@dimen/linealayout_padding">
+    </padding>
+    //角的话，里边有参数可以单独设置
+    <corners andrpid:radius="@dimen/linealayout_corners"></corners>
+
+</shape>

@@ -7,10 +7,15 @@
     <dimen name="little_margin">4dp</dimen>
     <dimen name="gridview_margin">8dp</dimen>
     <dimen name="big_text_size">18sp</dimen>
+    <dimen name="big_big_text_size">24sp</dimen>
     <dimen name="normal_text_size">15sp</dimen>
     <dimen name="small_text_size">10sp</dimen>
+    <dimen name="small_small_text_size">15sp</dimen>
     <dimen name="dialog_title_text_size">20sp</dimen>
     <dimen name="dialog_content_text_size">16sp</dimen>
     <dimen name="content_text_size">12sp</dimen>
     <dimen name="dialog_line_size">1sp</dimen>
+    <dimen name="linealayout_padding_width">0.1dp</dimen>
+    <dimen name="linealayout_padding">1dp</dimen>
+    <dimen name="linealayout_corners">10dp</dimen>
 </resources>

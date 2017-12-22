@@ -10,4 +10,8 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <declare-styleable name="refreshableView">
+        <attr name="interceptAllMoveEvents" format="boolean"/>
+    </declare-styleable>
+
 </resources>

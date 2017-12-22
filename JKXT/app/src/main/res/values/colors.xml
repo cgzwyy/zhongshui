@@ -149,6 +149,7 @@
     <color name="black">#000000</color> <!-- 黑色 -->
     <color name="detail_text_color">#3dc84a</color> <!-- 黑色 -->
     <color name="dialog_background">#eeeeee</color> <!-- 黑色 -->
+    <color name="text_color">#20aff5</color>
 
     <color name="red1">#bc8f8f</color> <!-- 褐玫瑰红 -->
     <color name="red2">#ba55d3</color> <!-- 中粉紫色 -->

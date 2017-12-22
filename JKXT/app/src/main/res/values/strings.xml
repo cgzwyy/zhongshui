@@ -37,9 +37,12 @@
     <string name="electricity_unit2">日发电量：%1$skwh</string>
     <string name="efficiency_unit">%1$s%%</string>
     <string name="efficiency_unit2">逆变效率：%1$s%%</string>
+    <string name="efficiency_state2">逆变状态：%1$s</string>
+    <string name="efficiency_state">状态：%1$s</string>
     <string name="test_value">0.00</string>
     <string name="stop">停用</string>
-    <string name="test_num">#01</string>
+    <string name="run">发电</string>
+    <string name="test_num">#01A</string>
     <string name="dialog_title">数据详情</string>
     <string name="fan_speed">风速：</string>
     <string name="fan_power">有功：</string>

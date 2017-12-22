@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -373,7 +374,7 @@ public class MonitorDetailActivity extends Activity {
                 convertView = View.inflate(getApplicationContext(), R.layout.item_monitor_detail, null);
                 holder.fan_picture = (ImageView) convertView.findViewById(R.id.fan_picture);
                 holder.fan_number = (TextView) convertView.findViewById(R.id.fan_number);
-                holder.fan_state = (TextView) convertView.findViewById(R.id.fan_state);
+//                holder.fan_state = (TextView) convertView.findViewById(R.id.fan_state);
                 holder.fan_speed = (TextView) convertView.findViewById(R.id.fan_speed);
                 holder.fan_active_power = (TextView) convertView.findViewById(R.id.fan_active_power);
                 holder.fan_revs = (TextView) convertView.findViewById(R.id.fan_revs);
@@ -389,31 +390,48 @@ public class MonitorDetailActivity extends Activity {
                 holder.fan_speed.setText(getResources().getString(R.string.electricity_unit, model.fan_speed));
                 holder.fan_active_power.setText(getResources().getString(R.string.active_power_unit, model.fan_active_power));
                 holder.fan_revs.setText(getResources().getString(R.string.efficiency_unit, model.fan_revs));
+                if (Double.valueOf(model.fan_state.trim()) == 0) { //停机
+                    holder.fan_picture.setImageResource(R.drawable.gf2_2);
+//                    holder.fan_state.setText(getResources().getString(R.string.stop));
+                }else {
+                    holder.fan_picture.setImageResource(R.drawable.gf2_1);
+//                    holder.fan_state.setText(getResources().getString(R.string.run));
+                }
+//                holder.fan_state.setVisibility(View.INVISIBLE);
             } else {
                 holder.fan_speed.setText(getResources().getString(R.string.speed_unit, model.fan_speed));
                 holder.fan_active_power.setText(getResources().getString(R.string.active_power_unit, model.fan_active_power));
                 holder.fan_revs.setText(getResources().getString(R.string.revs_unit, model.fan_revs));
-            }
-            if (Double.valueOf(model.fan_state.trim()) >= 5) { //停机
-                if (mStation.columnName.contains("光伏")) {
-                    // TDTD
-//                    Glide.with(MonitorDetailActivity.this).load(R.drawable.gf2_2).asGif().into(holder.fan_picture);
-                    holder.fan_picture.setImageResource(R.drawable.gf2_2);
-                } else {
+                if (Double.valueOf(model.fan_state.trim()) == 2) { //发电
+                    Glide.with(MonitorDetailActivity.this).load(R.drawable.fj_032).asGif().dontAnimate()
+                            .diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.fan_picture);
+//                    holder.fan_state.setText(getResources().getString(R.string.run));
+                }else {
                     holder.fan_picture.setImageResource(R.drawable.fj_05);
+//                    holder.fan_state.setText(getResources().getString(R.string.stop));
                 }
-                holder.fan_state.setText(getResources().getString(R.string.stop));
-                holder.fan_state.setVisibility(View.VISIBLE);
-            } else {
-                if (mStation.columnName.contains("光伏")) {
-                    holder.fan_picture.setImageResource(R.drawable.gf2_1);
-                } else {
-//                    holder.fan_picture.setImageResource(R.drawable.fj_04);
-                    Glide.with(MonitorDetailActivity.this).load(R.drawable.fj_03).asGif().into(holder.fan_picture);
-                }
-                holder.fan_state.setText("");
-                holder.fan_state.setVisibility(View.INVISIBLE);
+//                holder.fan_state.setVisibility(View.INVISIBLE);
             }
+//            if (Double.valueOf(model.fan_state.trim()) >= 5) { //停机
+//                if (mStation.columnName.contains("光伏")) {
+//                    // TDTD
+////                    Glide.with(MonitorDetailActivity.this).load(R.drawable.gf2_2).asGif().into(holder.fan_picture);
+//                    holder.fan_picture.setImageResource(R.drawable.gf2_2);
+//                } else {
+//                    holder.fan_picture.setImageResource(R.drawable.fj_05);
+//                }
+//                holder.fan_state.setText(getResources().getString(R.string.stop));
+//                holder.fan_state.setVisibility(View.VISIBLE);
+//            } else {
+//                if (mStation.columnName.contains("光伏")) {
+//                    holder.fan_picture.setImageResource(R.drawable.gf2_1);
+//                } else {
+////                    holder.fan_picture.setImageResource(R.drawable.fj_04);
+//                    Glide.with(MonitorDetailActivity.this).load(R.drawable.fj_032).asGif().into(holder.fan_picture);
+//                }
+//                holder.fan_state.setText("");
+//                holder.fan_state.setVisibility(View.INVISIBLE);
+//            }
             return convertView;
         }
     }
@@ -421,7 +439,7 @@ public class MonitorDetailActivity extends Activity {
     static class ViewHolder {
         ImageView fan_picture;
         TextView fan_number;
-        TextView fan_state;
+//        TextView fan_state;
         TextView fan_speed;
         TextView fan_active_power;
         TextView fan_revs;
