@@ -26,11 +26,11 @@ public class JKXTApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites()
-                .detectNetwork().penaltyLog().build());
-        StrictMode.setVmPolicy(
-                new StrictMode.VmPolicy.Builder().detectLeakedSqlLiteObjects().penaltyLog().penaltyDeath().build());
-        NETWORK_FLAG = ConnectionChangeReceiver.ConnectionDetect(this);
+//        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites()
+//                .detectNetwork().penaltyLog().build());
+//        StrictMode.setVmPolicy(
+//                new StrictMode.VmPolicy.Builder().detectLeakedSqlLiteObjects().penaltyLog().penaltyDeath().build());
+//        NETWORK_FLAG = ConnectionChangeReceiver.ConnectionDetect(this);
         Log.e("NETWORK_FLAG", "------------------".concat(String.valueOf(NETWORK_FLAG)));
 
         getUrl();
