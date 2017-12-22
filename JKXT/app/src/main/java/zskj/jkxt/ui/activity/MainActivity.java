@@ -14,8 +14,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import zskj.jkxt.R;
+import zskj.jkxt.ui.fragment.JKInfoFragment;
 import zskj.jkxt.ui.fragment.PowerFragment;
-import zskj.jkxt.ui.fragment.StationFragment;
 import zskj.jkxt.ui.fragment.UserManagementFragment;
 import zskj.jkxt.ui.fragment.WarnFragment;
 
@@ -26,7 +26,8 @@ import zskj.jkxt.ui.fragment.WarnFragment;
 public class MainActivity extends FragmentActivity {
 
     private static final String TAG = "MainActivity";
-    private StationFragment mStationFrag;
+//    private StationFragment mStationFrag;
+    private JKInfoFragment mJKInfoFragment;
     private PowerFragment mPowerFrag;
     private WarnFragment mWarnFrag;
     private UserManagementFragment mSetFrag;
@@ -92,14 +93,21 @@ public class MainActivity extends FragmentActivity {
                     transaction.hide(currentFrag);
                 switch (i) {
                     case R.id.rb_station:
-                        if (mStationFrag == null) {
-                            mStationFrag = new StationFragment();
-                            mStationFrag.setRanges(ranges);
-                            transaction.add(R.id.fl_container, mStationFrag, "station");
+//                        if (mStationFrag == null) {
+//                            mStationFrag = new StationFragment();
+//                            mStationFrag.setRanges(ranges);
+//                            transaction.add(R.id.fl_container, mStationFrag, "station");
+//                        } else {
+//                            transaction.show(mStationFrag);
+//                        }
+                        if (mJKInfoFragment == null) {
+                            mJKInfoFragment = new JKInfoFragment();
+//                            mStationFrag.setRanges(ranges);
+                            transaction.add(R.id.fl_container, mJKInfoFragment, "station");
                         } else {
-                            transaction.show(mStationFrag);
+                            transaction.show(mJKInfoFragment);
                         }
-                        currentFrag = mStationFrag;
+                        currentFrag = mJKInfoFragment;
                         break;
                     case R.id.rb_power:
                         if (mPowerFrag == null) {

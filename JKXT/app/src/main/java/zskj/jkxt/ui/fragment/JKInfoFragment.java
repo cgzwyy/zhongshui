@@ -1,13 +1,20 @@
-package zskj.jkxt.ui.activity;
+package zskj.jkxt.ui.fragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.SpannableString;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -29,33 +36,56 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import java.util.ArrayList;
 
 import zskj.jkxt.R;
-import zskj.jkxt.util.DemoBase;
+import zskj.jkxt.ui.activity.StationInfoActivity;
+import zskj.jkxt.util.DemoData;
 import zskj.jkxt.util.RiseNumberTextView;
 
-public class NewMainActivity extends DemoBase {
+import static zskj.jkxt.util.DemoData.mColors;
 
+/**
+ * Created by WYY on 2017/12/22.
+ */
+
+public class JKInfoFragment extends Fragment{
+
+    Context mContext;
     private LinearLayout ll_jkdl,ll_jkyg;
     private LinearLayout piechart_legendLayout;
     private LinearLayout barchart_legendLayout;
     private RiseNumberTextView jk_yg,jk_dl;
-//    private RefreshView rv_refresh;
+    //    private RefreshView rv_refresh;
     private PieChart jkdl_piechart;
     private BarChart dldb_barchart;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_main);
-        ll_jkdl = (LinearLayout) this.findViewById(R.id.ll_jkdl);
+    public void onAttach(Activity context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_jkinfo, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        AssetManager mgr = mContext.getAssets();
+
+        ll_jkdl = (LinearLayout) getView().findViewById(R.id.ll_jkdl);
         ll_jkdl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent();
-                intent.setClass(NewMainActivity.this, LoginActivity.class);
+                intent.setClass(getActivity(), StationInfoActivity.class);
                 startActivity(intent);
             }
         });
 
-        ll_jkyg = (LinearLayout) this.findViewById(R.id.ll_jkyg);
+        ll_jkyg = (LinearLayout) getView().findViewById(R.id.ll_jkyg);
         ll_jkyg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,15 +93,15 @@ public class NewMainActivity extends DemoBase {
             }
         });
 
-        jk_dl = (RiseNumberTextView) this.findViewById(R.id.jk_dl);
+        jk_dl = (RiseNumberTextView) getView().findViewById(R.id.jk_dl);
         startNumberAutoUp(jk_dl, "233.25");
-        jk_yg = (RiseNumberTextView) this.findViewById(R.id.jk_yg);
+        jk_yg = (RiseNumberTextView) getView().findViewById(R.id.jk_yg);
         startNumberAutoUp(jk_yg, "123");
 
-        jkdl_piechart = (PieChart) this.findViewById(R.id.jkdl_piechart);
+        jkdl_piechart = (PieChart) getView().findViewById(R.id.jkdl_piechart);
         jkdl_piechart.setBackgroundColor(Color.WHITE);
 
-        piechart_legendLayout = (LinearLayout) this.findViewById(R.id.piechart_legendLayout);
+        piechart_legendLayout = (LinearLayout) getView().findViewById(R.id.piechart_legendLayout);
 
 
         //设置饼图是否使用百分比
@@ -118,12 +148,12 @@ public class NewMainActivity extends DemoBase {
 
         // entry label styling
         jkdl_piechart.setEntryLabelColor(Color.WHITE);
-        jkdl_piechart.setEntryLabelTypeface(mTfRegular);
+        jkdl_piechart.setEntryLabelTypeface(Typeface.createFromAsset(mgr,"OpenSans-Regular.ttf"));
         jkdl_piechart.setEntryLabelTextSize(12f);
 
         //柱状图
-        dldb_barchart = (BarChart) this.findViewById(R.id.dldb_barchart);
-        barchart_legendLayout = (LinearLayout) this.findViewById(R.id.barchart_legendLayout);
+        dldb_barchart = (BarChart) getView().findViewById(R.id.dldb_barchart);
+        barchart_legendLayout = (LinearLayout) getView().findViewById(R.id.barchart_legendLayout);
 
         dldb_barchart.getDescription().setEnabled(false);
         dldb_barchart.setPinchZoom(false);
@@ -137,7 +167,7 @@ public class NewMainActivity extends DemoBase {
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return stations[(int) value];
+                return DemoData.stations[(int) value];
             }
         });
         xAxis.setLabelCount(4);
@@ -163,7 +193,7 @@ public class NewMainActivity extends DemoBase {
                     LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
             lp.weight=1;//设置比重为1
             lp.setMargins(20,10,0,0);
-            LinearLayout layout=new LinearLayout(this);//单个图例的布局
+            LinearLayout layout=new LinearLayout(mContext);//单个图例的布局
             layout.setOrientation(LinearLayout.HORIZONTAL);//水平排列
             layout.setGravity(Gravity.LEFT);//左对齐
             layout.setLayoutParams(lp);
@@ -172,18 +202,18 @@ public class NewMainActivity extends DemoBase {
             LinearLayout.LayoutParams colorLP=new LinearLayout.
                     LayoutParams(20,20);
             colorLP.setMargins(20, 10, 20, 0);
-            LinearLayout colorLayout=new LinearLayout(this);
+            LinearLayout colorLayout=new LinearLayout(mContext);
             colorLayout.setLayoutParams(colorLP);
             colorLayout.setBackgroundColor(mColors[i]);
             layout.addView(colorLayout);
 
             //添加label
-            TextView labelTV=new TextView(this);
-            labelTV.setText(stations[i]+" ");
+            TextView labelTV=new TextView(mContext);
+            labelTV.setText(DemoData.stations[i]+" ");
             layout.addView(labelTV);
 
             //添加data
-            TextView dataTV=new TextView(this);
+            TextView dataTV=new TextView(mContext);
             dataTV.setText(((int) val)+"");
             layout.addView(dataTV);
 
@@ -192,7 +222,7 @@ public class NewMainActivity extends DemoBase {
         }
 
         BarDataSet set = new BarDataSet(yVals, "Data Set");
-        set.setColors(mColors);
+        set.setColors(DemoData.mColors);
         set.setDrawValues(false); //柱状图上不显示y轴的值
 
         BarData data = new BarData(set);
@@ -223,13 +253,13 @@ public class NewMainActivity extends DemoBase {
         for (int i = 0; i < count; i++) {
             float xValue = (float) ((Math.random() * range) + range / 5);
             Log.e("xValue","----------->"+xValue);
-            values.add(new PieEntry(xValue, jkdl_Pie[i % jkdl_Pie.length]));
+            values.add(new PieEntry(xValue, DemoData.jkdl_Pie[i]));
 //            values.add(new PieEntry((float) ((Math.random() * range) + range / 5), mParties[i % mParties.length]));
 
             LinearLayout.LayoutParams lp=new LinearLayout.
                     LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
             lp.weight=1;//设置比重为1
-            LinearLayout layout=new LinearLayout(this);//单个图例的布局
+            LinearLayout layout=new LinearLayout(mContext);//单个图例的布局
             layout.setOrientation(LinearLayout.VERTICAL);//垂直排列
             layout.setGravity(Gravity.LEFT);//左对齐
             layout.setLayoutParams(lp);
@@ -238,18 +268,18 @@ public class NewMainActivity extends DemoBase {
             LinearLayout.LayoutParams colorLP=new LinearLayout.
                     LayoutParams(20,20);
             colorLP.setMargins(0, 0, 20, 0);
-            LinearLayout colorLayout=new LinearLayout(this);
+            LinearLayout colorLayout=new LinearLayout(mContext);
             colorLayout.setLayoutParams(colorLP);
-            colorLayout.setBackgroundColor(mColors[i]);
+            colorLayout.setBackgroundColor(DemoData.mColors[i]);
             layout.addView(colorLayout);
 
             //添加label
-            TextView labelTV=new TextView(this);
-            labelTV.setText(jkdl_Pie[i % jkdl_Pie.length]+" ");
+            TextView labelTV=new TextView(mContext);
+            labelTV.setText(DemoData.jkdl_Pie[i]+" ");
             layout.addView(labelTV);
 
             //添加data
-            TextView dataTV=new TextView(this);
+            TextView dataTV=new TextView(mContext);
             dataTV.setText(xValue+"");
             layout.addView(dataTV);
 
@@ -260,7 +290,7 @@ public class NewMainActivity extends DemoBase {
         dataSet.setSliceSpace(3f);
         dataSet.setSelectionShift(5f);
 
-        dataSet.setColors(mColors);
+        dataSet.setColors(DemoData.mColors);
 //        dataSet.setDrawValues(false); //false，饼图上不显示比例值，默认为true
         //dataSet.setSelectionShift(0f);
 
@@ -268,7 +298,7 @@ public class NewMainActivity extends DemoBase {
         data.setValueFormatter(new PercentFormatter());
         data.setValueTextSize(11f);
         data.setValueTextColor(Color.WHITE);
-        data.setValueTypeface(mTfLight);
+//        data.setValueTypeface(mTfLight);
         jkdl_piechart.setData(data);
 
         jkdl_piechart.invalidate();
@@ -285,18 +315,5 @@ public class NewMainActivity extends DemoBase {
 //        s.setSpan(new ForegroundColorSpan(ColorTemplate.getHoloBlue()), s.length() - 14, s.length(), 0);
         SpannableString s = new SpannableString("test");
         return s;
-    }
-
-    private void moveOffScreen() {
-
-        Display display = getWindowManager().getDefaultDisplay();
-        int height = display.getHeight();  // deprecated
-
-        int offset = (int)(height * 0.65); /* percent to move */
-
-        LinearLayout.LayoutParams rlParams =
-                (LinearLayout.LayoutParams)jkdl_piechart.getLayoutParams();
-        rlParams.setMargins(0, 0, 0, -offset);
-        jkdl_piechart.setLayoutParams(rlParams);
     }
 }
