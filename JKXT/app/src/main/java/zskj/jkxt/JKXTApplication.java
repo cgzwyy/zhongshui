@@ -17,14 +17,13 @@ import zskj.jkxt.util.ConnectionChangeReceiver;
 public class JKXTApplication extends Application {
 
     private static final String sp_app = "config";
-
     public static String webServiceUrl = "";
     public static String[] stations;
     public static int NETWORK_FLAG = ConnectionChangeReceiver.NET_NONE;
 
 
     @Override
-    public void onCreate() {
+    public void onCreate() {//TODO 解注
         super.onCreate();
 //        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites()
 //                .detectNetwork().penaltyLog().build());
