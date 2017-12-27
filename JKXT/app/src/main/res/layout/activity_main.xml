@@ -14,7 +14,7 @@
         android:id="@+id/rg_menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ff37474f"
+        android:background="@color/white"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingBottom="5dp"
@@ -29,7 +29,7 @@
             android:drawableTop="@drawable/rb_station_selector"
             android:gravity="center"
             android:text="场站"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="15dp"
             android:visibility="gone" />
 
@@ -42,7 +42,7 @@
             android:drawableTop="@drawable/rb_power_selector"
             android:gravity="center"
             android:text="全场功率"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="15dp"
             android:visibility="gone" />
 
@@ -55,7 +55,7 @@
             android:drawableTop="@drawable/rb_warn_selector"
             android:gravity="center"
             android:text="实时告警"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="15dp"
             android:visibility="gone" />
 
@@ -68,7 +68,7 @@
             android:drawableTop="@drawable/rb_set_selector"
             android:gravity="center"
             android:text="用户管理"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="15dp"
             android:visibility="gone" />
     </RadioGroup>

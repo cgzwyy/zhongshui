@@ -20,7 +20,9 @@
     </string>
     <string name="home_page">首页</string>
     <string name="monitor_page">运行监视</string>
-    <string name="stationinfo_page">场站列表</string>
+    <string name="stationinfo_page">生产运营中心</string>
+    <string name="linechar_stationspower_page">场站功率曲线对比</string>
+    <string name="staticsticaltable_page">运行统计</string>
     <string name="test">首页首页首页首页2</string>
     <string name="test2">首页首页2</string>
     <string name="plan">省调计划</string>
@@ -36,6 +38,7 @@
     <string name="revs_unit2">转速：%1$srpm</string>
     <string name="electricity_unit">%1$skwh</string>
     <string name="electricity_unit2">日发电量：%1$skwh</string>
+    <string name="electricity_unit3">kWh</string>
     <string name="efficiency_unit">%1$s%%</string>
     <string name="efficiency_unit2">逆变效率：%1$s%%</string>
     <string name="efficiency_state2">逆变状态：%1$s</string>

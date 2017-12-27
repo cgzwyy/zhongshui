@@ -102,7 +102,7 @@ public class MainActivity extends FragmentActivity {
 //                        }
                         if (mJKInfoFragment == null) {
                             mJKInfoFragment = new JKInfoFragment();
-//                            mStationFrag.setRanges(ranges);
+//                            mJKInfoFragment.setRanges(ranges);
                             transaction.add(R.id.fl_container, mJKInfoFragment, "station");
                         } else {
                             transaction.show(mJKInfoFragment);

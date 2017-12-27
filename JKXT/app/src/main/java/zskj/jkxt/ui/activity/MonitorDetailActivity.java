@@ -24,9 +24,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,7 +56,7 @@ public class MonitorDetailActivity extends Activity {
 
     ArrayList<Fan> fanList = new ArrayList<>();
     MonitorAdapter monitorAdapter;
-    DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
+    DecimalFormat df = new DecimalFormat("0.0");  //数据格式转换，四舍五入，保留两位小数
     MonitorDetailTask mTask;
     RotateAnimation rotateAnimation;
 
@@ -231,21 +228,21 @@ public class MonitorDetailActivity extends Activity {
                 if(data.has("省调计划")){
                     tv_plan.setText(df.format(Double.valueOf(data.optString("省调计划"))));
                 }else{
-                    tv_plan.setText("0.00");
+                    tv_plan.setText("0.0");
                 }
                 if (colName.contains("光伏")) {
 //                tv_speed.setText(df.format(Double.valueOf(data.optString("总辐射瞬时值"))));
                     if(data.has("总辐射瞬时值")){
                         tv_speed.setText(df.format(Double.valueOf(data.optString("总辐射瞬时值"))));
                     }else{
-                        tv_speed.setText("0.00");
+                        tv_speed.setText("0.0");
                     }
                 } else {
 //                tv_speed.setText(df.format(Double.valueOf(data.optString("平均风速"))));
                     if(data.has("平均风速")){
                         tv_speed.setText(df.format(Double.valueOf(data.optString("平均风速"))));
                     }else{
-                        tv_speed.setText("0.00");
+                        tv_speed.setText("0.0");
                     }
                 }
 //            tv_power.setText(df.format(Double.valueOf(data.optString("瞬时总有功"))));
@@ -253,12 +250,12 @@ public class MonitorDetailActivity extends Activity {
                 if(data.has("瞬时总有功")){
                     tv_power.setText(df.format(Double.valueOf(data.optString("瞬时总有功"))));
                 }else{
-                    tv_power.setText("0.00");
+                    tv_power.setText("0.0");
                 }
                 if(data.has("当日发电量")){
                     tv_electricity.setText(df.format(Double.valueOf(data.optString("当日发电量"))));
                 }else{
-                    tv_electricity.setText("0.00");
+                    tv_electricity.setText("0.0");
                 }
 
 //            Log.e("当日发电量---->",df.format(Double.valueOf(data.optString("当日发电量"))));
@@ -274,43 +271,43 @@ public class MonitorDetailActivity extends Activity {
                             if(object.has("逆变器日发电量")){
                                 fan.fan_speed = df.format(Double.valueOf(object.optString("逆变器日发电量")));
                             }else{
-                                fan.fan_speed = "0.00";
+                                fan.fan_speed = "0.0";
                             }
                             if(object.has("逆变器效率")){
                                 fan.fan_revs = df.format(Double.valueOf(object.optString("逆变器效率")));
                             }else{
-                                fan.fan_revs = "0.00";
+                                fan.fan_revs = "0.0";
                             }
                             if(object.has("逆变器状态")){
                                 fan.fan_state = df.format(Double.valueOf(object.optString("逆变器状态")));
                             }else{
-                                fan.fan_state = "0.00";
+                                fan.fan_state = "0.0";
                             }
                             if(object.has("有功功率")){
                                 fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
                             }else{
-                                fan.fan_active_power = "0.00";
+                                fan.fan_active_power = "0.0";
                             }
                         } else {
                             if(object.has("风速")){
                                 fan.fan_speed = df.format(Double.valueOf(object.optString("风速")));
                             }else{
-                                fan.fan_speed = "0.00";
+                                fan.fan_speed = "0.0";
                             }
                             if(object.has("转速")){
                                 fan.fan_revs = df.format(Double.valueOf(object.optString("转速")));
                             }else{
-                                fan.fan_revs = "0.00";
+                                fan.fan_revs = "0.0";
                             }
                             if(object.has("风机运行状态")){
                                 fan.fan_state = df.format(Double.valueOf(object.optString("风机运行状态")));
                             }else{
-                                fan.fan_state = "0.00";
+                                fan.fan_state = "0.0";
                             }
                             if(object.has("有功功率")){
                                 fan.fan_active_power = df.format(Double.valueOf(object.optString("有功功率")));
                             }else{
-                                fan.fan_active_power = "0.00";
+                                fan.fan_active_power = "0.0";
                             }
 //                        fan.fan_speed = df.format(Double.valueOf(object.optString("风速")));
 //                        fan.fan_revs = df.format(Double.valueOf(object.optString("转速")));
@@ -390,11 +387,11 @@ public class MonitorDetailActivity extends Activity {
                 holder.fan_speed.setText(getResources().getString(R.string.electricity_unit, model.fan_speed));
                 holder.fan_active_power.setText(getResources().getString(R.string.active_power_unit, model.fan_active_power));
                 holder.fan_revs.setText(getResources().getString(R.string.efficiency_unit, model.fan_revs));
-                if (Double.valueOf(model.fan_state.trim()) == 0) { //停机
-                    holder.fan_picture.setImageResource(R.drawable.gf2_2);
+                if (Double.valueOf(model.fan_state.trim()) == 1) { //发电
+                    holder.fan_picture.setImageResource(R.drawable.gf2);
 //                    holder.fan_state.setText(getResources().getString(R.string.stop));
                 }else {
-                    holder.fan_picture.setImageResource(R.drawable.gf2_1);
+                    holder.fan_picture.setImageResource(R.drawable.gf3);
 //                    holder.fan_state.setText(getResources().getString(R.string.run));
                 }
 //                holder.fan_state.setVisibility(View.INVISIBLE);
@@ -403,11 +400,12 @@ public class MonitorDetailActivity extends Activity {
                 holder.fan_active_power.setText(getResources().getString(R.string.active_power_unit, model.fan_active_power));
                 holder.fan_revs.setText(getResources().getString(R.string.revs_unit, model.fan_revs));
                 if (Double.valueOf(model.fan_state.trim()) == 2) { //发电
-                    Glide.with(MonitorDetailActivity.this).load(R.drawable.fj_032).asGif().dontAnimate()
-                            .diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.fan_picture);
+//                    Glide.with(MonitorDetailActivity.this).load(R.drawable.fj_032).asGif().dontAnimate()
+//                            .diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.fan_picture);
+                    holder.fan_picture.setImageResource(R.drawable.fj2);
 //                    holder.fan_state.setText(getResources().getString(R.string.run));
                 }else {
-                    holder.fan_picture.setImageResource(R.drawable.fj_05);
+                    holder.fan_picture.setImageResource(R.drawable.fj3);
 //                    holder.fan_state.setText(getResources().getString(R.string.stop));
                 }
 //                holder.fan_state.setVisibility(View.INVISIBLE);

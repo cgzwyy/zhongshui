@@ -23,7 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.activity.LoginActivity"
+            android:name=".ui.activity.NewMainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -55,9 +55,15 @@
         <activity
             android:name=".ui.activity.UpdateUserActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".ui.activity.NewMainActivity">
+        <activity android:name=".ui.activity.LoginActivity">
         </activity>
         <activity android:name=".ui.activity.StationInfoActivity">
+        </activity>
+        <activity android:name=".ui.activity.LineCharOfStationsPowerActivity">
+        </activity>
+        <activity android:name=".ui.activity.AnotherTestActivity">
+        </activity>
+        <activity android:name=".ui.activity.StatisticalDataActivity">
         </activity>
     </application>
 

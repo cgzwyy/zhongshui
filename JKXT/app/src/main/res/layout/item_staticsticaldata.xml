@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/lin_content"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_data"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="1"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1px"
+            android:background="@color/tableline_color"/>
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="2"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1px"
+            android:background="@color/tableline_color"/>
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="3"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1px"
+            android:background="@color/tableline_color"/>
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="4"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1px"
+            android:background="@color/tableline_color"/>
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="5"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1px"
+            android:background="@color/tableline_color"/>
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="6"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1px"
+            android:background="@color/tableline_color"/>
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="7"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1px"
+            android:background="@color/tableline_color"/>
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="8"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1px"
+            android:background="@color/tableline_color"/>
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="9"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1px"
+            android:background="@color/tableline_color"/>
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="10"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1px"
+            android:background="@color/tableline_color"/>
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="11"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1px"
+            android:background="@color/tableline_color"/>
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="12"/>
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="1px"
+            android:background="@color/tableline_color"/>
+    </LinearLayout>
+</LinearLayout>

@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:background="@color/blue"
+            android:background="@color/text_color"
             android:gravity="center"
             android:paddingTop="@dimen/activity_vertical_little_margin"
             android:paddingBottom="@dimen/activity_vertical_little_margin"

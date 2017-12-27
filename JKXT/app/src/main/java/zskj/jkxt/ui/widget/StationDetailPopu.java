@@ -3,6 +3,7 @@ package zskj.jkxt.ui.widget;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
@@ -53,7 +54,7 @@ public class StationDetailPopu extends PopupWindow {
             fan_detail_speed.setText(mContext.getResources().getString(R.string.electricity_unit2 , mFan.fan_speed));
             fan_detail_power.setText(mContext.getResources().getString(R.string.active_power_unit2, mFan.fan_active_power));
             fan_detail_revs.setText(mContext.getResources().getString(R.string.efficiency_unit2, mFan.fan_revs));
-            if(mFan.fan_state.equals("1") || mFan.fan_state.equals("1.00")){  //发电
+            if(Double.valueOf(mFan.fan_state.trim()) == 1){  //发电
                 fan_detail_state.setText(mContext.getResources().getString(R.string.efficiency_state2, "发电"));
             }else{
                 fan_detail_state.setText(mContext.getResources().getString(R.string.efficiency_state2, "停用"));
@@ -63,7 +64,8 @@ public class StationDetailPopu extends PopupWindow {
             fan_detail_speed.setText(mContext.getResources().getString(R.string.speed_unit2, mFan.fan_speed));
             fan_detail_power.setText(mContext.getResources().getString(R.string.active_power_unit3, mFan.fan_active_power));
             fan_detail_revs.setText(mContext.getResources().getString(R.string.revs_unit2, mFan.fan_revs));
-            if(mFan.fan_state.equals("2") || mFan.fan_state.equals("2.00")){  //发电
+            Log.e("fan_state","--->" + mFan.fan_state);
+            if(Double.valueOf(mFan.fan_state.trim()) == 2){  //发电
                 fan_detail_state.setText(mContext.getResources().getString(R.string.efficiency_state, "发电"));
             }else{
                 fan_detail_state.setText(mContext.getResources().getString(R.string.efficiency_state, "停用"));

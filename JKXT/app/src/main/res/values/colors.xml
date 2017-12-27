@@ -159,9 +159,11 @@
     <color name="green2">#b0c4de</color> <!-- 亮钢兰色 -->
     <color name="green3">#afeeee</color> <!-- 苍宝石绿 -->
     <color name="green4">#adff2f</color> <!-- 黄绿色 -->
-    <color name="pale">#FAFFFFFF</color><!--灰白色 -->
-    <color name="paleblue">#FAE0F3FA</color><!--浅蓝色 -->
+    <color name="pale">#FAFFFF</color><!--灰白色 -->
+    <color name="paleblue">#E0F3FA</color><!--浅蓝色 -->
+    <color name="tableline_color">#cccccc</color><!--浅蓝色 -->
 
+    <color name="text_gray_666666">#666666</color>
 
     <!--                                                 app begin                                                       -->
     <color name="app_bg">@color/beige</color>

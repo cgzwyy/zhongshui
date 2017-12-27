@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import zskj.jkxt.R;
 import zskj.jkxt.ui.activity.StationInfoActivity;
+import zskj.jkxt.ui.activity.StatisticalDataActivity;
 import zskj.jkxt.util.DemoData;
 import zskj.jkxt.util.RiseNumberTextView;
 
@@ -89,7 +90,9 @@ public class JKInfoFragment extends Fragment{
         ll_jkyg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), StatisticalDataActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -134,7 +137,7 @@ public class JKInfoFragment extends Fragment{
         setData(2, 100);
 
         jkdl_piechart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
-//        jkdl_piechart.setDrawEntryLabels(false); //设置在饼图中不显示图注
+        jkdl_piechart.setDrawEntryLabels(false); //设置在饼图中不显示图注
 
         Legend l = jkdl_piechart.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);//图注显示位置，上部、居中、横向
@@ -156,7 +159,8 @@ public class JKInfoFragment extends Fragment{
         barchart_legendLayout = (LinearLayout) getView().findViewById(R.id.barchart_legendLayout);
 
         dldb_barchart.getDescription().setEnabled(false);
-        dldb_barchart.setPinchZoom(false);
+        dldb_barchart.setScaleEnabled(false);//启用/禁用缩放图表上的两个轴。
+//        dldb_barchart.setPinchZoom(false);//如果设置为true，捏缩放功能。 如果false，x轴和y轴可分别放大。
 
         dldb_barchart.setDrawBarShadow(false);
         dldb_barchart.setDrawGridBackground(false);
@@ -223,7 +227,7 @@ public class JKInfoFragment extends Fragment{
 
         BarDataSet set = new BarDataSet(yVals, "Data Set");
         set.setColors(DemoData.mColors);
-        set.setDrawValues(false); //柱状图上不显示y轴的值
+        set.setDrawValues(true); //柱状图上显示y轴的值
 
         BarData data = new BarData(set);
 
@@ -296,7 +300,7 @@ public class JKInfoFragment extends Fragment{
 
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter());
-        data.setValueTextSize(11f);
+        data.setValueTextSize(16f);
         data.setValueTextColor(Color.WHITE);
 //        data.setValueTypeface(mTfLight);
         jkdl_piechart.setData(data);

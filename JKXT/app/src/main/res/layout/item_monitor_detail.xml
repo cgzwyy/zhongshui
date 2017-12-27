@@ -31,8 +31,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/test_num"
-                android:textColor="@color/white"
-                android:textSize="@dimen/small_small_text_size" />
+                android:textColor="@color/black"
+                android:textSize="@dimen/small_text_size" />
 
             <!--<TextView-->
                 <!--android:id="@+id/fan_state"-->
@@ -56,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/test_value"
-            android:textColor="@color/detail_text_color"
+            android:textColor="@color/text_color"
             android:textSize="@dimen/small_text_size" />
 
         <TextView
@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/test_value"
-            android:textColor="@color/detail_text_color"
+            android:textColor="@color/text_color"
             android:textSize="@dimen/small_text_size" />
 
         <TextView
@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/test_value"
-            android:textColor="@color/detail_text_color"
+            android:textColor="@color/text_color"
             android:textSize="@dimen/small_text_size" />
     </LinearLayout>
 </LinearLayout>

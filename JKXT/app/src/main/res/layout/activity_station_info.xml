@@ -15,22 +15,32 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="5dp">
-
         <ImageView
             android:id="@+id/back_jkinfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:src="@drawable/back5" />
-
+            android:src="@drawable/left2" />
         <TextView
+            android:id="@+id/stationinfo_page_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/stationinfo_page"
             android:textColor="@color/white"
-            android:textSize="@dimen/dialog_title_text_size" />
-
+            android:textSize="@dimen/dialog_content_text_size" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/stationinfo_page_title"
+            android:src="@drawable/bottom2" />
     </RelativeLayout>
+
+    <ListView
+        android:id="@+id/lv_station_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </ListView>
 
 </LinearLayout>
