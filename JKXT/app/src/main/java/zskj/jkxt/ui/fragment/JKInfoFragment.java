@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.SpannableString;
 import android.util.Log;
 import android.view.Gravity;
@@ -41,6 +42,7 @@ import zskj.jkxt.ui.activity.StatisticalDataActivity;
 import zskj.jkxt.util.DemoData;
 import zskj.jkxt.util.RiseNumberTextView;
 
+import static zskj.jkxt.util.DemoData.jkdl_Pie;
 import static zskj.jkxt.util.DemoData.mColors;
 
 /**
@@ -50,6 +52,7 @@ import static zskj.jkxt.util.DemoData.mColors;
 public class JKInfoFragment extends Fragment{
 
     Context mContext;
+    private static final String TAG = "JKInfoFragment";
     private LinearLayout ll_jkdl,ll_jkyg;
     private LinearLayout piechart_legendLayout;
     private LinearLayout barchart_legendLayout;
@@ -57,6 +60,9 @@ public class JKInfoFragment extends Fragment{
     //    private RefreshView rv_refresh;
     private PieChart jkdl_piechart;
     private BarChart dldb_barchart;
+    private SwipeRefreshLayout mRefreshLayout;
+    private AssetManager mgr;
+    float database = 35.0f;
 
     @Override
     public void onAttach(Activity context) {
@@ -73,10 +79,33 @@ public class JKInfoFragment extends Fragment{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mgr = mContext.getAssets();
+        initView();
+        getData();
+    }
 
-        AssetManager mgr = mContext.getAssets();
-
+    /**
+     * 初始化view
+     */
+    private void initView() {
+        mRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.refresh_jkinfo);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i(TAG, "REFRESH.........................");//TODO
+                database++;
+                getData();
+                mRefreshLayout.setRefreshing(false);
+            }
+        });
         ll_jkdl = (LinearLayout) getView().findViewById(R.id.ll_jkdl);
+        ll_jkyg = (LinearLayout) getView().findViewById(R.id.ll_jkyg);
+        jk_dl = (RiseNumberTextView) getView().findViewById(R.id.jk_dl);
+        jk_yg = (RiseNumberTextView) getView().findViewById(R.id.jk_yg);
+        jkdl_piechart = (PieChart) getView().findViewById(R.id.jkdl_piechart);
+        piechart_legendLayout = (LinearLayout) getView().findViewById(R.id.piechart_legendLayout);
+        dldb_barchart = (BarChart) getView().findViewById(R.id.dldb_barchart);
+        barchart_legendLayout = (LinearLayout) getView().findViewById(R.id.barchart_legendLayout);
         ll_jkdl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,8 +114,6 @@ public class JKInfoFragment extends Fragment{
                 startActivity(intent);
             }
         });
-
-        ll_jkyg = (LinearLayout) getView().findViewById(R.id.ll_jkyg);
         ll_jkyg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,17 +122,13 @@ public class JKInfoFragment extends Fragment{
                 startActivity(intent);
             }
         });
+        initPie();
+        initBar();
+    }
 
-        jk_dl = (RiseNumberTextView) getView().findViewById(R.id.jk_dl);
-        startNumberAutoUp(jk_dl, "233.25");
-        jk_yg = (RiseNumberTextView) getView().findViewById(R.id.jk_yg);
-        startNumberAutoUp(jk_yg, "123");
-
-        jkdl_piechart = (PieChart) getView().findViewById(R.id.jkdl_piechart);
+    private void initPie() {
+        //饼状图
         jkdl_piechart.setBackgroundColor(Color.WHITE);
-
-        piechart_legendLayout = (LinearLayout) getView().findViewById(R.id.piechart_legendLayout);
-
 
         //设置饼图是否使用百分比
         jkdl_piechart.setUsePercentValues(true);
@@ -134,7 +157,7 @@ public class JKInfoFragment extends Fragment{
 //        jkdl_piechart.setRotationAngle(180f);
 //        jkdl_piechart.setCenterTextOffset(0, -20);
 
-        setData(2, 100);
+//        setPicCharData(2, 100);
 
         jkdl_piechart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
         jkdl_piechart.setDrawEntryLabels(false); //设置在饼图中不显示图注
@@ -154,10 +177,10 @@ public class JKInfoFragment extends Fragment{
         jkdl_piechart.setEntryLabelTypeface(Typeface.createFromAsset(mgr,"OpenSans-Regular.ttf"));
         jkdl_piechart.setEntryLabelTextSize(12f);
 
-        //柱状图
-        dldb_barchart = (BarChart) getView().findViewById(R.id.dldb_barchart);
-        barchart_legendLayout = (LinearLayout) getView().findViewById(R.id.barchart_legendLayout);
+    }
 
+    private void initBar() {
+        //柱状图
         dldb_barchart.getDescription().setEnabled(false);
         dldb_barchart.setScaleEnabled(false);//启用/禁用缩放图表上的两个轴。
 //        dldb_barchart.setPinchZoom(false);//如果设置为true，捏缩放功能。 如果false，x轴和y轴可分别放大。
@@ -180,15 +203,37 @@ public class JKInfoFragment extends Fragment{
 
         dldb_barchart.getLegend().setEnabled(false); //设置不显示x轴图注
 
-        setBarChartData(4);
+//        setBarChartData(4);
         dldb_barchart.setFitBars(true);
-
     }
+
+    private void getData() {
+//        info = new DataInfo();
+//        info.elec = 233.25f;
+//        info.power = 152.30f;
+//        info.pie = new HashMap<>();
+//        for (int i = 0; i < jkdl_Pie.length; i++) {
+//            info.pie.put(jkdl_Pie[i], 32.62f + database + i * 2);
+//        }
+//        info.bar = new HashMap<>();
+//        for (int i = 0; i < stations.length; i++) {
+//            info.bar.put(stations[i], database + i * 5);
+//        }
+        setData();
+    }
+
+    private void setData() {
+        startNumberAutoUp(jk_dl, 233.25 + database + "");
+        startNumberAutoUp(jk_yg, 152.30 + database + "");
+        setPieChartData(2, 100);
+        setBarChartData(4);
+    }
+
 
     private void setBarChartData(int count) {
 
         ArrayList<BarEntry> yVals = new ArrayList<BarEntry>();
-
+        barchart_legendLayout.removeAllViews();
         for (int i = 0; i < count; i++) {
             float val = (float) (Math.random() * count) + 15;
             yVals.add(new BarEntry(i, (int) val));
@@ -250,14 +295,14 @@ public class JKInfoFragment extends Fragment{
         view.start();
     }
 
-    private void setData(int count, float range) {
+    private void setPieChartData(int count, float range) {
 
         ArrayList<PieEntry> values = new ArrayList<PieEntry>();
-
+        piechart_legendLayout.removeAllViews();
         for (int i = 0; i < count; i++) {
             float xValue = (float) ((Math.random() * range) + range / 5);
             Log.e("xValue","----------->"+xValue);
-            values.add(new PieEntry(xValue, DemoData.jkdl_Pie[i]));
+            values.add(new PieEntry(xValue, jkdl_Pie[i]));
 //            values.add(new PieEntry((float) ((Math.random() * range) + range / 5), mParties[i % mParties.length]));
 
             LinearLayout.LayoutParams lp=new LinearLayout.
@@ -279,7 +324,7 @@ public class JKInfoFragment extends Fragment{
 
             //添加label
             TextView labelTV=new TextView(mContext);
-            labelTV.setText(DemoData.jkdl_Pie[i]+" ");
+            labelTV.setText(jkdl_Pie[i]+" ");
             layout.addView(labelTV);
 
             //添加data

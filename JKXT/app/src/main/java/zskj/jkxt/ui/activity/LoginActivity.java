@@ -146,6 +146,7 @@ public class LoginActivity extends Activity {
     private void parserResult(String result) {
         try {
             if(result != null && result.toString() != null){
+//                Log.e("result--->",result.toString());
                 JSONObject obj = new JSONObject(result);
                 int code = obj.optInt("code");
                 if (code == 0) {

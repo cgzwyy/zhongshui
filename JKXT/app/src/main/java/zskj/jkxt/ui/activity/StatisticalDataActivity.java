@@ -52,9 +52,9 @@ public class StatisticalDataActivity extends Activity {
         statisticalDataAdapter.setColInfoList(colInfoList);
 
         List<List<String>> dataInfoList = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 6; i++) {
             List<String> tmpDataList = new ArrayList<>();
-            for(int j=0;j< 6; j++) {
+            for(int j=0;j< 20; j++) {
                 tmpDataList.add(df.format(Math.random() * (20 + j)) + "");
             }
             dataInfoList.add(tmpDataList);

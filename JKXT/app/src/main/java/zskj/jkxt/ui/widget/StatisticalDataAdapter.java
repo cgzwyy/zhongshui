@@ -104,7 +104,7 @@ public class StatisticalDataAdapter extends PanelAdapter {
 
     private void setDataView(final int row, final int column, DataViewHolder viewHolder) {
 //        int[] colors = new int[]{0x30E0F3FA, 0x30FAFFFF};
-        final String dataInfo = dataInfoList.get(row - 1).get(column - 1);
+        final String dataInfo = dataInfoList.get(column - 1).get(row - 1);
         Log.e("dataInfo","--------->"+dataInfo);
         if (dataInfo != null) {
             viewHolder.detailTextView.setText(dataInfo);

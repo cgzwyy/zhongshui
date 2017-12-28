@@ -1,5 +1,7 @@
 package zskj.jkxt;
 
+import android.util.Log;
+
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -32,6 +34,8 @@ public class WebService {
     }
 
     public String isUser(String userName, String password) {
+        Log.e("network","------>" + JKXTApplication.NETWORK_FLAG);
+        Log.e("serviceUrl","------>" + serviceUrl);
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
             return ERRORMSG;
         }

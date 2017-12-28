@@ -1,179 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/refresh_jkinfo"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/logo2"/>
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/jk_info"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginLeft="@dimen/activity_vertical_little_margin"
-            android:layout_marginRight="@dimen/activity_vertical_little_margin"
-            android:orientation="vertical"
-            android:background="@drawable/linearlayout_shape">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/little_margin"
-                android:layout_marginBottom="@dimen/little_margin"
-                android:layout_marginLeft="@dimen/gridview_margin"
-                android:text="集控"
-                android:textSize="@dimen/big_text_size"
-                android:textColor="@color/text_color"/>
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="@dimen/linealayout_padding_width"
-                android:background="@color/silver" />
-            <LinearLayout
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <LinearLayout
-                    android:id="@+id/ll_jkdl"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-                    <zskj.jkxt.util.RiseNumberTextView
-                        android:id="@+id/jk_dl"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/activity_vertical_little_margin"
-                        android:layout_marginBottom="@dimen/gridview_margin"
-                        android:gravity="center_horizontal"
-                        android:text="1.21"
-                        android:textSize="@dimen/big_big_text_size"
-                        android:textColor="@color/text_color"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/gridview_margin"
-                        android:layout_marginBottom="@dimen/gridview_margin"
-                        android:gravity="center_horizontal"
-                        android:text="今日发电(kWh)"
-                        android:textSize="@dimen/content_text_size"
-                        android:textColor="@color/gray"/>
-                </LinearLayout>
+                android:background="@drawable/logo2"/>
 
+            <LinearLayout
+                android:id="@+id/jk_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_vertical_little_margin"
+                android:layout_marginRight="@dimen/activity_vertical_little_margin"
+                android:orientation="vertical"
+                android:background="@drawable/linearlayout_shape">
                 <TextView
-                    android:layout_width="@dimen/linealayout_padding_width"
-                    android:layout_height="fill_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/little_margin"
+                    android:layout_marginBottom="@dimen/little_margin"
+                    android:layout_marginLeft="@dimen/gridview_margin"
+                    android:text="集控"
+                    android:textSize="@dimen/big_text_size"
+                    android:textColor="@color/text_color"/>
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="@dimen/linealayout_padding_width"
                     android:background="@color/silver" />
-
                 <LinearLayout
-                    android:id="@+id/ll_jkyg"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
-                    <zskj.jkxt.util.RiseNumberTextView
-                        android:id="@+id/jk_yg"
-                        android:layout_width="match_parent"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:id="@+id/ll_jkdl"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/gridview_margin"
-                        android:layout_marginBottom="@dimen/gridview_margin"
-                        android:gravity="center_horizontal"
-                        android:text="1.21"
-                        android:textSize="@dimen/big_big_text_size"
-                        android:textColor="@color/text_color"/>
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+                        <zskj.jkxt.util.RiseNumberTextView
+                            android:id="@+id/jk_dl"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/activity_vertical_little_margin"
+                            android:layout_marginBottom="@dimen/gridview_margin"
+                            android:gravity="center_horizontal"
+                            android:text="1.21"
+                            android:textSize="@dimen/big_big_text_size"
+                            android:textColor="@color/text_color"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/gridview_margin"
+                            android:layout_marginBottom="@dimen/gridview_margin"
+                            android:gravity="center_horizontal"
+                            android:text="今日发电(kWh)"
+                            android:textSize="@dimen/content_text_size"
+                            android:textColor="@color/gray"/>
+                    </LinearLayout>
+
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="@dimen/linealayout_padding_width"
+                        android:layout_height="fill_parent"
+                        android:background="@color/silver" />
+
+                    <LinearLayout
+                        android:id="@+id/ll_jkyg"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/gridview_margin"
-                        android:layout_marginBottom="@dimen/activity_vertical_little_margin"
-                        android:gravity="center_horizontal"
-                        android:text="今日有功(kW)"
-                        android:textSize="@dimen/content_text_size"
-                        android:textColor="@color/gray"/>
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+                        <zskj.jkxt.util.RiseNumberTextView
+                            android:id="@+id/jk_yg"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/gridview_margin"
+                            android:layout_marginBottom="@dimen/gridview_margin"
+                            android:gravity="center_horizontal"
+                            android:text="1.21"
+                            android:textSize="@dimen/big_big_text_size"
+                            android:textColor="@color/text_color"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/gridview_margin"
+                            android:layout_marginBottom="@dimen/activity_vertical_little_margin"
+                            android:gravity="center_horizontal"
+                            android:text="今日有功(kW)"
+                            android:textSize="@dimen/content_text_size"
+                            android:textColor="@color/gray"/>
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/dl_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginLeft="@dimen/activity_vertical_little_margin"
-            android:layout_marginRight="@dimen/activity_vertical_little_margin"
-            android:orientation="vertical"
-            android:background="@drawable/linearlayout_shape">
-            <TextView
+            <LinearLayout
+                android:id="@+id/dl_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/little_margin"
-                android:layout_marginBottom="@dimen/little_margin"
-                android:layout_marginLeft="@dimen/gridview_margin"
-                android:text="集控"
-                android:textSize="@dimen/big_text_size"
-                android:textColor="@color/text_color"/>
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_vertical_little_margin"
+                android:layout_marginRight="@dimen/activity_vertical_little_margin"
+                android:orientation="vertical"
+                android:background="@drawable/linearlayout_shape">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/little_margin"
+                    android:layout_marginBottom="@dimen/little_margin"
+                    android:layout_marginLeft="@dimen/gridview_margin"
+                    android:text="集控"
+                    android:textSize="@dimen/big_text_size"
+                    android:textColor="@color/text_color"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:orientation="horizontal">
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/jkdl_piechart"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2">
+                    </com.github.mikephil.charting.charts.PieChart>
+
+                    <LinearLayout
+                        android:id="@+id/piechart_legendLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                    </LinearLayout>
+                </LinearLayout>
+
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_vertical_little_margin"
+                android:layout_marginRight="@dimen/activity_vertical_little_margin"
+                android:orientation="vertical"
+                android:background="@drawable/linearlayout_shape">
 
-                <com.github.mikephil.charting.charts.PieChart
-                    android:id="@+id/jkdl_piechart"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="2">
-                </com.github.mikephil.charting.charts.PieChart>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/little_margin"
+                    android:layout_marginBottom="@dimen/little_margin"
+                    android:layout_marginLeft="@dimen/gridview_margin"
+                    android:text="各场站发电量对比"
+                    android:textSize="@dimen/big_text_size"
+                    android:textColor="@color/text_color"/>
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/dldb_barchart"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" >
+                </com.github.mikephil.charting.charts.BarChart>
 
                 <LinearLayout
-                    android:id="@+id/piechart_legendLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:id="@+id/barchart_legendLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
                 </LinearLayout>
             </LinearLayout>
-
-
         </LinearLayout>
+    </ScrollView>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginLeft="@dimen/activity_vertical_little_margin"
-            android:layout_marginRight="@dimen/activity_vertical_little_margin"
-            android:orientation="vertical"
-            android:background="@drawable/linearlayout_shape">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/little_margin"
-                android:layout_marginBottom="@dimen/little_margin"
-                android:layout_marginLeft="@dimen/gridview_margin"
-                android:text="各场站发电量对比"
-                android:textSize="@dimen/big_text_size"
-                android:textColor="@color/text_color"/>
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/dldb_barchart"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" >
-            </com.github.mikephil.charting.charts.BarChart>
-
-            <LinearLayout
-                android:id="@+id/barchart_legendLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+</android.support.v4.widget.SwipeRefreshLayout>
