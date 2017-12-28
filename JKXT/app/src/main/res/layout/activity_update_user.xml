@@ -103,7 +103,7 @@
                         android:id="@+id/update_rightsStation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="场站"
+                        android:text="总览"
                         android:textSize="@dimen/content_text_size" />
 
                     <CheckBox

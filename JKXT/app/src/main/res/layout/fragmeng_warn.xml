@@ -15,7 +15,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@color/text_color"
             android:text="首页"
+            android:textColor="@color/white"
             android:textSize="@dimen/content_text_size"/>
 
         <Button
@@ -23,7 +25,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@color/text_color"
+            android:layout_marginLeft="@dimen/little_margin"
             android:text="上一页"
+            android:textColor="@color/white"
             android:textSize="@dimen/content_text_size"/>
 
         <Button
@@ -31,7 +36,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@color/text_color"
+            android:layout_marginLeft="@dimen/little_margin"
             android:text="下一页"
+            android:textColor="@color/white"
             android:textSize="@dimen/content_text_size"/>
 
         <Button
@@ -39,7 +47,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@color/text_color"
+            android:layout_marginLeft="@dimen/little_margin"
             android:text="尾页"
+            android:textColor="@color/white"
             android:textSize="@dimen/content_text_size"/>
     </LinearLayout>
 

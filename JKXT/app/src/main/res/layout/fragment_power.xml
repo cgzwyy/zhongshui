@@ -26,7 +26,9 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_weight="1"
-                    android:text="@string/select_time" />
+                    android:background="@color/text_color"
+                    android:text="@string/select_time"
+                    android:textColor="@color/white"/>
 
                 <Button
                     android:id="@+id/select_station"
@@ -34,7 +36,10 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
-                    android:text="@string/select_station" />
+                    android:layout_marginTop="@dimen/little_margin"
+                    android:background="@color/text_color"
+                    android:text="@string/select_station"
+                    android:textColor="@color/white"/>
 
             </LinearLayout>
 
@@ -42,7 +47,10 @@
                 android:id="@+id/sure"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="@string/sure" />
+                android:background="@color/text_color"
+                android:layout_marginLeft="@dimen/little_margin"
+                android:text="@string/sure"
+                android:textColor="@color/white"/>
 
         </LinearLayout>
 

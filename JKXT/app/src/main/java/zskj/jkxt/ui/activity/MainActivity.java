@@ -107,6 +107,10 @@ public class MainActivity extends FragmentActivity {
                         } else {
                             transaction.show(mJKInfoFragment);
                         }
+                        rb_station.setTextColor(getResources().getColor(R.color.text_color));
+                        rb_power.setTextColor(getResources().getColor(R.color.black));
+                        rb_warn.setTextColor(getResources().getColor(R.color.black));
+                        rb_set.setTextColor(getResources().getColor(R.color.black));
                         currentFrag = mJKInfoFragment;
                         break;
                     case R.id.rb_power:
@@ -116,6 +120,10 @@ public class MainActivity extends FragmentActivity {
                         } else {
                             transaction.show(mPowerFrag);
                         }
+                        rb_station.setTextColor(getResources().getColor(R.color.black));
+                        rb_power.setTextColor(getResources().getColor(R.color.text_color));
+                        rb_warn.setTextColor(getResources().getColor(R.color.black));
+                        rb_set.setTextColor(getResources().getColor(R.color.black));
                         currentFrag = mPowerFrag;
                         break;
                     case R.id.rb_warn:
@@ -125,6 +133,10 @@ public class MainActivity extends FragmentActivity {
                         } else {
                             transaction.show(mWarnFrag);
                         }
+                        rb_station.setTextColor(getResources().getColor(R.color.black));
+                        rb_power.setTextColor(getResources().getColor(R.color.black));
+                        rb_warn.setTextColor(getResources().getColor(R.color.text_color));
+                        rb_set.setTextColor(getResources().getColor(R.color.black));
                         currentFrag = mWarnFrag;
                         break;
                     case R.id.rb_set:
@@ -134,6 +146,10 @@ public class MainActivity extends FragmentActivity {
                         } else {
                             transaction.show(mSetFrag);
                         }
+                        rb_station.setTextColor(getResources().getColor(R.color.black));
+                        rb_power.setTextColor(getResources().getColor(R.color.black));
+                        rb_warn.setTextColor(getResources().getColor(R.color.black));
+                        rb_set.setTextColor(getResources().getColor(R.color.text_color));
                         currentFrag = mSetFrag;
                         break;
                 }

@@ -30,8 +30,7 @@ public class JKXTApplication extends Application {
         StrictMode.setVmPolicy(
                 new StrictMode.VmPolicy.Builder().detectLeakedSqlLiteObjects().penaltyLog().penaltyDeath().build());
         NETWORK_FLAG = ConnectionChangeReceiver.ConnectionDetect(this);
-        Log.e("NETWO0.15*13" +
-                "RK_FLAG", "------------------".concat(String.valueOf(NETWORK_FLAG)));
+        Log.e("NETWO0RK_FLAG", "------------------".concat(String.valueOf(NETWORK_FLAG)));
 
         getUrl();
         getStations();

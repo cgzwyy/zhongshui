@@ -28,9 +28,9 @@
             android:button="@null"
             android:drawableTop="@drawable/rb_station_selector"
             android:gravity="center"
-            android:text="场站"
+            android:text="总览"
             android:textColor="@color/black"
-            android:textSize="15dp"
+            android:textSize="@dimen/content_text_size"
             android:visibility="gone" />
 
         <RadioButton
@@ -43,7 +43,7 @@
             android:gravity="center"
             android:text="全场功率"
             android:textColor="@color/black"
-            android:textSize="15dp"
+            android:textSize="@dimen/content_text_size"
             android:visibility="gone" />
 
         <RadioButton
@@ -56,7 +56,7 @@
             android:gravity="center"
             android:text="实时告警"
             android:textColor="@color/black"
-            android:textSize="15dp"
+            android:textSize="@dimen/content_text_size"
             android:visibility="gone" />
 
         <RadioButton
@@ -69,7 +69,7 @@
             android:gravity="center"
             android:text="用户管理"
             android:textColor="@color/black"
-            android:textSize="15dp"
+            android:textSize="@dimen/content_text_size"
             android:visibility="gone" />
     </RadioGroup>
 

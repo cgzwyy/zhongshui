@@ -11,17 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/blue"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="@string/action_sign_in"
-            android:textColor="@color/white"
-            android:textSize="@dimen/dialog_title_text_size" />
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@color/blue"-->
+            <!--android:gravity="center"-->
+            <!--android:padding="10dp"-->
+            <!--android:text="@string/action_sign_in"-->
+            <!--android:textColor="@color/white"-->
+            <!--android:textSize="@dimen/dialog_title_text_size" />-->
 
         <ImageView
             android:layout_width="match_parent"

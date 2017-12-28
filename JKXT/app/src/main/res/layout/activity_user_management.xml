@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/user_name"
+            android:text="@string/user_name2"
             android:textColor="@color/black"
             android:textSize="@dimen/content_text_size"/>
 

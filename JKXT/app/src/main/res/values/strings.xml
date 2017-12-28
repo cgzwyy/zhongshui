@@ -68,6 +68,7 @@
     <string name="user_management_page">用户管理</string>
     <string name="user_id">ID</string>
     <string name="user_name">用户名</string>
+    <string name="user_name2">用户</string>
     <string name="user_rights">权限</string>
     <string name="user_range">范围</string>
     <string name="user_operation">操作</string>
