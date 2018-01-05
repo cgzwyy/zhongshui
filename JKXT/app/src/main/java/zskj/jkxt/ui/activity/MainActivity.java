@@ -50,6 +50,8 @@ public class MainActivity extends FragmentActivity {
         ranges = getIntent().getStringExtra("ranges");
         level = getIntent().getStringExtra("level");
 
+        Log.e(TAG,"------>" + rights);
+
         initViews();//初始化控件
         initData();
     }
@@ -102,7 +104,7 @@ public class MainActivity extends FragmentActivity {
 //                        }
                         if (mJKInfoFragment == null) {
                             mJKInfoFragment = new JKInfoFragment();
-//                            mJKInfoFragment.setRanges(ranges);
+                            mJKInfoFragment.setRanges(ranges);
                             transaction.add(R.id.fl_container, mJKInfoFragment, "station");
                         } else {
                             transaction.show(mJKInfoFragment);
@@ -157,6 +159,25 @@ public class MainActivity extends FragmentActivity {
             }
         });
     }
+
+//    @Override
+//    protected void onResume() {
+//        ranges = getIntent().getStringExtra("ranges");
+//        mJKInfoFragment.setRanges(ranges);
+//        Log.e("onResume ranges","----->" + ranges);
+//        super.onResume();
+////        int id = getIntent().getIntExtra("flag",0);
+////        if(id == 1){
+////            manager.
+////        }
+//    }
+//
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if(requestCode == 1 && resultCode == 4)
+//            ranges = data.getStringExtra("ranges");
+//    }
 
     //重要，不要删
     @Override

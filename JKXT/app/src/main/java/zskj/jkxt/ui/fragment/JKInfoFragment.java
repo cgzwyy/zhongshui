@@ -6,18 +6,21 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.SpannableString;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
@@ -34,15 +37,23 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 import zskj.jkxt.R;
+import zskj.jkxt.WebService;
+import zskj.jkxt.domain.JKInfo;
 import zskj.jkxt.ui.activity.StationInfoActivity;
 import zskj.jkxt.ui.activity.StatisticalDataActivity;
 import zskj.jkxt.util.DemoData;
 import zskj.jkxt.util.RiseNumberTextView;
 
-import static zskj.jkxt.util.DemoData.jkdl_Pie;
 import static zskj.jkxt.util.DemoData.mColors;
 
 /**
@@ -62,7 +73,19 @@ public class JKInfoFragment extends Fragment{
     private BarChart dldb_barchart;
     private SwipeRefreshLayout mRefreshLayout;
     private AssetManager mgr;
-    float database = 35.0f;
+    private TextView jk_jhfd;
+//    float database = 35.0f;
+    String ranges;
+//    private View mProgressView;
+    GetJKInfoTask mTask;
+    JKInfo mJKInfo;
+    DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
+    String[] Xbar_name;
+
+    public void setRanges(String ranges){
+        Log.e(TAG,"---->"+ranges);
+        this.ranges = ranges;
+    }
 
     @Override
     public void onAttach(Activity context) {
@@ -88,12 +111,13 @@ public class JKInfoFragment extends Fragment{
      * 初始化view
      */
     private void initView() {
+//        Log.e(TAG,"---->initView() start");
         mRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.refresh_jkinfo);
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 Log.i(TAG, "REFRESH.........................");//TODO
-                database++;
+//                database++;
                 getData();
                 mRefreshLayout.setRefreshing(false);
             }
@@ -102,15 +126,20 @@ public class JKInfoFragment extends Fragment{
         ll_jkyg = (LinearLayout) getView().findViewById(R.id.ll_jkyg);
         jk_dl = (RiseNumberTextView) getView().findViewById(R.id.jk_dl);
         jk_yg = (RiseNumberTextView) getView().findViewById(R.id.jk_yg);
+        jk_jhfd = (TextView) getView().findViewById(R.id.jk_jhfd);
         jkdl_piechart = (PieChart) getView().findViewById(R.id.jkdl_piechart);
         piechart_legendLayout = (LinearLayout) getView().findViewById(R.id.piechart_legendLayout);
         dldb_barchart = (BarChart) getView().findViewById(R.id.dldb_barchart);
         barchart_legendLayout = (LinearLayout) getView().findViewById(R.id.barchart_legendLayout);
+//        mProgressView = getView().findViewById(R.id.jkinfo_progress);
         ll_jkdl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent();
                 intent.setClass(getActivity(), StationInfoActivity.class);
+                intent.putExtra("ranges",ranges);
+//                intent.putExtra("flag",1);
+//                startActivityForResult(intent,1);
                 startActivity(intent);
             }
         });
@@ -119,6 +148,7 @@ public class JKInfoFragment extends Fragment{
             public void onClick(View view) {
                 Intent intent = new Intent();
                 intent.setClass(getActivity(), StatisticalDataActivity.class);
+                intent.putExtra("ranges",ranges);
                 startActivity(intent);
             }
         });
@@ -188,17 +218,6 @@ public class JKInfoFragment extends Fragment{
         dldb_barchart.setDrawBarShadow(false);
         dldb_barchart.setDrawGridBackground(false);
 
-        XAxis xAxis = dldb_barchart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawGridLines(false);
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return DemoData.stations[(int) value];
-            }
-        });
-        xAxis.setLabelCount(4);
-
         dldb_barchart.getAxisLeft().setDrawGridLines(false);
 
         dldb_barchart.getLegend().setEnabled(false); //设置不显示x轴图注
@@ -208,36 +227,39 @@ public class JKInfoFragment extends Fragment{
     }
 
     private void getData() {
-//        info = new DataInfo();
-//        info.elec = 233.25f;
-//        info.power = 152.30f;
-//        info.pie = new HashMap<>();
-//        for (int i = 0; i < jkdl_Pie.length; i++) {
-//            info.pie.put(jkdl_Pie[i], 32.62f + database + i * 2);
-//        }
-//        info.bar = new HashMap<>();
-//        for (int i = 0; i < stations.length; i++) {
-//            info.bar.put(stations[i], database + i * 5);
-//        }
-        setData();
+        if (mTask != null)
+            return;
+        mTask = new GetJKInfoTask();
+        mJKInfo = new JKInfo();
+        mTask.execute();
     }
 
-    private void setData() {
-        startNumberAutoUp(jk_dl, 233.25 + database + "");
-        startNumberAutoUp(jk_yg, 152.30 + database + "");
-        setPieChartData(2, 100);
-        setBarChartData(4);
+    private void setData(JKInfo mJKInfo) {
+//        startNumberAutoUp(jk_dl, 233.25 + database + "");
+//        startNumberAutoUp(jk_yg, 152.30 + database + "");
+//        setPieChartData(2, 100);
+//        setBarChartData(4);
+        startNumberAutoUp(jk_dl, mJKInfo.jk_jrfd);
+        startNumberAutoUp(jk_yg, mJKInfo.jk_jryg);
+        jk_jhfd.setText(mJKInfo.jk_jhfd);
+        setPieChartData(mJKInfo.jk_pie_data);
+        setBarChartData(mJKInfo.jk_rfdl);
     }
 
 
-    private void setBarChartData(int count) {
+    private void setBarChartData(Map<String,String> map) {
 
         ArrayList<BarEntry> yVals = new ArrayList<BarEntry>();
         barchart_legendLayout.removeAllViews();
-        for (int i = 0; i < count; i++) {
-            float val = (float) (Math.random() * count) + 15;
-            yVals.add(new BarEntry(i, (int) val));
+        Xbar_name = new String[map.size()];
+        Iterator<String> iterator = map.keySet().iterator();
 
+        int i = 0;
+        while (iterator.hasNext()){
+            String key = iterator.next();
+            String value = map.get(key);
+            yVals.add(new BarEntry(i, Float.parseFloat(value)));
+            Xbar_name[i] = key;
             LinearLayout.LayoutParams lp=new LinearLayout.
                     LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
             lp.weight=1;//设置比重为1
@@ -258,16 +280,20 @@ public class JKInfoFragment extends Fragment{
 
             //添加label
             TextView labelTV=new TextView(mContext);
-            labelTV.setText(DemoData.stations[i]+" ");
+            labelTV.setText(key + "    ");
+            labelTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.content_text_size));
+            labelTV.setTextColor(getResources().getColor(R.color.gray));
             layout.addView(labelTV);
 
             //添加data
             TextView dataTV=new TextView(mContext);
-            dataTV.setText(((int) val)+"");
+            dataTV.setText(value);
+            dataTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.content_text_size));
+            dataTV.setTextColor(getResources().getColor(R.color.gray));
             layout.addView(dataTV);
 
             barchart_legendLayout.addView(layout);//legendLayout为外层布局即整个图例布局，是在xml文件中定义
-
+            i++;
         }
 
         BarDataSet set = new BarDataSet(yVals, "Data Set");
@@ -279,6 +305,17 @@ public class JKInfoFragment extends Fragment{
         dldb_barchart.setData(data);
         dldb_barchart.invalidate();
         dldb_barchart.animateXY(3000, 3000);
+
+        XAxis xAxis = dldb_barchart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return Xbar_name[(int) value];
+            }
+        });
+        xAxis.setLabelCount(map.size());
     }
 
     /**
@@ -295,15 +332,16 @@ public class JKInfoFragment extends Fragment{
         view.start();
     }
 
-    private void setPieChartData(int count, float range) {
+    private void setPieChartData(Map<String,String> map) {
 
         ArrayList<PieEntry> values = new ArrayList<PieEntry>();
         piechart_legendLayout.removeAllViews();
-        for (int i = 0; i < count; i++) {
-            float xValue = (float) ((Math.random() * range) + range / 5);
-            Log.e("xValue","----------->"+xValue);
-            values.add(new PieEntry(xValue, jkdl_Pie[i]));
-//            values.add(new PieEntry((float) ((Math.random() * range) + range / 5), mParties[i % mParties.length]));
+        Iterator<String> iter = map.keySet().iterator();
+        int i=0;
+        while(iter.hasNext()){
+            String key = iter.next();
+            String value = map.get(key);
+            values.add(new PieEntry(Float.parseFloat(value), key));
 
             LinearLayout.LayoutParams lp=new LinearLayout.
                     LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
@@ -316,7 +354,7 @@ public class JKInfoFragment extends Fragment{
             //添加color
             LinearLayout.LayoutParams colorLP=new LinearLayout.
                     LayoutParams(20,20);
-            colorLP.setMargins(0, 0, 20, 0);
+            colorLP.setMargins(0, 20, 20, 0);
             LinearLayout colorLayout=new LinearLayout(mContext);
             colorLayout.setLayoutParams(colorLP);
             colorLayout.setBackgroundColor(DemoData.mColors[i]);
@@ -324,15 +362,20 @@ public class JKInfoFragment extends Fragment{
 
             //添加label
             TextView labelTV=new TextView(mContext);
-            labelTV.setText(jkdl_Pie[i]+" ");
+            labelTV.setText(key);
+            labelTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.content_text_size));
+            labelTV.setTextColor(getResources().getColor(R.color.gray));
             layout.addView(labelTV);
 
             //添加data
             TextView dataTV=new TextView(mContext);
-            dataTV.setText(xValue+"");
+            dataTV.setText(value);
+            dataTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.content_text_size));
+            dataTV.setTextColor(getResources().getColor(R.color.gray));
             layout.addView(dataTV);
 
             piechart_legendLayout.addView(layout);//legendLayout为外层布局即整个图例布局，是在xml文件中定义
+            i++;
         }
 
         PieDataSet dataSet = new PieDataSet(values, "Election Results");
@@ -365,4 +408,101 @@ public class JKInfoFragment extends Fragment{
         SpannableString s = new SpannableString("test");
         return s;
     }
+
+    private class GetJKInfoTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//            showProgress(true);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+//            Log.e("ranges","-------->"+ranges);
+            return WebService.getInstance().getJKInfo(ranges);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            mTask = null;
+//            showProgress(false);
+            dealResult(result);
+        }
+
+        @Override
+        protected void onCancelled() {
+            mTask = null;
+//            showProgress(false);
+        }
+    }
+
+    private void dealResult(String result) {
+        try {
+            if(result != null && result.toString() != null){
+                JSONObject obj = new JSONObject(result);
+                int code = obj.optInt("code");
+                if (code == 0) {
+                    String msg = obj.optString("msg");
+                    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                //JSONObject data = obj.optJSONObject("data");
+                //JSONArray userLists = data.optJSONArray("userlist");
+                JSONObject data = obj.optJSONObject("data");
+                if(data.has("今日发电")){
+                    mJKInfo.jk_jrfd = df.format(Double.valueOf(data.optString("今日发电")));
+                }else{
+                    mJKInfo.jk_jrfd = "0.00";
+                }
+                if(data.has("今日有功")){
+                    mJKInfo.jk_jryg = df.format(Double.valueOf(data.optString("今日有功")));
+                }else{
+                    mJKInfo.jk_jryg = "0.00";
+                }
+                if(data.has("累计发电")){
+                    mJKInfo.jk_ljfd = df.format(Double.valueOf(data.optString("累计发电")));
+                    mJKInfo.jk_pie_data.put("已发电量",mJKInfo.jk_ljfd);
+                }else{
+                    mJKInfo.jk_pie_data.put("已发电量","0.00");
+                }
+                if(data.has("计划发电")){
+                    mJKInfo.jk_jhfd = df.format(Double.valueOf(data.optString("计划发电")));
+                    float syfd = Float.parseFloat(mJKInfo.jk_jhfd) - Float.parseFloat(mJKInfo.jk_ljfd);
+                    if(syfd < 0){
+                        mJKInfo.jk_pie_data.put("待发电量","0.00");
+                    }else{
+                        mJKInfo.jk_pie_data.put("待发电量",df.format(syfd));
+                    }
+
+                }else{
+                    mJKInfo.jk_pie_data.put("待发电量","0.00");
+                }
+                if(data.has("日发电量")){
+                    JSONArray rfdl = data.getJSONArray("日发电量");
+                    if(rfdl.length() == 1){
+                        JSONObject rfdl_detail = rfdl.getJSONObject(0);
+                        String[] tmp = ranges.split(",");
+                        for(int i=0;i<tmp.length;i++){
+                            if(rfdl_detail.has(tmp[i])){
+                                mJKInfo.jk_rfdl.put(tmp[i],rfdl_detail.optString(tmp[i]));
+                            }else{
+                                mJKInfo.jk_rfdl.put(tmp[i],"0.00");
+                            }
+                        }
+                    }
+                }
+                setData(mJKInfo);
+            }else{
+                Toast.makeText(mContext, "获取用户信息失败1", Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, "获取用户信息失败2", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+//    private void showProgress(final boolean show) {
+//        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+//    }
 }

@@ -350,12 +350,12 @@ public class PowerFragment extends Fragment {
 //                                    if (detail.optInt("time") > time)
 //                                        time = detail.optInt("time");
 //                                }
-                                    if(Double.valueOf(detail.optString("data")) >= -100){
+                                    if(Double.valueOf(detail.optString("data")) >= -100 && Double.valueOf(detail.optString("data")) <= 500){
 //                                    Log.e("data too small:","----->"+Double.valueOf(detail.optString("data")));
                                         pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
-                                        if (detail.optInt("time") > time)
-                                            time = detail.optInt("time");
                                     }
+                                    if (detail.optInt("time") > time)
+                                        time = detail.optInt("time");
                                 } catch (NumberFormatException e) {
                                     e.printStackTrace();
                                 }
@@ -387,7 +387,10 @@ public class PowerFragment extends Fragment {
 //                                    if (detail.optInt("time") > time)
 //                                        time = detail.optInt("time");
 //                                }
-                                    pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+                                    if(Double.valueOf(detail.optString("data")) >= -100 && Double.valueOf(detail.optString("data")) <= 500){
+//                                    Log.e("data too small:","----->"+Double.valueOf(detail.optString("data")));
+                                        pData.add(new Entry(detail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(detail.optString("data"))))));
+                                    }
                                     if (detail.optInt("time") > time)
                                         time = detail.optInt("time");
                                 } catch (NumberFormatException e) {
@@ -400,9 +403,13 @@ public class PowerFragment extends Fragment {
                             for (int i = 0; i < fpcode.length(); i++) {
                                 JSONObject fdetail = fpcode.optJSONObject(i);
                                 try {
-                                    if (i == 0) {
-                                        forecastData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
-                                    } else {
+//                                    if (i == 0) {
+//                                        forecastData.add(new Entry(0, Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
+//                                    } else {
+//                                        forecastData.add(new Entry(fdetail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
+//                                    }
+                                    if(Double.valueOf(fdetail.optString("data")) >= -100 && Double.valueOf(fdetail.optString("data")) <= 500){
+//                                    Log.e("data too small:","----->"+Double.valueOf(detail.optString("data")));
                                         forecastData.add(new Entry(fdetail.optInt("time"), Float.parseFloat(df.format(Double.valueOf(fdetail.optString("data"))))));
                                     }
                                 } catch (NumberFormatException e) {

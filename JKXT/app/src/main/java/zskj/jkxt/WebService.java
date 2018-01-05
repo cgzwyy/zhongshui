@@ -1,7 +1,5 @@
 package zskj.jkxt;
 
-import android.util.Log;
-
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -34,8 +32,8 @@ public class WebService {
     }
 
     public String isUser(String userName, String password) {
-        Log.e("network","------>" + JKXTApplication.NETWORK_FLAG);
-        Log.e("serviceUrl","------>" + serviceUrl);
+//        Log.e("network","------>" + JKXTApplication.NETWORK_FLAG);
+//        Log.e("serviceUrl","------>" + serviceUrl);
         if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
             return ERRORMSG;
         }
@@ -342,6 +340,108 @@ public class WebService {
             request.addProperty("sdate", new String(sdate.getBytes("gbk"),"ISO-8859-1"));
             request.addProperty("stime", new String(time.getBytes("gbk"),"ISO-8859-1"));
             request.addProperty("stationName", new String(station_names.getBytes("gbk"),"ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+        envelope.bodyOut = request;
+        envelope.dotNet = true;
+        HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
+        try {
+            ht.call(namespace + methodName, envelope);
+//            SoapObject object = (SoapObject) envelope.bodyIn;
+//            if (object != null && object.getProperty(0) != null) {
+//                return object.getProperty(0).toString();
+//            } else
+//                return ERRORMSG;
+            Object object = envelope.getResponse();
+            if (object != null && object.toString() != null) {
+//                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+                return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
+            } else
+                return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String getJKInfo(String ranges) {
+
+        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
+            return null;
+        }
+        String methodName = "GetJKInfo";
+        SoapObject request = new SoapObject(namespace, methodName);
+        try {
+            request.addProperty("ranges", new String(ranges.getBytes("gbk"),"ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+        envelope.bodyOut = request;
+        envelope.dotNet = true;
+        HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
+        try {
+            ht.call(namespace + methodName, envelope);
+//            SoapObject object = (SoapObject) envelope.bodyIn;
+//            if (object != null && object.getProperty(0) != null) {
+//                return object.getProperty(0).toString();
+//            } else
+//                return ERRORMSG;
+            Object object = envelope.getResponse();
+            if (object != null && object.toString() != null) {
+//                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+                return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
+            } else
+                return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String getStationsElec(String ranges) {
+
+        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
+            return null;
+        }
+        String methodName = "GetStationsElec";
+        SoapObject request = new SoapObject(namespace, methodName);
+        try {
+            request.addProperty("ranges", new String(ranges.getBytes("gbk"),"ISO-8859-1"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER12);
+        envelope.bodyOut = request;
+        envelope.dotNet = true;
+        HttpTransportSE ht = new HttpTransportSE(serviceUrl, timeoutmiles);
+        try {
+            ht.call(namespace + methodName, envelope);
+//            SoapObject object = (SoapObject) envelope.bodyIn;
+//            if (object != null && object.getProperty(0) != null) {
+//                return object.getProperty(0).toString();
+//            } else
+//                return ERRORMSG;
+            Object object = envelope.getResponse();
+            if (object != null && object.toString() != null) {
+//                Log.e("resutl----->",new String(object.toString().getBytes("ISO-8859-1"),"gbk"));
+                return new String(object.toString().getBytes("ISO-8859-1"),"gbk");
+            } else
+                return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String getStatisticalData(String ranges) {
+
+        if (JKXTApplication.NETWORK_FLAG == ConnectionChangeReceiver.NET_NONE) {
+            return null;
+        }
+        String methodName = "GetStatisticalData";
+        SoapObject request = new SoapObject(namespace, methodName);
+        try {
+            request.addProperty("ranges", new String(ranges.getBytes("gbk"),"ISO-8859-1"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

@@ -31,8 +31,8 @@
                     android:layout_marginTop="@dimen/little_margin"
                     android:layout_marginBottom="@dimen/little_margin"
                     android:layout_marginLeft="@dimen/gridview_margin"
-                    android:text="集控"
-                    android:textSize="@dimen/big_text_size"
+                    android:text="@string/stationinfo_page"
+                    android:textSize="@dimen/content_text_size"
                     android:textColor="@color/text_color"/>
                 <TextView
                     android:layout_width="fill_parent"
@@ -55,7 +55,7 @@
                             android:layout_marginTop="@dimen/activity_vertical_little_margin"
                             android:layout_marginBottom="@dimen/gridview_margin"
                             android:gravity="center_horizontal"
-                            android:text="1.21"
+                            android:text="@string/test_value"
                             android:textSize="@dimen/big_big_text_size"
                             android:textColor="@color/text_color"/>
                         <TextView
@@ -64,7 +64,7 @@
                             android:layout_marginTop="@dimen/gridview_margin"
                             android:layout_marginBottom="@dimen/gridview_margin"
                             android:gravity="center_horizontal"
-                            android:text="今日发电(kWh)"
+                            android:text="@string/jk_jrfd"
                             android:textSize="@dimen/content_text_size"
                             android:textColor="@color/gray"/>
                     </LinearLayout>
@@ -87,7 +87,7 @@
                             android:layout_marginTop="@dimen/gridview_margin"
                             android:layout_marginBottom="@dimen/gridview_margin"
                             android:gravity="center_horizontal"
-                            android:text="1.21"
+                            android:text="@string/test_value"
                             android:textSize="@dimen/big_big_text_size"
                             android:textColor="@color/text_color"/>
                         <TextView
@@ -96,7 +96,7 @@
                             android:layout_marginTop="@dimen/gridview_margin"
                             android:layout_marginBottom="@dimen/activity_vertical_little_margin"
                             android:gravity="center_horizontal"
-                            android:text="今日有功(kW)"
+                            android:text="@string/jk_jryg"
                             android:textSize="@dimen/content_text_size"
                             android:textColor="@color/gray"/>
                     </LinearLayout>
@@ -112,19 +112,42 @@
                 android:layout_marginRight="@dimen/activity_vertical_little_margin"
                 android:orientation="vertical"
                 android:background="@drawable/linearlayout_shape">
-                <TextView
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/little_margin"
-                    android:layout_marginBottom="@dimen/little_margin"
-                    android:layout_marginLeft="@dimen/gridview_margin"
-                    android:text="集控"
-                    android:textSize="@dimen/big_text_size"
-                    android:textColor="@color/text_color"/>
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/gridview_margin"
+                    android:layout_marginBottom="@dimen/gridview_margin"
+                    android:layout_marginLeft="@dimen/gridview_margin">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stationinfo_page2"
+                        android:textSize="@dimen/content_text_size"
+                        android:textColor="@color/text_color"/>
+
+                    <TextView
+                        android:id="@+id/jk_jhfd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/test_value"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/activity_vertical_little_margin"
+                        android:textSize="@dimen/content_text_size"
+                        android:textColor="@color/text_color"/>
+
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="@dimen/linealayout_padding_width"
+                    android:background="@color/silver" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
+                    android:layout_marginTop="@dimen/gridview_margin"
                     android:orientation="horizontal">
 
                     <com.github.mikephil.charting.charts.PieChart
@@ -163,7 +186,7 @@
                     android:layout_marginBottom="@dimen/little_margin"
                     android:layout_marginLeft="@dimen/gridview_margin"
                     android:text="各场站发电量对比"
-                    android:textSize="@dimen/big_text_size"
+                    android:textSize="@dimen/content_text_size"
                     android:textColor="@color/text_color"/>
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/dldb_barchart"
@@ -179,6 +202,7 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+
     </ScrollView>
 
 </android.support.v4.widget.SwipeRefreshLayout>

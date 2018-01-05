@@ -56,7 +56,7 @@ public class MonitorDetailActivity extends Activity {
 
     ArrayList<Fan> fanList = new ArrayList<>();
     MonitorAdapter monitorAdapter;
-    DecimalFormat df = new DecimalFormat("0.0");  //数据格式转换，四舍五入，保留两位小数
+    DecimalFormat df = new DecimalFormat("0.0");  //数据格式转换，四舍五入，保留一位小数
     MonitorDetailTask mTask;
     RotateAnimation rotateAnimation;
 

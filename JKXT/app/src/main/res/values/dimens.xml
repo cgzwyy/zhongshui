@@ -15,6 +15,7 @@
     <dimen name="dialog_title_text_size">20sp</dimen>
     <dimen name="dialog_content_text_size">16sp</dimen>
     <dimen name="content_text_size">12sp</dimen>
+    <dimen name="content_text_size2">13sp</dimen>
     <dimen name="dialog_line_size">1sp</dimen>
     <dimen name="linealayout_padding_width">0.1dp</dimen>
     <dimen name="linealayout_padding">1dp</dimen>

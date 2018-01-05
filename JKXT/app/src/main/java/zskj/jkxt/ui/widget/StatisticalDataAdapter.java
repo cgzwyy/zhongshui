@@ -1,7 +1,6 @@
 package zskj.jkxt.ui.widget;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,7 +95,7 @@ public class StatisticalDataAdapter extends PanelAdapter {
 
     private void setDetailView(int pos, DetailViewHolder viewHolder, List<String> detailInfoList) {
         String detailInfo = detailInfoList.get(pos - 1);
-        Log.e("detailInfo","--------->"+detailInfo);
+//        Log.e("detailInfo","--------->"+detailInfo);
         if (detailInfo != null && pos > 0) {
             viewHolder.detailTextView.setText(detailInfo);
         }
@@ -105,7 +104,7 @@ public class StatisticalDataAdapter extends PanelAdapter {
     private void setDataView(final int row, final int column, DataViewHolder viewHolder) {
 //        int[] colors = new int[]{0x30E0F3FA, 0x30FAFFFF};
         final String dataInfo = dataInfoList.get(column - 1).get(row - 1);
-        Log.e("dataInfo","--------->"+dataInfo);
+//        Log.e("dataInfo","--------->"+dataInfo);
         if (dataInfo != null) {
             viewHolder.detailTextView.setText(dataInfo);
 //            if(column % 2 == 1){

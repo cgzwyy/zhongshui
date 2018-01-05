@@ -2,8 +2,9 @@ package zskj.jkxt.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -11,60 +12,58 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import zskj.jkxt.R;
+import zskj.jkxt.WebService;
 import zskj.jkxt.domain.Station;
-import zskj.jkxt.domain.StationInfo;
 
 public class StationInfoActivity extends Activity {
 
     ImageView back_jkinfo;
     ListView lv_staion_info;
-    List<StationInfo> stationsInfo = new ArrayList<>();
+//    List<StationInfo> stationsInfo = new ArrayList<>();
+    List<Station> list = new ArrayList<Station>();
+    String ranges;
+    GetElecInfoTask mTask;
+    stationInfoAdapter mAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station_info);
+        ranges = getIntent().getStringExtra("ranges");
 
         back_jkinfo = (ImageView) this.findViewById(R.id.back_jkinfo);
         back_jkinfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                finish();
+//                Intent intent = new Intent();
+//                intent.putExtra("ranges",ranges);
+////                startActivity(intent);
+//                setResult(4,intent);
                 finish();
             }
         });
 
         lv_staion_info = (ListView) this.findViewById(R.id.lv_station_info);
+        getStationsData();
 
-        for(int i=0;i<5;i++){
-            StationInfo mStationInfo = new StationInfo();
-            mStationInfo.stationType = "光伏" + i;
-            mStationInfo.stationName = "乐平" + i;
-            mStationInfo.elecValue = i * 10 + "";
-            stationsInfo.add(mStationInfo);
-        }
-
-        Log.e("stationInfo size","---------->" + stationsInfo.size());
-        lv_staion_info.setAdapter(new stationInfoAdapter());
+        lv_staion_info.setAdapter(mAdapter = new stationInfoAdapter());
         lv_staion_info.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 //                Toast.makeText(getApplicationContext(), "获取用户信息失败 " + i, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.setClass(StationInfoActivity.this,MonitorDetailActivity.class);
-                Station model = new Station();
-                if(i % 2 == 0){
-                    model.columnAddress = "乐平";
-                    model.columnName = "光伏";
-                    model.columnValue = "lp";
-                }else{
-                    model.columnAddress = "基隆嶂";
-                    model.columnName = "风电场";
-                    model.columnValue = "jl";
-                }
+                Station model = list.get(i);
                 intent.putExtra("model",model);
                 startActivity(intent);
             }
@@ -72,19 +71,112 @@ public class StationInfoActivity extends Activity {
 
     }
 
+    private void getStationsData() {
+        String stations = "";
+        try {
+            InputStream in = getResources().openRawResource(R.raw.stations);//获取
+            int length = in.available();
+            byte[] buffer = new byte[length];
+            in.read(buffer);
+            stations = new String(buffer, "UTF-8");
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (!TextUtils.isEmpty(stations)) {
+            if (list != null && list.size() > 0)
+                list.clear();
+            String station[] = stations.split(";");
+            for (int i = 0; i < station.length; i++) {
+                String[] module = station[i].split(",", 3);
+                if(ranges.contains(module[0])){
+                    Station model = new Station();
+                    model.columnAddress = module[0]; //位置
+                    model.columnName = module[1];  //厂站类型
+                    model.columnValue = module[2];  //编号
+                    model.stationElec = "0.00";
+                    list.add(model);
+                }
+            }
+            if(!list.isEmpty()){
+                if (mTask != null)
+                    return;
+                mTask = new GetElecInfoTask();
+                mTask.execute();
+            }
+        }
+    }
 
+    private class GetElecInfoTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//            showProgress(true);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+//            Log.e("ranges","-------->"+ranges);
+            return WebService.getInstance().getStationsElec(ranges);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            mTask = null;
+//            showProgress(false);
+            dealResult(result);
+        }
+
+        @Override
+        protected void onCancelled() {
+            mTask = null;
+//            showProgress(false);
+        }
+    }
+
+    private void dealResult(String result) {
+        try {
+            if(result != null && result.toString() != null){
+                JSONObject obj = new JSONObject(result);
+                int code = obj.optInt("code");
+                if (code == 0) {
+                    String msg = obj.optString("msg");
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                JSONObject data = obj.optJSONObject("data");
+                for(int i=0;i<list.size();i++){
+                    Station tmp_station = list.get(i);
+                    if(data.has(tmp_station.columnAddress)){
+//                        Log.e("xxx","------------>"+data.optString(tmp_station.columnAddress));
+                        tmp_station.stationElec = data.optString(tmp_station.columnAddress);
+//                        tmp_station.setStationElec();
+                        list.set(i,tmp_station);
+                    }
+                }
+                if (mAdapter != null && list != null)
+                    mAdapter.notifyDataSetChanged();
+            }else{
+                Toast.makeText(getApplicationContext(), "获取用户信息失败1", Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "获取用户信息失败2", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     class stationInfoAdapter extends BaseAdapter {
         private int[] colors = new int[]{0x30FF0000, 0x300000FF};
 
         @Override
         public int getCount() {
-            return stationsInfo.size();
+            return list.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return stationsInfo.get(position);
+            return list.get(position);
         }
 
         @Override
@@ -114,15 +206,15 @@ public class StationInfoActivity extends Activity {
                 convertView.setBackgroundColor(getResources().getColor(R.color.pale));
             }
 
-            final StationInfo model = stationsInfo.get(position);
+            final Station model = list.get(position);
 //            holder.stationType.setText(model.stationType);
-            if(model.stationType.toString().equals("光伏3")){
+            if(model.columnName.toString().contains("光伏")){
                 holder.stationType.setImageResource(R.drawable.gf2);
             }else{
                 holder.stationType.setImageResource(R.drawable.fj2);
             }
-            holder.stationName.setText(model.stationName);
-            holder.stationElec.setText(model.elecValue);
+            holder.stationName.setText(model.columnAddress);
+            holder.stationElec.setText(model.stationElec);
 
             return convertView;
         }

@@ -21,8 +21,11 @@
     <string name="home_page">首页</string>
     <string name="monitor_page">运行监视</string>
     <string name="stationinfo_page">生产运营中心</string>
+    <string name="stationinfo_page2">生产运营中心年计划发电量</string>
     <string name="linechar_stationspower_page">场站功率曲线对比</string>
     <string name="staticsticaltable_page">运行统计</string>
+    <string name="jk_jrfd">今日发电(kWh)</string>
+    <string name="jk_jryg">今日有功(kW)</string>
     <string name="test">首页首页首页首页2</string>
     <string name="test2">首页首页2</string>
     <string name="plan">省调计划</string>
