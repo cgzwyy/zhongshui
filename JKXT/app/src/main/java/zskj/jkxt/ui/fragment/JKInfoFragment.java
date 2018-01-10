@@ -31,11 +31,14 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -224,6 +227,8 @@ public class JKInfoFragment extends Fragment{
 
 //        setBarChartData(4);
         dldb_barchart.setFitBars(true);
+        dldb_barchart.getAxisRight().setEnabled(false);
+        dldb_barchart.getAxisLeft().setDrawGridLines(true);
     }
 
     private void getData() {
@@ -299,6 +304,12 @@ public class JKInfoFragment extends Fragment{
         BarDataSet set = new BarDataSet(yVals, "Data Set");
         set.setColors(DemoData.mColors);
         set.setDrawValues(true); //柱状图上显示y轴的值
+        set.setValueFormatter(new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                return df.format(value);
+            }
+        });
 
         BarData data = new BarData(set);
 
@@ -316,6 +327,7 @@ public class JKInfoFragment extends Fragment{
             }
         });
         xAxis.setLabelCount(map.size());
+
     }
 
     /**
@@ -485,7 +497,7 @@ public class JKInfoFragment extends Fragment{
                         String[] tmp = ranges.split(",");
                         for(int i=0;i<tmp.length;i++){
                             if(rfdl_detail.has(tmp[i])){
-                                mJKInfo.jk_rfdl.put(tmp[i],rfdl_detail.optString(tmp[i]));
+                                mJKInfo.jk_rfdl.put(tmp[i],df.format(Double.valueOf(rfdl_detail.optString(tmp[i]))));
                             }else{
                                 mJKInfo.jk_rfdl.put(tmp[i],"0.00");
                             }

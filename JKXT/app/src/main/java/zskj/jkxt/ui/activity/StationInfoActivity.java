@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class StationInfoActivity extends Activity {
     String ranges;
     GetElecInfoTask mTask;
     stationInfoAdapter mAdapter;
+    DecimalFormat df = new DecimalFormat("0.00");  //数据格式转换，四舍五入，保留两位小数
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,7 +152,7 @@ public class StationInfoActivity extends Activity {
                     Station tmp_station = list.get(i);
                     if(data.has(tmp_station.columnAddress)){
 //                        Log.e("xxx","------------>"+data.optString(tmp_station.columnAddress));
-                        tmp_station.stationElec = data.optString(tmp_station.columnAddress);
+                        tmp_station.stationElec = df.format(Double.valueOf(data.optString(tmp_station.columnAddress)));
 //                        tmp_station.setStationElec();
                         list.set(i,tmp_station);
                     }
