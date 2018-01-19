@@ -13,9 +13,13 @@ public class Station implements Serializable {
     public String columnName;//厂站类型
     public String columnValue;//编号
     public String stationElec;//日发电量
+    public String stationSpeed;//平均风速
+    public String stationPower;//瞬时有功
 
     public Station(){
         this.stationElec = "0.00";
+        this.stationPower = "0.00";
+        this.stationSpeed = "0.00";
     }
 
     public void setStationElec(String stationElec){

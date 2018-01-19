@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -14,10 +15,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +36,7 @@ public class StationInfoActivity extends Activity {
     ListView lv_staion_info;
 //    List<StationInfo> stationsInfo = new ArrayList<>();
     List<Station> list = new ArrayList<Station>();
+    DecimalFormat df = new DecimalFormat("0.00");
     String ranges;
     GetElecInfoTask mTask;
     stationInfoAdapter mAdapter;
@@ -56,6 +62,7 @@ public class StationInfoActivity extends Activity {
         lv_staion_info = (ListView) this.findViewById(R.id.lv_station_info);
         getStationsData();
 
+
         lv_staion_info.setAdapter(mAdapter = new stationInfoAdapter());
         lv_staion_info.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -70,6 +77,7 @@ public class StationInfoActivity extends Activity {
         });
 
     }
+
 
     private void getStationsData() {
         String stations = "";
@@ -95,6 +103,8 @@ public class StationInfoActivity extends Activity {
                     model.columnName = module[1];  //厂站类型
                     model.columnValue = module[2];  //编号
                     model.stationElec = "0.00";
+                    model.stationSpeed = "0.00";
+                    model.stationPower = "0.00";
                     list.add(model);
                 }
             }
@@ -146,15 +156,46 @@ public class StationInfoActivity extends Activity {
                     return;
                 }
                 JSONObject data = obj.optJSONObject("data");
-                for(int i=0;i<list.size();i++){
-                    Station tmp_station = list.get(i);
-                    if(data.has(tmp_station.columnAddress)){
-//                        Log.e("xxx","------------>"+data.optString(tmp_station.columnAddress));
-                        tmp_station.stationElec = data.optString(tmp_station.columnAddress);
-//                        tmp_station.setStationElec();
-                        list.set(i,tmp_station);
+                for (int k=0;k<list.size();k++){
+                    JSONArray list1 = data.optJSONArray(list.get(k).columnAddress);
+                    if (list1 != null && list1.length() > 0)
+                    {
+                        for (int i = 0; i<list1.length();i++)
+                        {
+                            JSONObject object = list1.optJSONObject(i);
+
+                            if(list.get(k).columnName.contains("光伏"))
+                            {
+                                if (object.has("总辐射瞬时值")){
+                                    list.get(k).stationSpeed = df.format(Double.valueOf(object.optString("总辐射瞬时值")));
+                                }else{
+                                    list.get(k).stationSpeed = "0.00";
+                                }
+                            }else{
+                                if (object.has("平均风速")){
+                                    list.get(k).stationSpeed = df.format(Double.valueOf(object.optString("平均风速")));
+                                }else{
+                                    list.get(k).stationSpeed = "0.00";
+                                }
+                            }
+                            if (object.has("瞬时总有功")){
+                                list.get(k).stationPower = df.format(Double.valueOf(object.optString("瞬时总有功")));
+                            }else{
+                                list.get(k).stationPower = "0.00";
+                            }
+                            if(object.has("当日发电量")){
+                                list.get(k).stationElec = df.format(Double.valueOf(object.optString("当日发电量")));
+                            }else{
+                                list.get(k).stationElec = "0.00";
+                            }
+
+                        }
+
                     }
+
+
                 }
+
                 if (mAdapter != null && list != null)
                     mAdapter.notifyDataSetChanged();
             }else{
@@ -193,6 +234,10 @@ public class StationInfoActivity extends Activity {
                 holder.stationType = (ImageView) convertView.findViewById(R.id.stations_type);
                 holder.stationName = (TextView) convertView.findViewById(R.id.station_name);
                 holder.stationElec = (TextView) convertView.findViewById(R.id.station_elec);
+                holder.stationSpeed= (TextView) convertView.findViewById(R.id.station_speed);
+                holder.stationPower= (TextView) convertView.findViewById(R.id.station_power);
+                holder.stationType_speed= (TextView) convertView.findViewById(R.id.station_type_speed);
+                holder.stationType_speed_unit = (TextView) convertView.findViewById(R.id.station_type_speed_unit);
                 convertView.setTag(holder);
 
             } else {
@@ -209,12 +254,21 @@ public class StationInfoActivity extends Activity {
             final Station model = list.get(position);
 //            holder.stationType.setText(model.stationType);
             if(model.columnName.toString().contains("光伏")){
-                holder.stationType.setImageResource(R.drawable.gf2);
+ //               holder.stationType.setImageResource(R.drawable.gf_new);
+                Glide.with(StationInfoActivity.this).load(R.drawable.fj_gif).asGif().into(holder.stationType);
+                holder.stationType_speed.setText(getResources().getString(R.string.title_radiation_4));
+                holder.stationType_speed_unit.setText(getResources().getString(R.string.title_radiation_unit));
+
             }else{
-                holder.stationType.setImageResource(R.drawable.fj2);
+                holder.stationType.setImageResource(R.drawable.fj_new);
+                holder.stationType_speed.setText(getResources().getString(R.string.title_speed_4));
+                holder.stationType_speed_unit.setText(getResources().getString(R.string.title_speed_unit));
             }
+
             holder.stationName.setText(model.columnAddress);
             holder.stationElec.setText(model.stationElec);
+            holder.stationPower.setText(model.stationElec);
+            holder.stationSpeed.setText(model.stationSpeed);
 
             return convertView;
         }
@@ -225,5 +279,10 @@ public class StationInfoActivity extends Activity {
         ImageView stationType;
         TextView stationName;
         TextView stationElec;
+        TextView stationSpeed;
+        TextView stationPower;
+        TextView stationType_speed;
+        TextView stationType_speed_unit;
+
     }
 }
