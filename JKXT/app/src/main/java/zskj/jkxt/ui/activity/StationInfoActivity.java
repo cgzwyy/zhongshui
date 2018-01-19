@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -256,7 +257,8 @@ public class StationInfoActivity extends Activity {
 //            holder.stationType.setText(model.stationType);
             if(model.columnName.toString().contains("光伏")){
  //               holder.stationType.setImageResource(R.drawable.gf_new);
-                Glide.with(StationInfoActivity.this).load(R.drawable.fj_gif).asGif().into(holder.stationType);
+                String url = "http://img0.imgtn.bdimg.com/it/u=1785724709,3835905221&fm=27&gp=0.jpg";
+                Glide.with(StationInfoActivity.this).load(url).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.stationType);
                 holder.stationType_speed.setText(getResources().getString(R.string.title_radiation_4));
                 holder.stationType_speed_unit.setText(getResources().getString(R.string.title_radiation_unit));
 

@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/item_stations"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:paddingBottom="@dimen/activity_vertical_margin"
-              android:paddingTop="@dimen/activity_vertical_margin"
-              android:background="@drawable/linearlayout_shape">
+    android:id="@+id/item_stations"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/linearlayout_shape"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingTop="@dimen/activity_vertical_margin">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="horizontal">
+
         <TextView
             android:id="@+id/station_name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/test"
+            android:gravity="center_vertical"
             android:paddingLeft="@dimen/gridview_margin"
             android:paddingRight="@dimen/gridview_margin"
-            android:gravity="center_vertical"
-            android:textSize="@dimen/big_text_size"
-            android:textColor="@color/black"/>
+            android:text="@string/test"
+            android:textColor="@color/black"
+            android:textSize="@dimen/big_text_size" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
         android:gravity="center"
         android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -41,160 +45,161 @@
                 android:id="@+id/stations_type"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
                 android:paddingLeft="@dimen/gridview_margin"
                 android:paddingRight="@dimen/gridview_margin"
-                android:src="@drawable/fj2"/>
+                android:scaleType="centerInside" />
         </LinearLayout>
 
 
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="10"
-        android:gravity="center"
-        android:orientation="vertical">
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
             android:gravity="center"
-            android:orientation="horizontal">
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:gravity="center"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:gravity="center"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="4"
-                android:text="@string/speed"
-                android:gravity="center_vertical|center_horizontal"
-                android:textSize="@dimen/content_text_size"
-                android:textColor="@color/text_color"
-                android:id="@+id/station_type_speed" />
-
-            <TextView
-
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="4"
-                android:text="@string/test_value"
-                android:gravity="center_vertical|center_horizontal"
-                android:textSize="@dimen/content_text_size"
-                android:textColor="@color/black"
-                android:id="@+id/station_speed" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="3"
-                android:text="@string/speed_unit3"
-                android:paddingLeft="@dimen/gridview_margin"
-                android:gravity="center_vertical|start"
-                android:textSize="@dimen/content_text_size"
-                android:textColor="@color/slategray"
-                android:id="@+id/station_type_speed_unit" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:gravity="center"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="4"
-                android:text="@string/power1"
-                android:gravity="center_vertical|center_horizontal"
-                android:textSize="@dimen/content_text_size"
-                android:textColor="@color/text_color"/>
+                android:gravity="center"
+                android:orientation="horizontal"></LinearLayout>
 
-            <TextView
-                android:id="@+id/station_power"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="4"
-                android:text="@string/test_value"
-                android:gravity="center_vertical|center_horizontal"
-                android:textSize="@dimen/content_text_size"
-                android:textColor="@color/black"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="3"
-                android:text="@string/electricity_unit3"
-                android:paddingLeft="@dimen/gridview_margin"
-                android:gravity="center_vertical|start"
-                android:textSize="@dimen/content_text_size"
-                android:textColor="@color/slategray"/>
-        </LinearLayout>
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
-        android:gravity="center"
-        android:orientation="horizontal">
+                android:gravity="center"
+                android:orientation="horizontal"></LinearLayout>
 
-            <TextView
-
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="4"
-                android:text="@string/electricity1"
-                android:gravity="center_vertical|center_horizontal"
-                android:textSize="@dimen/content_text_size"
-                android:textColor="@color/text_color"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="4"
-                android:text="@string/test_value"
-                android:gravity="center_vertical|center_horizontal"
-                android:textSize="@dimen/content_text_size"
-                android:textColor="@color/black"
-                android:id="@+id/station_elec" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="3"
-                android:text="@string/power_unit"
-                android:paddingLeft="@dimen/gridview_margin"
-                android:gravity="center_vertical|start"
-                android:textSize="@dimen/content_text_size"
-                android:textColor="@color/slategray"/>
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/station_type_speed"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:text="@string/speed"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/content_text_size" />
+
+                <TextView
+
+                    android:id="@+id/station_speed"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:text="@string/test_value"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/content_text_size" />
+
+                <TextView
+                    android:id="@+id/station_type_speed_unit"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:gravity="center_vertical|start"
+                    android:paddingLeft="@dimen/gridview_margin"
+                    android:text="@string/speed_unit3"
+                    android:textColor="@color/slategray"
+                    android:textSize="@dimen/content_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:text="@string/power1"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/content_text_size" />
+
+                <TextView
+                    android:id="@+id/station_power"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:text="@string/test_value"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/content_text_size" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:gravity="center_vertical|start"
+                    android:paddingLeft="@dimen/gridview_margin"
+                    android:text="@string/electricity_unit3"
+                    android:textColor="@color/slategray"
+                    android:textSize="@dimen/content_text_size" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:text="@string/electricity1"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/content_text_size" />
+
+                <TextView
+                    android:id="@+id/station_elec"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:text="@string/test_value"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/content_text_size" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:gravity="center_vertical|start"
+                    android:paddingLeft="@dimen/gridview_margin"
+                    android:text="@string/power_unit"
+                    android:textColor="@color/slategray"
+                    android:textSize="@dimen/content_text_size" />
+            </LinearLayout>
+
+
         </LinearLayout>
 
 
-
-    </LinearLayout>
-
-
-   <ImageView
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:src="@drawable/right2"
-        android:paddingRight="@dimen/gridview_margin"
-        android:paddingLeft="@dimen/gridview_margin"
-        android:layout_marginRight="@dimen/activity_vertical_little_margin"
-        android:gravity="center_vertical"/>
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="@dimen/activity_vertical_little_margin"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/gridview_margin"
+            android:paddingRight="@dimen/gridview_margin"
+            android:src="@drawable/right2" />
     </LinearLayout>
 
 </LinearLayout>
