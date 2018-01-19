@@ -36,7 +36,6 @@ public class StationInfoActivity extends Activity {
     ListView lv_staion_info;
 //    List<StationInfo> stationsInfo = new ArrayList<>();
     List<Station> list = new ArrayList<Station>();
-    DecimalFormat df = new DecimalFormat("0.00");
     String ranges;
     GetElecInfoTask mTask;
     stationInfoAdapter mAdapter;
@@ -157,7 +156,7 @@ public class StationInfoActivity extends Activity {
                     return;
                 }
                 JSONObject data = obj.optJSONObject("data");
-<<<<<<< HEAD
+
                 for (int k=0;k<list.size();k++){
                     JSONArray list1 = data.optJSONArray(list.get(k).columnAddress);
                     if (list1 != null && list1.length() > 0)
@@ -193,15 +192,6 @@ public class StationInfoActivity extends Activity {
 
                         }
 
-=======
-                for(int i=0;i<list.size();i++){
-                    Station tmp_station = list.get(i);
-                    if(data.has(tmp_station.columnAddress)){
-//                        Log.e("xxx","------------>"+data.optString(tmp_station.columnAddress));
-                        tmp_station.stationElec = df.format(Double.valueOf(data.optString(tmp_station.columnAddress)));
-//                        tmp_station.setStationElec();
-                        list.set(i,tmp_station);
->>>>>>> 7b03aeae0d4fb51c2f3ae551746c606fdfa883aa
                     }
 
 
