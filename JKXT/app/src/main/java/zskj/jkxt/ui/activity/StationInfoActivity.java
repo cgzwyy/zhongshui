@@ -241,11 +241,9 @@ public class StationInfoActivity extends Activity {
                 holder.stationType_speed= (TextView) convertView.findViewById(R.id.station_type_speed);
                 holder.stationType_speed_unit = (TextView) convertView.findViewById(R.id.station_type_speed_unit);
                 convertView.setTag(holder);
-
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-
             int colorPos = position % colors.length;
             if (colorPos == 1) {
                 convertView.setBackgroundColor(getResources().getColor(R.color.paleblue));
@@ -261,18 +259,15 @@ public class StationInfoActivity extends Activity {
                 Glide.with(StationInfoActivity.this).load(url).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.stationType);
                 holder.stationType_speed.setText(getResources().getString(R.string.title_radiation_4));
                 holder.stationType_speed_unit.setText(getResources().getString(R.string.title_radiation_unit));
-
             }else{
-                holder.stationType.setImageResource(R.drawable.fj_new);
+                Glide.with(StationInfoActivity.this).load(R.drawable.fj_new).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.stationType);
                 holder.stationType_speed.setText(getResources().getString(R.string.title_speed_4));
                 holder.stationType_speed_unit.setText(getResources().getString(R.string.title_speed_unit));
             }
-
             holder.stationName.setText(model.columnAddress);
             holder.stationElec.setText(model.stationElec);
             holder.stationPower.setText(model.stationElec);
             holder.stationSpeed.setText(model.stationSpeed);
-
             return convertView;
         }
 
