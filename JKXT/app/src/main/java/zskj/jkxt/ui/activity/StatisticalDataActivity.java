@@ -149,7 +149,7 @@ public class StatisticalDataActivity extends Activity {
                     List<String> tmpDataList = new ArrayList<>();
                     for(int i=0;i<stationInfoList.size();i++){
                         if(tmpMap.containsKey(stationInfoList.get(i))){
-                            tmpDataList.add(tmpMap.get(stationInfoList.get(i)));
+                            tmpDataList.add(df.format(Double.valueOf(tmpMap.get(stationInfoList.get(i)))));
                         }else{
                             tmpDataList.add("0.00");
                         }
